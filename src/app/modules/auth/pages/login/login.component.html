@@ -1,65 +1,88 @@
 <div class="min-h-screen flex items-center justify-center bg-base-200 px-4">
     <div class="w-full max-w-md">
 
-
-        <!-- Login card -->
-        <div class="card bg-base-100 shadow-md border border-base-300">
+        <div class="card bg-base-100 shadow-xl border border-base-300">
             <div class="card-body p-8">
-                <!-- Logo section -->
-                <div class="flex justify-center items-center mb-3">
-                    <img src="images/jiro-logo.png" alt="Jiro" class="h-15" />
-                    <h1 class="text-3xl">
-                        JIRO
-                    </h1>
+
+                <!-- Logo-->
+                <div class="flex flex-row justify-center items-center mb-5">
+                    <img src="images/jiro-logo.png" alt="Jiro" class="h-16" />
+                    <h1 class="text-3xl font-bold text-primary">JIRO</h1>
                 </div>
 
-                <h2 class="text-2xl font-light text-center mb-2 text-base-content">
+                <h2 class="text-2xl font-light text-center mb-8 text-base-content">
                     Ingresa tus credenciales
                 </h2>
 
-                <form class="space-y-6">
+                <!-- Error message -->
+                @if (errorMessage) {
+                <div class="alert alert-error shadow-lg mb-6">
+                    <span>{{ errorMessage }}</span>
+                </div>
+                }
+
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
                     <!-- Email -->
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text font-medium">Correo electronico</span>
+                            <span class="label-text font-medium">Correo electrónico</span>
                         </label>
-                        <input type="email" placeholder="example@mail.com"
-                            class="input input-bordered input-lg w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-base"
-                            required />
+                        <input type="email" formControlName="email" placeholder="example@mail.com"
+                            class="input input-bordered input-lg w-full"
+                            [class.input-error]="email?.invalid && email?.touched" />
+                        @if (email?.invalid && email?.touched) {
+                        <label class="label">
+                            <span class="label-text-alt text-error">
+                                @if (email?.errors?.['required']) { Correo es obligatorio }
+                                @if (email?.errors?.['email']) { Ingresa un correo válido }
+                            </span>
+                        </label>
+                        }
                     </div>
 
                     <!-- Password -->
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text font-medium">Contrasena</span>
+                            <span class="label-text font-medium">Contraseña</span>
                         </label>
-                        <input type="password" placeholder="••••••••"
-                            class="input input-bordered input-lg w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-base"
-                            required />
+                        <input type="password" formControlName="password" placeholder="••••••••"
+                            class="input input-bordered input-lg w-full"
+                            [class.input-error]="password?.invalid && password?.touched" />
+                        @if (password?.invalid && password?.touched) {
+                        <label class="label">
+                            <span class="label-text-alt text-error">
+                                @if (password?.errors?.['required']) { Contraseña es obligatoria }
+                                @if (password?.errors?.['minlength']) { Mínimo 6 caracteres }
+                            </span>
+                        </label>
+                        }
                     </div>
 
-                    <!-- Login button -->
-                    <button type="submit" class="btn btn-primary btn-lg w-full text-lg font-medium">
-                        Iniciar sesion
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary btn-lg w-full text-lg font-medium"
+                        [disabled]="loading || loginForm.invalid">
+                        @if (loading) {
+                        <span class="loading loading-spinner"></span>
+                        }
+                        Iniciar sesión
                     </button>
                 </form>
 
-                <!-- Links footer -->
-                <div class="text-center mt-5 space-y-2 text-sm">
-                    <a href="#" class="link link-primary hover:underline">Olvidaste tus credenciales?</a>
-                    <span class="text-base-content/50 mx-2">•</span>
-                    <a href="#" class="link link-primary hover:underline">Crea una cuenta</a>
+                <div class="text-center mt-6 space-x-4 text-sm">
+                    <a routerLink="/recover" class="link link-primary">¿Olvidaste tu contraseña?</a>
+                    <span class="text-base-content/50">•</span>
+                    <a routerLink="/register" class="link link-primary">Crear cuenta</a>
                 </div>
             </div>
         </div>
 
-        <!-- Footer -->
-        <div class="text-center mt-7 text-xs text-base-content/60">
-            <p>Crea tu cuenta y administra tus recursos</p>
+        <div class="text-center mt-5 text-xs text-base-content/60">
+            <p>Administra tus proyectos como un profesional</p>
             <div class="mt-3 flex justify-center gap-4">
-                <a href="#" class="link link-hover">Politicas de privacidad</a>
+                <a href="#" class="link link-hover">Políticas de privacidad</a>
                 <span>•</span>
-                <a href="#" class="link link-hover">Terminos y condiciones</a>
+                <a href="#" class="link link-hover">Términos y condiciones</a>
             </div>
         </div>
     </div>
