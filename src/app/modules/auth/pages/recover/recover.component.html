@@ -1,1 +1,131 @@
-<p>recover works!</p>
+<div class="min-h-screen flex items-center justify-center bg-base-200 px-4">
+    <div class="w-full max-w-md">
+
+        <div class="card bg-base-100 shadow-xl border border-base-300">
+            <div class="card-body p-8">
+
+                <!-- Logo -->
+                <div class="flex flex-row justify-center items-center mb-5">
+                    <img src="images/jiro-logo.png" alt="Jiro" class="h-16" />
+                    <h1 class="text-3xl font-bold text-primary ml-3">JIRO</h1>
+                </div>
+
+                <h2 class="text-2xl font-light text-center mb-3 text-base-content">
+                    Restablece tu contraseña
+                </h2>
+
+                <p class="text-center text-base-content/70 mb-8 text-sm leading-relaxed">
+                    Ingresa el código de 6 dígitos que enviamos a<br />
+                    <span class="font-semibold text-primary">{{ userEmail || 'tu correo' }}</span>
+                </p>
+
+                <!-- Success or error message -->
+                @if (successMessage) {
+                <div class="alert alert-success shadow-lg mb-6">
+                    <span>{{ successMessage }}</span>
+                </div>
+                }
+                @if (errorMessage) {
+                <div class="alert alert-error shadow-lg mb-6">
+                    <span>{{ errorMessage }}</span>
+                </div>
+                }
+
+                <form [formGroup]="resetForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+                    <!-- Code -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Código de recuperación</span>
+                        </label>
+                        <input type="text" formControlName="code" placeholder="000000" maxlength="6"
+                            class="input input-bordered input-lg text-center text-2xl tracking-widest font-mono"
+                            [class.input-error]="code?.invalid && code?.touched" (input)="onCodeInput($event)" />
+                        @if (code?.invalid && code?.touched) {
+                        <label class="label">
+                            <span class="label-text-alt text-error">
+                                Ingresa un código válido de 6 dígitos
+                            </span>
+                        </label>
+                        }
+                    </div>
+
+                    <!-- New password -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Nueva contraseña</span>
+                        </label>
+                        <input type="password" formControlName="password" placeholder="••••••••"
+                            class="input input-bordered input-lg w-full"
+                            [class.input-error]="password?.invalid && password?.touched" />
+                        @if (password?.invalid && password?.touched) {
+                        <label class="label">
+                            <span class="label-text-alt text-error">
+                                @if (password?.errors?.['required']) { La contraseña es obligatoria }
+                                @if (password?.errors?.['minlength']) { Mínimo 6 caracteres }
+                            </span>
+                        </label>
+                        }
+                    </div>
+
+                    <!-- Password confirmation -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Confirmar nueva contraseña</span>
+                        </label>
+                        <input type="password" formControlName="confirmPassword" placeholder="••••••••"
+                            class="input input-bordered input-lg w-full"
+                            [class.input-error]="confirmPassword?.invalid && confirmPassword?.touched" />
+                        @if (confirmPassword?.invalid && confirmPassword?.touched) {
+                        <label class="label">
+                            <span class="label-text-alt text-error">
+                                @if (confirmPassword?.errors?.['required']) { Confirma tu contraseña }
+                                @if (confirmPassword?.errors?.['passwordMismatch']) { Las contraseñas no coinciden }
+                            </span>
+                        </label>
+                        }
+                    </div>
+
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary btn-lg w-full text-lg font-medium"
+                        [disabled]="loading || resetForm.invalid">
+                        @if (loading) {
+                        <span class="loading loading-spinner"></span>
+                        }
+                        Cambiar contraseña
+                    </button>
+                </form>
+
+                <!-- Resend code -->
+                <div class="text-center mt-6">
+                    <p class="text-sm text-base-content/70">
+                        ¿No recibiste el código?
+                        <button type="button" class="link link-primary font-medium" (click)="resendCode()"
+                            [disabled]="resendLoading || countdown > 0">
+                            @if (resendLoading) {
+                            <span class="loading loading-spinner loading-xs"></span>
+                            }
+                            Reenviar
+                            @if (countdown > 0) {
+                            <span class="text-base-content/50"> ({{ countdown }}s)</span>
+                            }
+                        </button>
+                    </p>
+                </div>
+
+                <!-- To login -->
+                <div class="text-center mt-8">
+                    <a routerLink="/login" class="link link-neutral text-sm">
+                        Volver al inicio de sesión
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-5 text-xs text-base-content/60">
+            <p>Administra tus proyectos como un profesional</p>
+        </div>
+    </div>
+</div>
