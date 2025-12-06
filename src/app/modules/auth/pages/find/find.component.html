@@ -1,1 +1,73 @@
-<p>find works!</p>
+<div class="min-h-screen flex items-center justify-center bg-base-200 px-4">
+    <div class="w-full max-w-md">
+
+        <div class="card bg-base-100 shadow-xl border border-base-300">
+            <div class="card-body p-8">
+
+                <!-- Logo -->
+                <div class="flex flex-row justify-center items-center mb-5">
+                    <img src="images/jiro-logo.png" alt="Jiro" class="h-16" />
+                    <h1 class="text-3xl font-bold text-primary ml-3">JIRO</h1>
+                </div>
+
+                <h2 class="text-2xl font-light text-center mb-3 text-base-content">
+                    Recupera tu cuenta
+                </h2>
+
+                <p class="text-center text-base-content/70 mb-8 text-sm leading-relaxed">
+                    Ingresa tu correo electrónico y te enviaremos un código de 6 dígitos para restablecer tu contraseña.
+                </p>
+
+                <!-- sucess or error message -->
+                @if (successMessage) {
+                <div class="alert alert-success shadow-lg mb-6">
+                    <span>{{ successMessage }}</span>
+                </div>
+                }
+                @if (errorMessage) {
+                <div class="alert alert-error shadow-lg mb-6">
+                    <span>{{ errorMessage }}</span>
+                </div>
+                }
+
+                <form [formGroup]="recoverForm" (ngSubmit)="onSubmit()" class="space-y-8">
+
+                    <!-- Email -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Correo electrónico</span>
+                        </label>
+                        <input type="email" formControlName="email" placeholder="example@mail.com"
+                            class="input input-bordered input-lg w-full"
+                            [class.input-error]="email?.invalid && email?.touched" />
+                        @if (email?.invalid && email?.touched) {
+                        <label class="label">
+                            <span class="label-text-alt text-error">
+                                @if (email?.errors?.['required']) { El correo es obligatorio }
+                                @if (email?.errors?.['email']) { Ingresa un correo válido }
+                            </span>
+                        </label>
+                        }
+                    </div>
+
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary btn-lg w-full text-lg font-medium"
+                        [disabled]="loading || recoverForm.invalid">
+                        @if (loading) {
+                        <span class="loading loading-spinner"></span>
+                        }
+                        Enviar código de recuperación
+                    </button>
+                </form>
+
+                <!-- To login -->
+                <div class="text-center mt-8">
+                    <a routerLink="/login" class="link link-neutral text-sm">
+                        Volver al inicio de sesión
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
