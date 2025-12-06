@@ -39,7 +39,7 @@
                             <span class="label-text font-medium">Código de recuperación</span>
                         </label>
                         <input type="text" formControlName="code" placeholder="000000" maxlength="6"
-                            class="input input-bordered input-lg text-center text-2xl tracking-widest font-mono"
+                            class="input input-bordered input-lg text-center text-2xl tracking-widest font-mono w-full"
                             [class.input-error]="code?.invalid && code?.touched" (input)="onCodeInput($event)" />
                         @if (code?.invalid && code?.touched) {
                         <label class="label">
@@ -121,11 +121,6 @@
                 </div>
 
             </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="text-center mt-5 text-xs text-base-content/60">
-            <p>Administra tus proyectos como un profesional</p>
         </div>
     </div>
 </div>
