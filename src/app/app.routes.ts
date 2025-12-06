@@ -4,6 +4,7 @@ import { SignupComponent } from './modules/auth/pages/signup/signup.component';
 import { ConfirmationComponent } from './modules/auth/pages/confirmation/confirmation.component';
 import { FindComponent } from './modules/auth/pages/find/find.component';
 import { RecoverComponent } from './modules/auth/pages/recover/recover.component';
+import { BoardComponent } from './modules/project/components/board/board.component';
 
 export const routes: Routes = [
     {
@@ -25,6 +26,10 @@ export const routes: Routes = [
     {
         path: 'recover',
         component: RecoverComponent
+    },
+    {
+        path: 'board',
+        component: BoardComponent
     },
     {
         path: '',
