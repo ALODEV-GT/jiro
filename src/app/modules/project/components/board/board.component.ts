@@ -1,7 +1,14 @@
 import { Component } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, transferArrayItem, DragDropModule } from '@angular/cdk/drag-drop';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import {
+  CdkDropListGroup,
+  CdkDropList,
+  CdkDrag,
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+} from '@angular/cdk/drag-drop';
+import { FormsModule } from '@angular/forms';
 
 interface Task {
   id: string;
@@ -18,7 +25,7 @@ interface Column {
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [CommonModule, DragDropModule, FormsModule],
+  imports: [CommonModule, CdkDropListGroup, CdkDropList, CdkDrag, FormsModule],
   templateUrl: './board.component.html',
   styleUrl: './board.component.scss'
 })
@@ -26,48 +33,73 @@ export class BoardComponent {
   columns: Column[] = [
     { id: '1', title: 'Pendiente', tasks: [] },
     { id: '2', title: 'En desarrollo', tasks: [] },
-    { id: '3', title: 'Finalizadas', tasks: [] }
+    { id: '3', title: 'Finalizadas', tasks: [] },
   ];
 
   isModalOpen = false;
-  newTask = { title: '', description: '', columnId: '' as string };
+  newTask: { title: string; description: string; columnId: string } = {
+    title: '',
+    description: '',
+    columnId: this.columns[0]?.id ?? '',
+  };
 
   openCreateTaskModal(columnId?: string) {
-    this.newTask = { title: '', description: '', columnId: columnId || this.columns[0].id };
+    const defaultColumnId = columnId ?? this.columns[0]?.id ?? '';
+    this.newTask = {
+      title: '',
+      description: '',
+      columnId: defaultColumnId,
+    };
     this.isModalOpen = true;
   }
 
   closeModal() {
     this.isModalOpen = false;
-    this.newTask = { title: '', description: '', columnId: '' };
+    this.newTask = { title: '', description: '', columnId: this.columns[0]?.id ?? '' };
   }
 
   createTask() {
     if (!this.newTask.title.trim()) return;
 
+    const column =
+      this.columns.find((c) => c.id === this.newTask.columnId) ?? this.columns[0];
+
+    if (!column) return;
+
     const task: Task = {
       id: Date.now().toString(36),
-      title: this.newTask.title,
-      description: this.newTask.description
+      title: this.newTask.title.trim(),
+      description: this.newTask.description?.trim() || undefined,
     };
 
-    const column = this.columns.find(c => c.id === this.newTask.columnId);
-    if (column) {
-      column.tasks.push(task);
-    }
-
+    column.tasks.push(task);
     this.closeModal();
   }
 
-  drop(event: CdkDragDrop<Task[]>, columnId: string) {
+  moveColumn(fromIndex: number, toIndex: number) {
+    if (
+      toIndex < 0 ||
+      toIndex >= this.columns.length ||
+      fromIndex === toIndex
+    ) {
+      return;
+    }
+    moveItemInArray(this.columns, fromIndex, toIndex);
+  }
+
+  dropTask(event: CdkDragDrop<Task[]>, columnId: string) {
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex,
+      );
     } else {
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
         event.previousIndex,
-        event.currentIndex
+        event.currentIndex,
       );
     }
   }
@@ -78,7 +110,7 @@ export class BoardComponent {
       this.columns.push({
         id: Date.now().toString(),
         title: name.trim(),
-        tasks: []
+        tasks: [],
       });
     }
   }
@@ -96,32 +128,13 @@ export class BoardComponent {
       return;
     }
     if (confirm('¿Eliminar esta columna y todas sus tareas?')) {
-      this.columns = this.columns.filter(c => c.id !== columnId);
+      this.columns = this.columns.filter((c) => c.id !== columnId);
     }
   }
 
   deleteTask(columnId: string, taskId: string) {
-    const column = this.columns.find(c => c.id === columnId);
-    if (column) {
-      column.tasks = column.tasks.filter(t => t.id !== taskId);
-    }
-  }
-
-  dropColumn(event: CdkDragDrop<Column[]>) {
-    moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
-  }
-
-  // ACTUALIZADO: Ahora separa el drop de tareas
-  dropTask(event: CdkDragDrop<Task[]>, columnId: string) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-    }
+    const column = this.columns.find((c) => c.id === columnId);
+    if (!column) return;
+    column.tasks = column.tasks.filter((t) => t.id !== taskId);
   }
 }
