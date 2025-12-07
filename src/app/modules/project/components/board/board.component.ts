@@ -43,6 +43,11 @@ export class BoardComponent {
     columnId: this.columns[0]?.id ?? '',
   };
 
+  /** IDs de las listas de tareas para conectarlas entre sí (drag entre columnas) */
+  get taskListIds(): string[] {
+    return this.columns.map(c => 'task-list-' + c.id);
+  }
+
   openCreateTaskModal(columnId?: string) {
     const defaultColumnId = columnId ?? this.columns[0]?.id ?? '';
     this.newTask = {
@@ -55,7 +60,11 @@ export class BoardComponent {
 
   closeModal() {
     this.isModalOpen = false;
-    this.newTask = { title: '', description: '', columnId: this.columns[0]?.id ?? '' };
+    this.newTask = {
+      title: '',
+      description: '',
+      columnId: this.columns[0]?.id ?? ''
+    };
   }
 
   createTask() {
@@ -76,17 +85,13 @@ export class BoardComponent {
     this.closeModal();
   }
 
-  moveColumn(fromIndex: number, toIndex: number) {
-    if (
-      toIndex < 0 ||
-      toIndex >= this.columns.length ||
-      fromIndex === toIndex
-    ) {
-      return;
-    }
-    moveItemInArray(this.columns, fromIndex, toIndex);
+  /** Drag & drop de columnas (horizontal) */
+  dropColumn(event: CdkDragDrop<Column[]>) {
+    if (event.previousIndex === event.currentIndex) return;
+    moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
   }
 
+  /** Drag & drop de tareas (dentro y entre columnas) */
   dropTask(event: CdkDragDrop<Task[]>, columnId: string) {
     if (event.previousContainer === event.container) {
       moveItemInArray(
