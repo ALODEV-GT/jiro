@@ -6,6 +6,7 @@ import { FindComponent } from './modules/auth/pages/find/find.component';
 import { RecoverComponent } from './modules/auth/pages/recover/recover.component';
 import { BoardComponent } from './modules/project/components/board/board.component';
 import { HomeComponent } from './modules/home/pages/home/home.component';
+import { ProjectComponent } from './modules/project/pages/project/project.component';
 
 export const routes: Routes = [
     {
@@ -35,6 +36,10 @@ export const routes: Routes = [
     {
         path: 'home',
         component: HomeComponent
+    },
+    {
+        path: 'project/:id',
+        component: ProjectComponent
     },
     {
         path: '',

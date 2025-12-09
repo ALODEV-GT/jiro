@@ -1,0 +1,173 @@
+<div class="space-y-8">
+
+    <!-- Header con botón para crear sprint -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+        </div>
+        <button class="btn btn-primary btn-lg" (click)="openCreateSprintModal()">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Nuevo Sprint
+        </button>
+    </div>
+
+    <!-- Lista de Sprints -->
+    @if (sprints().length > 0) {
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        @for (sprint of sprints(); track sprint.id) {
+        <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
+            <div class="card-body">
+                <!-- Estado del sprint -->
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-xl font-bold">{{ sprint.name }}</h3>
+                    <div class="badge badge-lg" [class.badge-success]="sprint.status === 'active'"
+                        [class.badge-ghost]="sprint.status === 'completed'"
+                        [class.badge-warning]="sprint.status === 'planned'">
+                        {{ sprintStatusLabel(sprint.status) }}
+                    </div>
+                </div>
+
+                <!-- Fechas -->
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>{{ sprint.startDate | date:'shortDate' }} → {{ sprint.endDate | date:'shortDate' }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>{{ sprintDuration(sprint) }}</span>
+                    </div>
+                </div>
+
+                <!-- Barra de progreso -->
+                <div class="mt-5">
+                    <div class="flex justify-between text-xs mb-1">
+                        <span>Progreso</span>
+                        <span class="font-medium">{{ sprint.progress }}%</span>
+                    </div>
+                    <progress class="progress progress-primary w-full" [value]="sprint.progress" max="100"></progress>
+                </div>
+
+                <!-- Estadísticas rápidas -->
+                <div class="flex justify-between items-center mt-5 pt-4 border-t border-base-300 text-sm">
+                    <div class="text-center">
+                        <div class="font-bold text-lg">{{ sprint.completedIssues }}</div>
+                        <div class="text-base-content/60">Completadas</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-bold text-lg">{{ sprint.totalIssues }}</div>
+                        <div class="text-base-content/60">Total</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-bold text-lg">{{ sprint.storyPoints }}</div>
+                        <div class="text-base-content/60">SP</div>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="card-actions justify-end mt-5">
+                    @if (sprint.status === 'planned') {
+                    <button class="btn btn-sm btn-success" (click)="startSprint(sprint)">
+                        Iniciar Sprint
+                    </button>
+                    }
+                    @if (sprint.status === 'active') {
+                    <button class="btn btn-sm btn-warning" (click)="completeSprint(sprint)">
+                        Finalizar Sprint
+                    </button>
+                    }
+                    <button class="btn btn-sm btn-ghost" (click)="editSprint(sprint)">
+                        Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    } @else {
+    <!-- Estado vacío -->
+    <div class="hero min-h-96 bg-base-200/50 rounded-2xl border-2 border-dashed border-base-300">
+        <div class="hero-content text-center">
+            <div class="max-w-md">
+                <svg class="mx-auto h-20 w-20 text-base-content/30 mb-6" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <h3 class="text-2xl font-bold mb-3">Aún no hay sprints</h3>
+                <p class="text-base-content/70 mb-8">Crea tu primer sprint para comenzar a planificar el trabajo</p>
+                <button class="btn btn-primary" (click)="openCreateSprintModal()">
+                    Crear Primer Sprint
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Modal: Crear / Editar Sprint -->
+    <dialog #sprintModal id="sprint_modal" class="modal">
+        <div class="modal-box w-11/12 max-w-2xl">
+            <h3 class="font-bold text-2xl mb-6">
+                {{ editingSprint() ? 'Editar Sprint' : 'Crear Nuevo Sprint' }}
+            </h3>
+
+            <form (ngSubmit)="saveSprint()">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-medium">Nombre del Sprint</span></label>
+                        <input type="text" [(ngModel)]="sprintForm.name" placeholder="Ej. Sprint 12 - Mobile First"
+                            class="input input-bordered" required />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-medium">Duración</span></label>
+                        <select [(ngModel)]="sprintForm.durationWeeks" class="select select-bordered">
+                            <option value="1">1 semana</option>
+                            <option value="2" selected>2 semanas</option>
+                            <option value="3">3 semanas</option>
+                            <option value="4">4 semanas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-medium">Fecha de Inicio</span></label>
+                        <input type="date" [(ngModel)]="sprintForm.startDate" class="input input-bordered" required />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-medium">Fecha de Fin
+                                (calculada)</span></label>
+                        <input type="date" [value]="calculatedEndDate()" disabled
+                            class="input input-bordered input-disabled" />
+                    </div>
+                </div>
+
+                <div class="form-control mt-6">
+                    <label class="label"><span class="label-text font-medium">Objetivo del Sprint
+                            (opcional)</span></label>
+                    <textarea [(ngModel)]="sprintForm.goal" class="textarea textarea-bordered h-24"
+                        placeholder="¿Qué se quiere lograr en este sprint?"></textarea>
+                </div>
+
+                <div class="modal-action mt-8">
+                    <button type="button" class="btn btn-ghost" (click)="closeSprintModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary px-8">
+                        {{ editingSprint() ? 'Guardar Cambios' : 'Crear Sprint' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+</div>
