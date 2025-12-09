@@ -4,8 +4,7 @@ import { FormsModule } from '@angular/forms';
 interface Project {
   name: string;
   description: string;
-  code: string;
-  isOwner: boolean;
+  active: boolean
 }
 
 @Component({
@@ -16,8 +15,8 @@ interface Project {
 })
 export class HomeComponent {
   projects: Project[] = [
-    { name: 'Rediseño Frontend', description: 'Nueva interfaz del panel de cliente', code: 'FR-2025-XK9', isOwner: true },
-    { name: 'Backend App Móvil', description: 'API en Node.js para la app móvil', code: 'MAB-2025-Z3M', isOwner: false },
+    { name: 'Rediseño Frontend', description: 'Nueva interfaz del panel de cliente', active: true },
+    { name: 'Backend App Móvil', description: 'API en Node.js para la app móvil', active: false },
   ];
 
   newProjectName = '';
@@ -30,11 +29,6 @@ export class HomeComponent {
     this.newProjectName = '';
     this.newProjectDescription = '';
     (document.getElementById('create_project_modal') as HTMLDialogElement)?.showModal();
-  }
-
-  openJoinProjectModal() {
-    this.joinCode = '';
-    (document.getElementById('join_project_modal') as HTMLDialogElement)?.showModal();
   }
 
   closeModal(modalId: string) {
@@ -58,10 +52,6 @@ export class HomeComponent {
 
   copyCode(code: string) {
     navigator.clipboard.writeText(code);
-  }
-
-  goToProject(code: string) {
-    console.log('Navegar al proyecto:', code);
   }
 
   private generateCode(): string {

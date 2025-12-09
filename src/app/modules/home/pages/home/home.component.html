@@ -14,9 +14,6 @@
                 </svg>
                 Crear Proyecto
             </button>
-            <button class="btn btn-outline btn-secondary" (click)="openJoinProjectModal()">
-                Unirse a Proyecto
-            </button>
         </div>
     </div>
 
@@ -27,39 +24,18 @@
         <!-- Projects Grid -->
         @if (projects.length > 0) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @for (project of projects; track project.code) {
-            <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer"
-                (click)="goToProject(project.code)">
+            @for (project of projects; track project.name) {
+            <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer">
                 <div class="card-body">
                     <div class="flex justify-between items-start mb-2">
                         <h2 class="card-title text-xl">{{ project.name }}</h2>
-                        @if (project.isOwner) {
-                        <div class="badge badge-primary">Propietario</div>
+                        @if (project.active) {
+                        <div class="badge badge-primary">Activo</div>
                         } @else {
-                        <div class="badge badge-accent">Invitado</div>
+                        <div class="badge badge-accent">Cerrado</div>
                         }
                     </div>
                     <p class="text-base-content/70 text-sm">{{ project.description }}</p>
-
-                    <!-- Show if its owner -->
-                    @if (project.isOwner) {
-                    <div class="mt-4 flex items-center justify-between">
-                        <div class="text-sm">
-                            <span class="font-medium opacity-70">Código:</span>
-                            <code class="ml-2 font-mono bg-base-300 px-2 py-1 rounded text-xs">
-                      {{ project.code }}
-                    </code>
-                        </div>
-                        <button class="btn btn-ghost btn-xs" (click)="copyCode(project.code); $event.stopPropagation()"
-                            title="Copiar código">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                        </button>
-                    </div>
-                    }
                 </div>
             </div>
             }
@@ -77,11 +53,8 @@
                     </svg>
                     <h1 class="text-4xl font-bold mb-4">Aún no tienes proyectos</h1>
                     <p class="text-lg text-base-content/70 mb-8">
-                        Crea tu primer proyecto o únete a uno existente con un código de invitación.
+                        Aun no tienes asignado ningun proyecto.
                     </p>
-                    <button class="btn btn-primary btn-lg" (click)="openCreateProjectModal()">
-                        Crear Primer Proyecto
-                    </button>
                 </div>
             </div>
         </div>
@@ -137,26 +110,4 @@
             </form>
         </div>
     </dialog>
-
-    <!-- Modal: Join project -->
-    <dialog #joinModal id="join_project_modal" class="modal">
-        <div class="modal-box">
-            <h3 class="font-bold text-2xl mb-4">Unirse a un Proyecto</h3>
-            <p class="text-base-content/70 mb-8">Ingresa el código del proyecto que te compartieron</p>
-
-            <input type="text" [(ngModel)]="joinCode" placeholder="Ej. WD-2025-K7P"
-                class="input input-bordered input-lg w-full font-mono text-center text-2xl tracking-widest"
-                maxlength="14" />
-
-            <div class="modal-action mt-8">
-                <button class="btn btn-ghost" (click)="closeModal('join_project_modal')">
-                    Cancelar
-                </button>
-                <button class="btn btn-primary px-10" (click)="joinProject(); closeModal('join_project_modal')">
-                    Unirse al Proyecto
-                </button>
-            </div>
-        </div>
-    </dialog>
-
 </div>
