@@ -5,6 +5,7 @@ import { ConfirmationComponent } from './modules/auth/pages/confirmation/confirm
 import { FindComponent } from './modules/auth/pages/find/find.component';
 import { RecoverComponent } from './modules/auth/pages/recover/recover.component';
 import { BoardComponent } from './modules/project/components/board/board.component';
+import { HomeComponent } from './modules/home/pages/home/home.component';
 
 export const routes: Routes = [
     {
@@ -30,6 +31,10 @@ export const routes: Routes = [
     {
         path: 'board',
         component: BoardComponent
+    },
+    {
+        path: 'home',
+        component: HomeComponent
     },
     {
         path: '',

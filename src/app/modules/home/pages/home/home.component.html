@@ -1,0 +1,162 @@
+<div class="min-h-screen bg-base-200">
+
+    <!-- Top Navbar -->
+    <div class="navbar bg-base-100 shadow-lg sticky top-0 z-10">
+        <div class="flex-1">
+            <img src="images/jiro-logo.png" alt="Jiro" class="h-16" />
+            <h1 class="text-3xl font-bold text-primary">JIRO</h1>
+        </div>
+        <div class="flex-none gap-3">
+            <button class="btn btn-primary" (click)="openCreateProjectModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Crear Proyecto
+            </button>
+            <button class="btn btn-outline btn-secondary" (click)="openJoinProjectModal()">
+                Unirse a Proyecto
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-10">
+        <h1 class="text-4xl font-bold mb-8">Mis Proyectos</h1>
+
+        <!-- Projects Grid -->
+        @if (projects.length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            @for (project of projects; track project.code) {
+            <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer"
+                (click)="goToProject(project.code)">
+                <div class="card-body">
+                    <div class="flex justify-between items-start mb-2">
+                        <h2 class="card-title text-xl">{{ project.name }}</h2>
+                        @if (project.isOwner) {
+                        <div class="badge badge-primary">Propietario</div>
+                        } @else {
+                        <div class="badge badge-accent">Invitado</div>
+                        }
+                    </div>
+                    <p class="text-base-content/70 text-sm">{{ project.description }}</p>
+
+                    <!-- Show if its owner -->
+                    @if (project.isOwner) {
+                    <div class="mt-4 flex items-center justify-between">
+                        <div class="text-sm">
+                            <span class="font-medium opacity-70">Código:</span>
+                            <code class="ml-2 font-mono bg-base-300 px-2 py-1 rounded text-xs">
+                      {{ project.code }}
+                    </code>
+                        </div>
+                        <button class="btn btn-ghost btn-xs" (click)="copyCode(project.code); $event.stopPropagation()"
+                            title="Copiar código">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+        } @else {
+        <!-- Empty projects -->
+        <div class="hero min-h-[60vh] bg-base-200 rounded-2xl border-2 border-dashed border-base-300">
+            <div class="hero-content text-center">
+                <div class="max-w-md">
+                    <svg class="mx-auto h-24 w-24 text-base-content/30 mb-6" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2">
+                        </path>
+                    </svg>
+                    <h1 class="text-4xl font-bold mb-4">Aún no tienes proyectos</h1>
+                    <p class="text-lg text-base-content/70 mb-8">
+                        Crea tu primer proyecto o únete a uno existente con un código de invitación.
+                    </p>
+                    <button class="btn btn-primary btn-lg" (click)="openCreateProjectModal()">
+                        Crear Primer Proyecto
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Modal: Create project -->
+    <dialog #createModal id="create_project_modal" class="modal">
+        <div class="modal-box w-11/12 max-w-xl">
+            <h3 class="font-bold text-2xl mb-6">Crear Nuevo Proyecto</h3>
+
+            <form (ngSubmit)="createProject()">
+                <div class="form-control mb-6">
+                    <label class="label"><span class="label-text font-medium">Nombre del Proyecto</span></label>
+                    <input type="text" [(ngModel)]="newProjectName" placeholder="Ej. Rediseño Web 2025"
+                        class="input input-bordered input-lg" required />
+                </div>
+
+                <div class="form-control mb-8">
+                    <label class="label"><span class="label-text font-medium">Descripción (opcional)</span></label>
+                    <textarea [(ngModel)]="newProjectDescription" class="textarea textarea-bordered h-32"
+                        placeholder="Breve descripción del proyecto..."></textarea>
+                </div>
+
+                <!-- Code to share project -->
+                @if (generatedCode) {
+                <div class="alert alert-success mb-6 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <div>
+                        <p class="font-medium">¡Proyecto creado! Comparte este código:</p>
+                        <div class="flex items-center gap-3 mt-2">
+                            <code
+                                class="bg-base-200 px-4 py-2 rounded font-mono text-lg font-bold">{{ generatedCode }}</code>
+                            <button type="button" class="btn btn-sm btn-outline" (click)="copyCode(generatedCode!)">
+                                Copiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                }
+
+                <div class="modal-action">
+                    <button type="button" class="btn btn-ghost" (click)="closeModal('create_project_modal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary px-8">
+                        Crear Proyecto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Modal: Join project -->
+    <dialog #joinModal id="join_project_modal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-2xl mb-4">Unirse a un Proyecto</h3>
+            <p class="text-base-content/70 mb-8">Ingresa el código del proyecto que te compartieron</p>
+
+            <input type="text" [(ngModel)]="joinCode" placeholder="Ej. WD-2025-K7P"
+                class="input input-bordered input-lg w-full font-mono text-center text-2xl tracking-widest"
+                maxlength="14" />
+
+            <div class="modal-action mt-8">
+                <button class="btn btn-ghost" (click)="closeModal('join_project_modal')">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary px-10" (click)="joinProject(); closeModal('join_project_modal')">
+                    Unirse al Proyecto
+                </button>
+            </div>
+        </div>
+    </dialog>
+
+</div>
