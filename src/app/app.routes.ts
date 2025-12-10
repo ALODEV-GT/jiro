@@ -7,6 +7,7 @@ import { RecoverComponent } from './modules/auth/pages/recover/recover.component
 import { BoardComponent } from './modules/project/components/board/board.component';
 import { HomeComponent } from './modules/home/pages/home/home.component';
 import { ProjectComponent } from './modules/project/pages/project/project.component';
+import { HomeLayoutComponent } from './modules/home/components/home-layout/home-layout.component';
 
 export const routes: Routes = [
     {
@@ -35,7 +36,18 @@ export const routes: Routes = [
     },
     {
         path: 'home',
-        component: HomeComponent
+        component: HomeLayoutComponent,
+        children: [
+            {
+                path: 'projects',
+                component: HomeComponent
+            },
+            {
+                path: '',
+                redirectTo: 'projects',
+                pathMatch: 'full'
+            }
+        ]
     },
     {
         path: 'project/:id',

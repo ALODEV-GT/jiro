@@ -1,0 +1,39 @@
+<!-- Top Navbar -->
+<div class="navbar flex flex-row justify-between bg-base-100 shadow-lg sticky top-0 z-50">
+    <!-- Izquierda: Logo y título -->
+    <div>
+        <img src="images/jiro-logo.png" alt="Jiro" class="h-16" />
+        <h1 class="text-3xl font-bold text-primary ml-3">JIRO</h1>
+    </div>
+
+    <!-- Centro: Tabs de navegación -->
+    <div>
+        <div class="tabs tabs-boxed bg-base-200">
+            <a routerLink="/projects" routerLinkActive="tab-active" [routerLinkActiveOptions]="{exact: true}"
+                class="tab tab-lg">Proyectos</a>
+            <a routerLink="/contratos" routerLinkActive="tab-active" class="tab tab-lg">Contratos</a>
+            <a routerLink="/bonos" routerLinkActive="tab-active" class="tab tab-lg">Bonos</a>
+            <a routerLink="/descuentos" routerLinkActive="tab-active" class="tab tab-lg">Descuentos</a>
+        </div>
+    </div>
+
+    <!-- Right Avatar + Dropdown -->
+    <div class="ml-8">
+        <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="avatar placeholder">
+                <div
+                    class="bg-neutral text-neutral-content rounded-full w-10 ring ring-primary ring-offset-base-100 ring-offset-1">
+                    <span class="text-xl uppercase">{{ initials }}</span>
+                </div>
+            </div>
+            <ul tabindex="0" class="dropdown-content menu menu-sm bg-base-200 rounded-box z-10 w-52 p-2 shadow mt-3">
+                <li>
+                    <a routerLink="/perfil" class="justify-between">
+                        Perfil
+                    </a>
+                </li>
+                <li><a (click)="logout()" class="text-error">Cerrar sesión</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TopbarComponent } from '../../components/topbar/topbar.component';
 
 interface Project {
   name: string;
@@ -10,7 +11,7 @@ interface Project {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TopbarComponent],
   templateUrl: './home.component.html',
 })
 export class HomeComponent {
