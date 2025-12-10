@@ -97,24 +97,6 @@
                         }
                     </div>
 
-                    <!-- Checkbox terms -->
-                    <div class="form-control">
-                        <label class="cursor-pointer label justify-start gap-3">
-                            <input type="checkbox" formControlName="acceptTerms" class="checkbox checkbox-primary" />
-                            <span class="label-text text-base text-wrap">
-                                Acepto los <a routerLink="/terms" class="link link-primary underline">Términos y
-                                    condiciones</a>
-                                y la <a routerLink="/privacy" class="link link-primary underline">Política de
-                                    privacidad</a>
-                            </span>
-                        </label>
-                        @if (acceptTerms?.invalid && acceptTerms?.touched) {
-                        <label class="label">
-                            <span class="label-text-alt text-error">Debes aceptar los términos</span>
-                        </label>
-                        }
-                    </div>
-
                     <!-- Submit button -->
                     <button type="submit" class="btn btn-primary btn-lg w-full text-lg font-medium"
                         [disabled]="loading || registerForm.invalid">
@@ -129,16 +111,6 @@
                     <span class="text-base-content/70">¿Ya tienes una cuenta? </span>
                     <a routerLink="/login" class="link link-primary font-medium">Iniciar sesión</a>
                 </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="text-center mt-5 text-xs text-base-content/60">
-            <p>Administra tus proyectos como un profesional</p>
-            <div class="mt-3 flex justify-center gap-4">
-                <a href="#" class="link link-hover">Políticas de privacidad</a>
-                <span>•</span>
-                <a href="#" class="link link-hover">Términos y condiciones</a>
             </div>
         </div>
     </div>

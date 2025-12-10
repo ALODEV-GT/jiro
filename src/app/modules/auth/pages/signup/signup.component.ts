@@ -42,7 +42,6 @@ export class SignupComponent {
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', Validators.required],
-        acceptTerms: [false, Validators.requiredTrue],
       },
       {
         validators: passwordMatchValidator,
@@ -61,9 +60,6 @@ export class SignupComponent {
   }
   get confirmPassword() {
     return this.registerForm.get('confirmPassword');
-  }
-  get acceptTerms() {
-    return this.registerForm.get('acceptTerms');
   }
 
   async onSubmit() {

@@ -19,6 +19,9 @@
             <a class="tab" [class.tab-active]="activeTab === 'reports'" (click)="activeTab = 'reports'">
                 Reportes
             </a>
+            <a class="tab" [class.tab-active]="activeTab === 'activity'" (click)="activeTab = 'activity'">
+                Actividad
+            </a>
         </div>
 
         <!-- Tabs content -->
@@ -54,6 +57,11 @@
             <div class="text-center py-20">
                 <h2 class="text-3xl font-bold mb-4">Reportes</h2>
                 <p class="text-base-content/60">Burndown chart, velocity, informes personalizados</p>
+            </div>
+            }
+            @if (activeTab === 'activity') {
+            <div class="text-center py-20">
+                <app-log-activity></app-log-activity>
             </div>
             }
 

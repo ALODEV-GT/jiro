@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { BoardComponent } from '../../components/board/board.component';
 import { SprintsComponent } from '../../components/sprints/sprints.component';
 import { TopbarComponent } from '../../../home/components/topbar/topbar.component';
+import { LogActivityComponent } from '../../components/log-activity/log-activity.component';
 
 interface Project {
   name: string;
@@ -13,7 +14,7 @@ interface Project {
 @Component({
   selector: 'app-project',
   standalone: true,
-  imports: [BoardComponent, SprintsComponent, TopbarComponent],
+  imports: [BoardComponent, SprintsComponent, TopbarComponent, LogActivityComponent],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss'
 })
@@ -27,7 +28,7 @@ export class ProjectComponent {
   currentUserName = 'Juan Pérez';
   currentUserInitials = 'JP';
 
-  activeTab: 'board' | 'members' | 'sprints' | 'finances' | 'reports' | 'settings' = 'board';
+  activeTab: 'board' | 'members' | 'sprints' | 'finances' | 'reports' | 'activity' = 'board';
 
   constructor(private router: Router) { }
 
