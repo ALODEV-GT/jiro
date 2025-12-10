@@ -12,6 +12,7 @@ import { ProjectsManagementComponent } from './modules/home/pages/projects-manag
 import { EmployeeManagementComponent } from './modules/home/pages/employee-management/employee-management.component';
 import { DiscountManagementComponent } from './modules/home/pages/discount-management/discount-management.component';
 import { BonusManagementComponent } from './modules/home/pages/bonus-management/bonus-management.component';
+import { RolManagementComponent } from './modules/home/pages/rol-management/rol-management.component';
 
 export const routes: Routes = [
     {
@@ -61,6 +62,10 @@ export const routes: Routes = [
             {
                 path: 'discount',
                 component: DiscountManagementComponent
+            },
+            {
+                path: 'rol',
+                component: RolManagementComponent
             },
             {
                 path: '',

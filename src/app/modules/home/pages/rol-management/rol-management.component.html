@@ -1,0 +1,237 @@
+<div class="p-6 min-h-screen bg-base-200">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-4xl font-bold text-primary">Gestión de Roles</h1>
+            <button class="btn btn-primary" (click)="openModal()">
+                + Nuevo Rol
+            </button>
+        </div>
+
+        <!-- Rol table -->
+        <div class="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
+            <table class="table table-lg">
+                <thead>
+                    <tr class="bg-base-200">
+                        <th>#</th>
+                        <th>Nombre del Rol</th>
+                        <th>Descripción</th>
+                        <th>Miembros</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Admin -->
+                    <tr class="hover">
+                        <td>1</td>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="avatar placeholder">
+                                    <div class="bg-error text-neutral-content rounded-full w-10">
+                                        <span class="text-xs font-bold">AD</span>
+                                    </div>
+                                </div>
+                                <span class="font-bold text-error">Admin</span>
+                            </div>
+                        </td>
+                        <td>Acceso total al sistema</td>
+                        <td>
+                            <div class="badge badge-error badge-sm">2 miembros</div>
+                        </td>
+                        <td>
+                            <div class="badge badge-success">Activo</div>
+                        </td>
+                        <td class="text-center">
+                            <div class="flex justify-center gap-2">
+                                <button class="btn btn-sm btn-outline btn-info" (click)="openModal()">Editar</button>
+                                <button class="btn btn-sm btn-outline btn-error" disabled>Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Project Manager -->
+                    <tr class="hover">
+                        <td>2</td>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="avatar placeholder">
+                                    <div class="bg-purple-600 text-white rounded-full w-10">
+                                        <span class="text-xs font-bold">PM</span>
+                                    </div>
+                                </div>
+                                <span class="font-bold text-purple-600">Project Manager</span>
+                            </div>
+                        </td>
+                        <td>Gestión completa de proyectos y sprints</td>
+                        <td>
+                            <div class="badge badge-purple badge-sm">5 miembros</div>
+                        </td>
+                        <td>
+                            <div class="badge badge-success">Activo</div>
+                        </td>
+                        <td class="text-center">
+                            <div class="flex justify-center gap-2">
+                                <button class="btn btn-sm btn-outline btn-info" (click)="openModal()">Editar</button>
+                                <button class="btn btn-sm btn-outline btn-error"
+                                    (click)="confirmDelete()">Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Project Owner -->
+                    <tr class="hover">
+                        <td>3</td>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="avatar placeholder">
+                                    <div class="bg-warning text-neutral-content rounded-full w-10">
+                                        <span class="text-xs font-bold">PO</span>
+                                    </div>
+                                </div>
+                                <span class="font-bold text-warning">Project Owner</span>
+                            </div>
+                        </td>
+                        <td>Define visión, backlog y prioridades</td>
+                        <td>
+                            <div class="badge badge-warning badge-sm">3 miembros</div>
+                        </td>
+                        <td>
+                            <div class="badge badge-success">Activo</div>
+                        </td>
+                        <td class="text-center">
+                            <div class="flex justify-center gap-2">
+                                <button class="btn btn-sm btn-outline btn-info" (click)="openModal()">Editar</button>
+                                <button class="btn btn-sm btn-outline btn-error"
+                                    (click)="confirmDelete()">Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Frontend / Backend / Fullstack -->
+                    <tr class="hover">
+                        <td>4</td>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="avatar placeholder">
+                                    <div class="bg-info text-neutral-content rounded-full w-10">
+                                        <span class="text-xs">FE</span>
+                                    </div>
+                                </div>
+                                <span class="font-semibold">Frontend</span>
+                            </div>
+                        </td>
+                        <td>Desarrollo de interfaz de usuario</td>
+                        <td>
+                            <div class="badge badge-info badge-sm">8 miembros</div>
+                        </td>
+                        <td>
+                            <div class="badge badge-success">Activo</div>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline btn-info" (click)="openModal()">Editar</button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover">
+                        <td>5</td>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="avatar placeholder">
+                                    <div class="bg-accent text-neutral-content rounded-full w-10">
+                                        <span class="text-xs">BE</span>
+                                    </div>
+                                </div>
+                                <span class="font-semibold">Backend</span>
+                            </div>
+                        </td>
+                        <td>APIs, lógica de negocio y base de datos</td>
+                        <td>
+                            <div class="badge badge-accent badge-sm">6 miembros</div>
+                        </td>
+                        <td>
+                            <div class="badge badge-success">Activo</div>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline btn-info" (click)="openModal()">Editar</button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover">
+                        <td>6</td>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="avatar placeholder">
+                                    <div class="bg-success text-neutral-content rounded-full w-10">
+                                        <span class="text-xs">FS</span>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-success">Fullstack</span>
+                            </div>
+                        </td>
+                        <td>Desarrollo completo (frontend + backend)</td>
+                        <td>
+                            <div class="badge badge-success badge-sm">4 miembros</div>
+                        </td>
+                        <td>
+                            <div class="badge badge-success">Activo</div>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline btn-info" (click)="openModal()">Editar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty -->
+        <div class="text-center py-20" *ngIf="false">
+            <p class="text-2xl text-base-content/60">No hay roles creados</p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create/Edit rol -->
+<dialog id="role_modal" class="modal">
+    <div class="modal-box w-11/12 max-w-2xl">
+        <h3 class="text-2xl font-bold mb-6">Nuevo Rol</h3>
+
+        <form class="space-y-6">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">Nombre del Rol *</span>
+                </label>
+                <input type="text" placeholder="Ej: DevOps Engineer" class="input input-bordered w-full" />
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">Descripción</span>
+                </label>
+                <textarea class="textarea textarea-bordered h-32"
+                    placeholder="Responsabilidades y permisos de este rol..."></textarea>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">Color del Rol</span>
+                </label>
+                <div class="grid grid-cols-6 gap-3">
+                    <input type="radio" name="color" class="btn btn-error btn-circle checked:bg-error" />
+                    <input type="radio" name="color" class="btn btn-warning btn-circle checked:bg-warning" />
+                    <input type="radio" name="color" class="btn btn-success btn-circle checked:bg-success" />
+                    <input type="radio" name="color" class="btn btn-info btn-circle checked:bg-info" />
+                    <input type="radio" name="color" class="btn btn-purple btn-circle checked:bg-purple-600" />
+                    <input type="radio" name="color" class="btn btn-accent btn-circle checked:bg-accent" />
+                </div>
+            </div>
+
+            <div class="modal-action">
+                <button type="button" class="btn" (click)="closeModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Rol</button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>cerrar</button>
+    </form>
+</dialog>
