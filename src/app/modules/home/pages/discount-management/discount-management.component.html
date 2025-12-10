@@ -1,0 +1,90 @@
+<div class="p-6 min-h-screen bg-base-200">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-bold text-primary">Descuentos</h1>
+            <button class="btn btn-error btn-lg" (click)="openCreateModal()">
+                + Registrar Descuento
+            </button>
+        </div>
+
+        <div class="bg-base-100 rounded-xl shadow-xl overflow-hidden">
+            <table class="table table-zebra">
+                <thead>
+                    <tr>
+                        <th>Empleado</th>
+                        <th>Proyecto</th>
+                        <th>Monto</th>
+                        <th>Fecha</th>
+                        <th>Motivo</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let d of deductions()">
+                        <td class="font-medium">{{ getEmployeeName(d.employeeId) }}</td>
+                        <td>{{ getProjectName(d.projectId) }}</td>
+                        <td class="font-bold text-error">- {{ formatCurrency(d.amount) }}</td>
+                        <td>{{ formatDate(d.date) }}</td>
+                        <td>{{ d.reason || '—' }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-error btn-outline" (click)="delete(d.id)">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="deductions().length === 0" class="text-center py-16 text-xl text-base-content/60">
+                No hay descuentos registrados aún
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create discount -->
+<dialog id="discount_modal" class="modal">
+    <div class="modal-box">
+        <h3 class="text-2xl font-bold mb-6 text-error">Registrar Descuento</h3>
+        <form (ngSubmit)="save()" class="space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-medium">Empleado *</span></label>
+                    <select [(ngModel)]="form().employeeId" name="employeeId" class="select select-bordered" required>
+                        <option value="0" disabled selected>Seleccionar empleado</option>
+                        <option *ngFor="let e of employees()" [value]="e.id">{{ e.name }}</option>
+                    </select>
+                </div>
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-medium">Proyecto *</span></label>
+                    <select [(ngModel)]="form().projectId" name="projectId" class="select select-bordered" required>
+                        <option value="0" disabled selected>Seleccionar proyecto</option>
+                        <option *ngFor="let p of projects()" [value]="p.id">{{ p.name }}</option>
+                    </select>
+                </div>
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-medium">Monto *</span></label>
+                    <input type="number" [(ngModel)]="form().amount" name="amount" class="input input-bordered" min="1"
+                        required />
+                </div>
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-medium">Fecha *</span></label>
+                    <input type="date" [(ngModel)]="form().date" name="date" class="input input-bordered" required />
+                </div>
+            </div>
+
+            <div class="form-control">
+                <label class="label"><span class="label-text">Motivo (opcional)</span></label>
+                <textarea [(ngModel)]="form().reason" name="reason" class="textarea textarea-bordered"></textarea>
+            </div>
+
+            <div class="modal-action">
+                <button type="button" class="btn" (click)="closeModal()">Cancelar</button>
+                <button type="submit" class="btn btn-error">Guardar Descuento</button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>cerrar</button></form>
+</dialog>

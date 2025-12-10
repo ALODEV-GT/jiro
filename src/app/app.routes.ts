@@ -10,6 +10,8 @@ import { ProjectComponent } from './modules/project/pages/project/project.compon
 import { HomeLayoutComponent } from './modules/home/components/home-layout/home-layout.component';
 import { ProjectsManagementComponent } from './modules/home/pages/projects-management/projects-management.component';
 import { EmployeeManagementComponent } from './modules/home/pages/employee-management/employee-management.component';
+import { DiscountManagementComponent } from './modules/home/pages/discount-management/discount-management.component';
+import { BonusManagementComponent } from './modules/home/pages/bonus-management/bonus-management.component';
 
 export const routes: Routes = [
     {
@@ -47,6 +49,14 @@ export const routes: Routes = [
             {
                 path: 'employee',
                 component: EmployeeManagementComponent
+            },
+            {
+                path: 'bonus',
+                component: BonusManagementComponent
+            },
+            {
+                path: 'discount',
+                component: DiscountManagementComponent
             },
             {
                 path: '',

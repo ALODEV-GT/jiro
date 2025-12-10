@@ -24,3 +24,22 @@ export interface Contract {
     endDate?: Date;
     isActive: boolean;
 }
+
+export interface Bonus {
+    id: number;
+    employeeId: number;
+    projectId: number;
+    amount: number;
+    date: Date;
+    description?: string;
+}
+
+export interface Discount {
+    id: number;
+    employeeId: number;
+    projectId: number;
+    amount: number;
+    date: Date;
+    reason?: string;
+}
+
