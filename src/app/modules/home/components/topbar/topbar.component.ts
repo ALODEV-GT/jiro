@@ -10,7 +10,7 @@ import { RouterLinkActive } from '@angular/router';
 })
 export class TopbarComponent {
   get initials(): string {
-    const user = 'Juan Pérez'; // aquí pondrías el usuario real
+    const user = 'Juan Pérez'; 
     return user
       .split(' ')
       .map(n => n[0])
@@ -20,7 +20,6 @@ export class TopbarComponent {
   }
 
   logout() {
-    // tu lógica de logout
   }
 
 }

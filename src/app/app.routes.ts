@@ -8,6 +8,7 @@ import { BoardComponent } from './modules/project/components/board/board.compone
 import { HomeComponent } from './modules/home/pages/home/home.component';
 import { ProjectComponent } from './modules/project/pages/project/project.component';
 import { HomeLayoutComponent } from './modules/home/components/home-layout/home-layout.component';
+import { ProjectsManagementComponent } from './modules/home/pages/projects-management/projects-management.component';
 
 export const routes: Routes = [
     {
@@ -40,7 +41,7 @@ export const routes: Routes = [
         children: [
             {
                 path: 'projects',
-                component: HomeComponent
+                component: ProjectsManagementComponent
             },
             {
                 path: '',
