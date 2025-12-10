@@ -1,161 +1,136 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Sprint, UserStory } from '../../models/project.model';
+import { UserStoryService } from '../../services/user-story.service';
+import { SprintService } from '../../services/sprint.service';
+import { EmployeeService } from '../../../home/services/employee.service';
 
-type SprintStatus = 'planned' | 'active' | 'completed';
-
-interface Sprint {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  status: SprintStatus;
-  progress: number;
-  totalIssues: number;
-  completedIssues: number;
-  storyPoints: number;
-  goal?: string;
-}
 @Component({
   selector: 'app-sprints',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule],
   templateUrl: './sprints.component.html',
   styleUrl: './sprints.component.scss'
 })
 export class SprintsComponent {
-  sprints = signal<Sprint[]>([
-    {
-      id: 's1',
-      name: 'Sprint 11 - Autenticación',
-      startDate: '2025-11-25',
-      endDate: '2025-12-08',
-      status: 'active' as const,
-      progress: 68,
-      totalIssues: 25,
-      completedIssues: 17,
-      storyPoints: 45,
-      goal: 'Implementar login con OAuth y recuperación de contraseña'
-    },
-    {
-      id: 's2',
-      name: 'Sprint 10 - Dashboard',
-      startDate: '2025-11-11',
-      endDate: '2025-11-24',
-      status: 'completed' as const,
-      progress: 100,
-      totalIssues: 20,
-      completedIssues: 20,
-      storyPoints: 38
-    }
-  ]);
+  userStories: any
+  sprints: any
+  employees: any
 
-  // Formulario modal
-  editingSprint = signal<Sprint | null>(null);
-  sprintForm = {
-    name: '',
-    durationWeeks: 2,
-    startDate: '',
-    goal: ''
-  };
+  storyForm = signal<Partial<UserStory>>(this.emptyStoryForm());
+  sprintForm = signal<Partial<Sprint>>(this.emptySprintForm());
+  editingStoryId = signal<number | null>(null);
+  editingSprintId = signal<number | null>(null);
 
-  openCreateSprintModal() {
-    this.editingSprint.set(null);
-    this.sprintForm = { name: '', durationWeeks: 2, startDate: this.nextMonday(), goal: '' };
-    this.showModal();
+  constructor(
+    private userStoryService: UserStoryService,
+    private sprintService: SprintService,
+    private employeeService: EmployeeService
+  ) {
+    this.userStories = this.userStoryService.allUserStories;
+    this.sprints = this.sprintService.allSprints;
+    this.employees = this.employeeService.allEmployees;
   }
 
-  editSprint(sprint: Sprint) {
-    this.editingSprint.set(sprint);
-    this.sprintForm = {
-      name: sprint.name,
-      durationWeeks: this.weeksBetween(sprint.startDate, sprint.endDate),
-      startDate: sprint.startDate,
-      goal: sprint.goal || ''
+  private emptyStoryForm(): Partial<UserStory> {
+    return {
+      name: '',
+      description: '',
+      points: 0,
+      priority: 'Media',
+      productOwnerId: 0,
+      assigneeId: 0,
+      sprintId: undefined
     };
-    this.showModal();
+  }
+
+  private emptySprintForm(): Partial<Sprint> {
+    return {
+      name: '',
+      description: '',
+      startDate: new Date('2025-12-09'),
+      durationWeeks: 2,
+      status: 'Pendiente'
+    };
+  }
+
+  openStoryModal(isEdit = false, story?: UserStory) {
+    this.editingStoryId.set(isEdit && story ? story.id : null);
+    this.storyForm.set(isEdit && story ? { ...story } : this.emptyStoryForm());
+    (document.getElementById('story_modal') as any)?.showModal();
+  }
+
+  saveStory() {
+    const data = this.storyForm();
+    if (!data.name || data.points! <= 0 || !data.productOwnerId || !data.assigneeId) return;
+
+    if (this.editingStoryId()) {
+      this.userStoryService.update(this.editingStoryId()!, data as UserStory);
+    } else {
+      this.userStoryService.add(data as Omit<UserStory, 'id'>);
+    }
+    this.closeModal('story_modal');
+  }
+
+  deleteStory(id: number) {
+    if (confirm('¿Eliminar esta historia?')) {
+      this.userStoryService.delete(id);
+    }
+  }
+
+  openSprintModal(isEdit = false, sprint?: Sprint) {
+    this.editingSprintId.set(isEdit && sprint ? sprint.id : null);
+    this.sprintForm.set(isEdit && sprint ? { ...sprint } : this.emptySprintForm());
+    (document.getElementById('sprint_modal') as any)?.showModal();
   }
 
   saveSprint() {
-    const start = new Date(this.sprintForm.startDate);
-    const end = new Date(start);
-    end.setDate(start.getDate() + (this.sprintForm.durationWeeks * 7) - 1);
+    const data = this.sprintForm();
+    if (!data.name || !data.startDate || !data.durationWeeks) return;
 
-    const newSprint: Sprint = {
-      id: this.editingSprint()?.id || Date.now().toString(),
-      name: this.sprintForm.name,
-      startDate: start.toISOString().split('T')[0],
-      endDate: end.toISOString().split('T')[0],
-      status: 'planned' as const,
-      progress: 0,
-      totalIssues: 0,
-      completedIssues: 0,
-      storyPoints: 0,
-      goal: this.sprintForm.goal
-    };
-
-    if (this.editingSprint()) {
-      this.sprints.update(sprints =>
-        sprints.map(s => s.id === this.editingSprint()!.id ? { ...s, ...newSprint } : s)
-      );
+    if (this.editingSprintId()) {
+      this.sprintService.update(this.editingSprintId()!, data as Sprint);
     } else {
-      this.sprints.update(sprints => [...sprints, newSprint]);
+      this.sprintService.add(data as Omit<Sprint, 'id' | 'endDate'>);
     }
-
-    this.closeSprintModal();
+    this.closeModal('sprint_modal');
   }
 
-  startSprint(sprint: Sprint) {
-    this.sprints.update(sprints =>
-      sprints.map(s => s.id === sprint.id ? { ...s, status: 'active' as const } : s)
-    );
+  deleteSprint(id: number) {
+    if (confirm('¿Eliminar este sprint? Esto no afectará las historias asignadas.')) {
+      this.sprintService.delete(id);
+    }
   }
 
-  completeSprint(sprint: Sprint) {
-    this.sprints.update(sprints =>
-      sprints.map(s => s.id === sprint.id
-        ? { ...s, status: 'completed' as const, progress: 100 }
-        : s
-      )
-    );
-  }
-
-  // Helpers
-  sprintStatusLabel(status: SprintStatus): string {
-    return { planned: 'Planificado', active: 'Activo', completed: 'Completado' }[status];
-  }
-
-  sprintDuration(sprint: Sprint): string {
-    const days = this.weeksBetween(sprint.startDate, sprint.endDate) * 7;
-    return `${days} días`;
-  }
-
-  calculatedEndDate(): string {
-    if (!this.sprintForm.startDate) return '';
-    const start = new Date(this.sprintForm.startDate);
+  calculateEndDate(start: Date, weeks: number): Date {
     const end = new Date(start);
-    end.setDate(start.getDate() + (this.sprintForm.durationWeeks * 7) - 1);
-    return end.toISOString().split('T')[0];
+    end.setDate(end.getDate() + weeks * 7);
+    return end;
   }
 
-  private nextMonday(): string {
-    const d = new Date();
-    const day = d.getDay();
-    const diff = day === 0 ? 1 : 8 - day;
-    d.setDate(d.getDate() + diff);
-    return d.toISOString().split('T')[0];
+  closeModal(modalId: string) {
+    (document.getElementById(modalId) as any)?.close();
   }
 
-  private weeksBetween(start: string, end: string): number {
-    const diff = (new Date(end).getTime() - new Date(start).getTime()) / (1000 * 3600 * 24);
-    return Math.round(diff / 7);
+  getEmployeeName(id: number): string {
+    return this.employees().find((e: any) => e.id === id)?.name ?? '—';
   }
 
-  private showModal() {
-    (document.getElementById('sprint_modal') as HTMLDialogElement)?.showModal();
+  getSprintName(id: number | undefined): string {
+    if (!id) return 'Backlog';
+    return this.sprints().find((s: any) => s.id === id)?.name ?? '—';
   }
 
-  closeSprintModal() {
-    (document.getElementById('sprint_modal') as HTMLDialogElement)?.close();
+  formatDate(date: Date): string {
+    return new Date(date).toLocaleDateString('es-PE');
+  }
+
+  getStoriesForSprint(sprintId: number): UserStory[] {
+    return this.userStories().filter((s: any) => s.sprintId === sprintId);
+  }
+
+  getBacklogStories(): UserStory[] {
+    return this.userStories().filter((s: any) => !s.sprintId);
   }
 }

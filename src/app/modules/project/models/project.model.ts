@@ -1,0 +1,20 @@
+export interface UserStory {
+    id: number;
+    name: string;
+    description: string;
+    points: number;
+    priority: 'Baja' | 'Media' | 'Alta' | 'Crítica';
+    productOwnerId: number;
+    assigneeId: number;
+    sprintId?: number;
+}
+
+export interface Sprint {
+    id: number;
+    name: string;
+    description: string;
+    startDate: Date;
+    durationWeeks: 1 | 2 | 3 | 4;
+    endDate: Date;
+    status: 'Pendiente' | 'Activo' | 'Finalizado';
+}
