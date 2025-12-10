@@ -43,6 +43,10 @@ export const routes: Routes = [
         component: HomeLayoutComponent,
         children: [
             {
+                path: 'welcome',
+                component: HomeComponent
+            },
+            {
                 path: 'projects',
                 component: ProjectsManagementComponent
             },
