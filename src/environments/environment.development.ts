@@ -1,3 +1,3 @@
 export const environment = {
-    API_BASE: ``
+    API_BASE: `http://localhost:8080`
 };
