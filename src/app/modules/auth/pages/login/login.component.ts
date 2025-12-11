@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { LoginCredentials } from '../../models/auth.model';
+import { LoginCredentials, LoginResponse } from '../../models/auth.model';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ErrorResponse } from '../../../../shared/models/errors';
@@ -38,7 +38,8 @@ export class LoginComponent {
     const credentials: LoginCredentials = this.loginForm.getRawValue() as LoginCredentials;
 
     this.authService.login(credentials).subscribe({
-      next: () => {
+      next: (response: LoginResponse) => {
+        // TODO: Guardar el token en el localStorage
         this.router.navigate(['/home/welcome']);
       },
       error: (err: ErrorResponse) => {

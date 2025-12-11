@@ -7,6 +7,7 @@ export interface LoginResponse {
   id: string;
   firstName: null;
   lastName: string;
+  dpi: string;
   email: string;
   token: string;
   role: string;
@@ -24,4 +25,9 @@ export interface SignupRequest {
 
 export interface SignupResponse {
   id: string;
+}
+
+export interface ConfirmationRequest {
+  email: string;
+  code:  string;
 }

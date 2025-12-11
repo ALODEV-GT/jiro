@@ -1,45 +1,45 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { interval, Subject, takeUntil } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { ErrorResponse } from '../../../../shared/models/errors';
+import { ConfirmationRequest, LoginResponse } from '../../models/auth.model';
 
 @Component({
   selector: 'app-confirmation',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterModule],
   templateUrl: './confirmation.component.html',
   styleUrl: './confirmation.component.scss'
 })
-export class ConfirmationComponent implements OnInit, OnDestroy {
-  verifyForm: FormGroup;
+export class ConfirmationComponent {
+  private activatedRoute = inject(ActivatedRoute);
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
+  verifyForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
+  });
+
+
   loading = false;
-  resendLoading = false;
   errorMessage = '';
-  successMessage = '';
-  countdown = 0;
-  userEmail = 'usuario@ejemplo.com';
 
-  private destroy$ = new Subject<void>();
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router
-  ) {
-    this.verifyForm = this.fb.group({
-      code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
+  constructor() {
+    this.activatedRoute.params.subscribe(params => {
+      this.email?.setValue(params['email']);
     });
   }
 
   ngOnInit() {
-    this.startResendCountdown();
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
+  get email() { return this.verifyForm.get('email'); }
   get code() { return this.verifyForm.get('code'); }
 
   onCodeInput(event: Event) {
@@ -56,44 +56,24 @@ export class ConfirmationComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     this.errorMessage = '';
-    this.successMessage = '';
 
-    try {
-      const code = this.verifyForm.get('code')?.value;
+    const request: ConfirmationRequest = {
+      email: this.email?.value as string,
+      code: this.code?.value as string
+    };
 
-      this.successMessage = '¡Correo verificado con éxito!';
-      setTimeout(() => {
-        this.router.navigate(['/dashboard']);
-      }, 1500);
-
-    } catch (error: any) {
-      this.errorMessage = error?.message || 'Código incorrecto o expirado';
-    } finally {
-      this.loading = false;
-    }
-  }
-
-  async resendCode() {
-    this.resendLoading = true;
-    this.errorMessage = '';
-    try {
-      this.successMessage = '¡Nuevo código enviado!';
-      this.startResendCountdown();
-    } catch (error: any) {
-      this.errorMessage = 'Error al reenviar el código';
-    } finally {
-      this.resendLoading = false;
-    }
-  }
-
-  private startResendCountdown() {
-    this.countdown = 60;
-    interval(1000)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        if (this.countdown > 0) {
-          this.countdown--;
-        }
-      });
+    this.authService.confirmation(request).subscribe({
+      next: (response: LoginResponse) => {
+        // TODO: Guardar el token en el localStorage
+        this.router.navigate(['/home/welcome']);
+      },
+      error: (err: ErrorResponse) => {
+        this.loading = false;
+        this.errorMessage = err.message;
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 }
