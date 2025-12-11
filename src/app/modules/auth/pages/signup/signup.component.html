@@ -5,12 +5,12 @@
             <div class="card-body p-8">
 
                 <!-- Logo -->
-                <div class="flex flex-row justify-center items-center mb-5">
+                <div class="flex flex-row justify-center items-center mb-2">
                     <img src="images/jiro-logo.png" alt="Jiro" class="h-16" />
                     <h1 class="text-3xl font-bold text-primary ml-3">JIRO</h1>
                 </div>
 
-                <h2 class="text-2xl font-light text-center mb-8 text-base-content">
+                <h2 class="text-2xl font-light text-center mb-3 text-base-content">
                     Crea tu cuenta
                 </h2>
 
@@ -20,19 +20,55 @@
                 </div>
                 }
 
-                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-2">
+                    <div class="flex gap-4">
+                        <!-- First name -->
+                        <div class="form-control flex-1">
+                            <label class="label">
+                                <span class="label-text font-medium">Nombre</span>
+                            </label>
+                            <input type="text" formControlName="firstName" placeholder="Juan"
+                                class="input input-bordered w-full"
+                                [class.input-error]="firstName?.invalid && firstName?.touched" />
+                            @if (firstName?.invalid && firstName?.touched) {
+                            <label class="label">
+                                <span class="label-text-alt text-error">
+                                    @if (firstName?.errors?.['required']) { El nombre es obligatorio }
+                                </span>
+                            </label>
+                            }
+                        </div>
+                        <!-- Last name -->
+                        <div class="form-control flex-1">
+                            <label class="label">
+                                <span class="label-text font-medium">Apellido</span>
+                            </label>
+                            <input type="text" formControlName="lastName" placeholder="Pérez"
+                                class="input input-bordered w-full"
+                                [class.input-error]="lastName?.invalid && lastName?.touched" />
+                            @if (lastName?.invalid && lastName?.touched) {
+                            <label class="label">
+                                <span class="label-text-alt text-error">
+                                    @if (lastName?.errors?.['required']) { El apellido es obligatorio }
+                                    @if (lastName?.errors?.['minlength']) { Mínimo 2 caracteres }
+                                </span>
+                            </label>
+                            }
+                        </div>
+                    </div>
 
+                    <!-- DPI -->
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text font-medium">Nombre completo</span>
+                            <span class="label-text font-medium">DPI</span>
                         </label>
-                        <input type="text" formControlName="firstName" placeholder="Juan Pérez"
-                            class="input input-bordered input-lg w-full"
-                            [class.input-error]="firstName?.invalid && firstName?.touched" />
-                        @if (firstName?.invalid && firstName?.touched) {
+                        <input type="text" formControlName="dpi" placeholder="1234567890123"
+                            class="input input-bordered w-full" [class.input-error]="dpi?.invalid && dpi?.touched" />
+                        @if (dpi?.invalid && dpi?.touched) {
                         <label class="label">
                             <span class="label-text-alt text-error">
-                                @if (firstName?.errors?.['required']) { El nombre es obligatorio }
+                                @if (dpi?.errors?.['required']) { El DPI es obligatorio }
+                                @if (dpi?.errors?.['minlength']) { Mínimo 13 caracteres }
                             </span>
                         </label>
                         }
@@ -44,7 +80,7 @@
                             <span class="label-text font-medium">Correo electrónico</span>
                         </label>
                         <input type="email" formControlName="email" placeholder="example@mail.com"
-                            class="input input-bordered input-lg w-full"
+                            class="input input-bordered w-full"
                             [class.input-error]="email?.invalid && email?.touched" />
                         @if (email?.invalid && email?.touched) {
                         <label class="label">
@@ -62,7 +98,7 @@
                             <span class="label-text font-medium">Contraseña</span>
                         </label>
                         <input type="password" formControlName="password" placeholder="••••••••"
-                            class="input input-bordered input-lg w-full"
+                            class="input input-bordered w-full"
                             [class.input-error]="password?.invalid && password?.touched" />
                         @if (password?.invalid && password?.touched) {
                         <label class="label">
@@ -80,13 +116,14 @@
                             <span class="label-text font-medium">Confirmar contraseña</span>
                         </label>
                         <input type="password" formControlName="confirmPassword" placeholder="••••••••"
-                            class="input input-bordered input-lg w-full"
+                            class="input input-bordered w-full"
                             [class.input-error]="confirmPassword?.invalid && confirmPassword?.touched" />
-                        @if (confirmPassword?.invalid && confirmPassword?.touched) {
+                        @if ( confirmPassword?.touched && (confirmPassword?.invalid ||
+                        registerForm.hasError('passwordMismatch'))) {
                         <label class="label">
                             <span class="label-text-alt text-error">
                                 @if (confirmPassword?.errors?.['required']) { Confirma tu contraseña }
-                                @if (confirmPassword?.errors?.['passwordMismatch']) { Las contraseñas no coinciden }
+                                @if (registerForm.hasError('passwordMismatch')) { Las contraseñas no coinciden }
                             </span>
                         </label>
                         }

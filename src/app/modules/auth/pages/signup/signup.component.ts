@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import {
   FormBuilder,
-  FormGroup,
   Validators,
   ReactiveFormsModule,
   AbstractControl,
@@ -9,7 +8,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { SignupRequest, SignupResponse } from '../../models/auth.model';
+import { SignupRequest } from '../../models/auth.model';
 import { AuthService } from '../../services/auth.service';
 import { ErrorResponse } from '../../../../shared/models/errors';
 
