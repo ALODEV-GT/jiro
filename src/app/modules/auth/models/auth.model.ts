@@ -12,3 +12,16 @@ export interface LoginResponse {
   role: string;
   permissions: string[];
 }
+
+
+export interface SignupRequest {
+  firstName: string;
+  lastName: string;
+  dpi: string;
+  email: string;
+  password: string;
+}
+
+export interface SignupResponse {
+  id: string;
+}

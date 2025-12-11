@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { LoginCredentials, LoginResponse } from '../models/auth.model';
+import { LoginCredentials, LoginResponse, SignupRequest, SignupResponse } from '../models/auth.model';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ApiConfig } from '../../../shared/services/api-config.service';
@@ -15,8 +15,8 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.apiBase.API_AUTH}`, credentials)
   }
 
-  signup() {
-
+  signup(request: SignupRequest): Observable<SignupResponse> {
+    return this.http.post<SignupResponse>(`${this.apiBase.API_AUTH}/sign-up`, request)
   }
 
   confirmation() {

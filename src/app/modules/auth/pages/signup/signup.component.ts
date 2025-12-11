@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -9,6 +9,9 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { SignupRequest, SignupResponse } from '../../models/auth.model';
+import { AuthService } from '../../services/auth.service';
+import { ErrorResponse } from '../../../../shared/models/errors';
 
 function passwordMatchValidator(form: AbstractControl): ValidationErrors | null {
   const password = form.get('password')?.value;
@@ -27,30 +30,30 @@ function passwordMatchValidator(form: AbstractControl): ValidationErrors | null 
   styleUrl: './signup.component.scss',
 })
 export class SignupComponent {
-  registerForm: FormGroup;
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
   loading = false;
   errorMessage = '';
-  successMessage = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-  ) {
-    this.registerForm = this.fb.group(
-      {
-        name: ['', [Validators.required, Validators.minLength(2)]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ['', Validators.required],
-      },
-      {
-        validators: passwordMatchValidator,
-      },
-    );
+  registerForm = this.fb.group({
+    firstName: ['', [Validators.required, Validators.minLength(2)]],
+    lastName: ['', [Validators.required, Validators.minLength(2)]],
+    dpi: ['', [Validators.required, Validators.minLength(13)]],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    confirmPassword: ['', Validators.required],
+  }, { validators: passwordMatchValidator });
+
+  get firstName() {
+    return this.registerForm.get('firstName');
   }
-
-  get name() {
-    return this.registerForm.get('name');
+  get lastName() {
+    return this.registerForm.get('lastName');
+  }
+  get dpi() {
+    return this.registerForm.get('dpi');
   }
   get email() {
     return this.registerForm.get('email');
@@ -70,19 +73,19 @@ export class SignupComponent {
 
     this.loading = true;
     this.errorMessage = '';
-    this.successMessage = '';
 
-    try {
-      const { name, email, password } = this.registerForm.value;
-      this.successMessage = '¡Cuenta creada con éxito! Redirigiendo...';
-      setTimeout(() => {
-        this.router.navigate(['/login']);
-      }, 2000);
-    } catch (error: any) {
-      this.errorMessage =
-        error?.message || 'Ocurrió un error al crear la cuenta. Inténtalo de nuevo.';
-    } finally {
-      this.loading = false;
-    }
+    const request: SignupRequest = this.registerForm.getRawValue() as SignupRequest;
+    this.authService.signup(request).subscribe({
+      next: () => {
+        this.router.navigate(['/auth/confirmation', request.email]);
+      },
+      error: (err: ErrorResponse) => {
+        this.loading = false;
+        this.errorMessage = err.message;
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 }

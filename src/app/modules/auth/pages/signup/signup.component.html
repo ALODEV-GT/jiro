@@ -14,11 +14,6 @@
                     Crea tu cuenta
                 </h2>
 
-                @if (successMessage) {
-                <div class="alert alert-success shadow-lg mb-6">
-                    <span>{{ successMessage }}</span>
-                </div>
-                }
                 @if (errorMessage) {
                 <div class="alert alert-error shadow-lg mb-6">
                     <span>{{ errorMessage }}</span>
@@ -31,13 +26,13 @@
                         <label class="label">
                             <span class="label-text font-medium">Nombre completo</span>
                         </label>
-                        <input type="text" formControlName="name" placeholder="Juan Pérez"
+                        <input type="text" formControlName="firstName" placeholder="Juan Pérez"
                             class="input input-bordered input-lg w-full"
-                            [class.input-error]="name?.invalid && name?.touched" />
-                        @if (name?.invalid && name?.touched) {
+                            [class.input-error]="firstName?.invalid && firstName?.touched" />
+                        @if (firstName?.invalid && firstName?.touched) {
                         <label class="label">
                             <span class="label-text-alt text-error">
-                                @if (name?.errors?.['required']) { El nombre es obligatorio }
+                                @if (firstName?.errors?.['required']) { El nombre es obligatorio }
                             </span>
                         </label>
                         }

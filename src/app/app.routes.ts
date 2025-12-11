@@ -24,7 +24,7 @@ export const routes: Routes = [
         component: SignupComponent
     },
     {
-        path: 'confirmation',
+        path: 'confirmation/:email',
         component: ConfirmationComponent
     },
     {
