@@ -1,8 +1,7 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { interval, Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ConfirmationRequest, LoginResponse } from '../../models/auth.model';

@@ -16,15 +16,9 @@
 
                 <p class="text-center text-base-content/70 mb-8 text-sm">
                     Te hemos enviado un código de 6 dígitos a<br />
-                    <span class="font-semibold text-primary">{{ userEmail }}</span>
+                    <span class="font-semibold text-primary">{{ email?.value }}</span>
                 </p>
 
-                <!-- success or error message -->
-                @if (successMessage) {
-                <div class="alert alert-success shadow-lg mb-6">
-                    <span>{{ successMessage }}</span>
-                </div>
-                }
                 @if (errorMessage) {
                 <div class="alert alert-error shadow-lg mb-6">
                     <span>{{ errorMessage }}</span>
@@ -60,23 +54,6 @@
                         Confirmar correo
                     </button>
                 </form>
-
-                <!-- Resend code -->
-                <div class="text-center mt-6">
-                    <p class="text-sm text-base-content/70">
-                        ¿No recibiste el código?
-                        <button type="button" class="link link-primary font-medium" (click)="resendCode()"
-                            [disabled]="resendLoading || countdown > 0">
-                            @if (resendLoading) {
-                            <span class="loading loading-spinner loading-xs"></span>
-                            }
-                            Reenviar código
-                            @if (countdown > 0) {
-                            <span class="text-base-content/50">({{ countdown }}s)</span>
-                            }
-                        </button>
-                    </p>
-                </div>
 
                 <!-- To login -->
                 <div class="text-center mt-8">
