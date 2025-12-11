@@ -1,38 +1,41 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { LoginCredentials, LoginResponse } from '../models/auth.model';
-import { BehaviorSubject, Observable, of, tap, delay, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { ApiConfig } from '../../../shared/api-config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<LoginResponse['user'] | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
-  public isLoggedIn$ = this.currentUser$.pipe(tap(user => !!user));
+  private readonly apiBase = inject(ApiConfig)
+  private readonly http = inject(HttpClient)
 
   login(credentials: LoginCredentials): Observable<LoginResponse> {
-    const validEmail = 'brayan.quialo@gmail.com';
-    const validPassword = 'password';
+    return this.http.post<LoginResponse>(`${this.apiBase.API_AUTH}`, credentials)
+  }
 
-    if (credentials.email !== validEmail || credentials.password !== validPassword) {
-      return throwError(() => new Error('Credenciales incorrectas'));
-    }
+  signup() {
 
-    const fakeResponse: LoginResponse = {
-      token: 'fake-jwt-token.' + btoa(credentials.email),
-      user: {
-        id: '1',
-        email: credentials.email,
-        name: 'Brayan'
-      }
-    };
+  }
 
-    return of(fakeResponse).pipe(
-      delay(800),
-      tap(response => {
-        localStorage.setItem('access_token', response.token);
-        this.currentUserSubject.next(response.user);
-      })
-    );
+  confirmation() {
+
+  }
+
+  find() {
+
+  }
+
+  recover() {
+
+  }
+
+  resendConfirmationCode() {
+
+  }
+
+  resendResetPasswordCode() {
+
   }
 }

@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { LoginCredentials } from '../../models/auth.model';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ErrorResponse } from '../../../../shared/models/errors';
 
 @Component({
   selector: 'app-login',
@@ -38,11 +39,11 @@ export class LoginComponent {
 
     this.authService.login(credentials).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/home/welcome']);
       },
-      error: (err) => {
+      error: (err: ErrorResponse) => {
         this.loading = false;
-        this.errorMessage = 'Credenciales incorrectas. Inténtalo de nuevo.';
+        this.errorMessage = err.message;
       },
       complete: () => {
         this.loading = false;
