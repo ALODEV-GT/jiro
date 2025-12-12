@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
         next: (page: Page<Project>) => {
           this.projects = [...this.projects, ...page.items]
           this.page += 1
-          this.isLastPage = page.isLastPage
+          this.isLastPage = page.lastPage
         },
         error: (error: ErrorResponse) => {
           //TODO: Handle error

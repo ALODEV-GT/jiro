@@ -1,6 +1,7 @@
 export interface Page<T> {
     page: number,
     size: number,
-    isLastPage: boolean,
+    firstPage: boolean,
+    lastPage: boolean,  
     items: T[];
 }
