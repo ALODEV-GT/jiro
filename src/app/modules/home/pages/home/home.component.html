@@ -5,7 +5,12 @@
 
         <!-- Projects Grid -->
         @if (projects.length > 0) {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
+            infiniteScroll
+            [infiniteScrollDistance]="2" 
+            [infiniteScrollThrottle]="50" 
+            (scrolled)="getProjectPage()"
+        >
             @for (project of projects; track project.id) {
             <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer">
                 <div class="card-body">
