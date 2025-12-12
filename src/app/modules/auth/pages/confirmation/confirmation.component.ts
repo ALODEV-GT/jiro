@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ConfirmationRequest, LoginResponse } from '../../models/auth.model';
+import { AuthStore } from '../../store/auth.store';
 
 @Component({
   selector: 'app-confirmation',
@@ -18,6 +19,7 @@ export class ConfirmationComponent {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private authStore = inject(AuthStore);
 
   verifyForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -63,7 +65,7 @@ export class ConfirmationComponent {
 
     this.authService.confirmation(request).subscribe({
       next: (response: LoginResponse) => {
-        // TODO: Guardar el token en el localStorage
+        this.authStore.loginSuccess(response)
         this.router.navigate(['/home/welcome']);
       },
       error: (err: ErrorResponse) => {

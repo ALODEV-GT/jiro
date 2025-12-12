@@ -5,6 +5,7 @@ import { LoginCredentials, LoginResponse } from '../../models/auth.model';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ErrorResponse } from '../../../../shared/models/errors';
+import { AuthStore } from '../../store/auth.store';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +18,7 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private authStore = inject(AuthStore);
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -39,7 +41,7 @@ export class LoginComponent {
 
     this.authService.login(credentials).subscribe({
       next: (response: LoginResponse) => {
-        // TODO: Guardar el token en el localStorage
+        this.authStore.loginSuccess(response)
         this.router.navigate(['/home/welcome']);
       },
       error: (err: ErrorResponse) => {
