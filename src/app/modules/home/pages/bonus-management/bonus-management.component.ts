@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { BonusService } from '../../services/bonus.service';
 import { EmployeeService } from '../../services/employee.service';
-import { ProjectService } from '../../services/project.service';
+import { ProjectManagementService } from '../../services/project-management.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -27,7 +27,7 @@ export class BonusManagementComponent {
   constructor(
     private bonusService: BonusService,
     private employeeService: EmployeeService,
-    private projectService: ProjectService
+    private projectService: ProjectManagementService
   ) {
     this.bonuses = this.bonusService.allBonuses;
     this.employees = this.employeeService.allEmployees;

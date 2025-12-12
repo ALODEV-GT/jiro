@@ -6,15 +6,15 @@
         <!-- Projects Grid -->
         @if (projects.length > 0) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @for (project of projects; track project.name) {
+            @for (project of projects; track project.id) {
             <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer">
                 <div class="card-body">
                     <div class="flex justify-between items-start mb-2">
                         <h2 class="card-title text-xl">{{ project.name }}</h2>
                         @if (project.active) {
-                        <div class="badge badge-primary">Activo</div>
+                        <div class="badge badge-success">Activo</div>
                         } @else {
-                        <div class="badge badge-accent">Cerrado</div>
+                        <div class="badge badge-error">Cerrado</div>
                         }
                     </div>
                     <p class="text-base-content/70 text-sm">{{ project.description }}</p>
@@ -42,54 +42,4 @@
         </div>
         }
     </div>
-
-    <!-- Modal: Create project -->
-    <dialog #createModal id="create_project_modal" class="modal">
-        <div class="modal-box w-11/12 max-w-xl">
-            <h3 class="font-bold text-2xl mb-6">Crear Nuevo Proyecto</h3>
-
-            <form (ngSubmit)="createProject()">
-                <div class="form-control mb-6">
-                    <label class="label"><span class="label-text font-medium">Nombre del Proyecto</span></label>
-                    <input type="text" [(ngModel)]="newProjectName" placeholder="Ej. Rediseño Web 2025"
-                        class="input input-bordered input-lg" required />
-                </div>
-
-                <div class="form-control mb-8">
-                    <label class="label"><span class="label-text font-medium">Descripción (opcional)</span></label>
-                    <textarea [(ngModel)]="newProjectDescription" class="textarea textarea-bordered h-32"
-                        placeholder="Breve descripción del proyecto..."></textarea>
-                </div>
-
-                <!-- Code to share project -->
-                @if (generatedCode) {
-                <div class="alert alert-success mb-6 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <div>
-                        <p class="font-medium">¡Proyecto creado! Comparte este código:</p>
-                        <div class="flex items-center gap-3 mt-2">
-                            <code
-                                class="bg-base-200 px-4 py-2 rounded font-mono text-lg font-bold">{{ generatedCode }}</code>
-                            <button type="button" class="btn btn-sm btn-outline" (click)="copyCode(generatedCode!)">
-                                Copiar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                }
-
-                <div class="modal-action">
-                    <button type="button" class="btn btn-ghost" (click)="closeModal('create_project_modal')">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary px-8">
-                        Crear Proyecto
-                    </button>
-                </div>
-            </form>
-        </div>
-    </dialog>
 </div>

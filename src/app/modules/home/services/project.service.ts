@@ -1,42 +1,24 @@
-import { Injectable, signal } from '@angular/core';
-import { Project } from '../models/home.model';
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { inject, Injectable } from "@angular/core";
+import { ApiConfig } from "../../../shared/services/api-config.service";
+import { Observable } from "rxjs";
+import { Page } from "../../../shared/models/page";
+import { Project } from "../models/home.model";
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class ProjectService {
-  private projects = signal<Project[]>([
-    {
-      id: 1,
-      name: 'Edificio Centro',
-      description: 'Construcción de 20 pisos en el centro',
-      status: 'Abierto',
-      monthlyIncome: 450000
+    private readonly http = inject(HttpClient)
+    private readonly apiConfig = inject(ApiConfig)
+    private readonly SIZE = 20
+
+    getProjectsByUserId(userId: string, page: number): Observable<Page<Project>> {
+        const params = new HttpParams()
+            .set('page', page)
+            .set('size', this.SIZE)
+            .set('id', userId)
+
+        return this.http.get<Page<Project>>(`${this.apiConfig.API_PROJECT}`, { params })
     }
-  ]);
-
-  allProjects = this.projects.asReadonly();
-
-  add(project: Omit<Project, 'id' | 'createdAt'>) {
-    const newProject: Project = {
-      ...project,
-      id: Math.max(...this.projects().map(p => p.id), 0) + 1,
-      createdAt: new Date()
-    };
-    this.projects.update((list: any) => [...list, newProject]);
-  }
-
-  update(id: number, changes: Pick<Project, 'name' | 'description' | 'status'>) {
-    this.projects.update((list: any) =>
-      list.map((p: any) => p.id === id ? { ...p, ...changes } : p)
-    );
-  }
-
-  delete(id: number) {
-    this.projects.update((list: any) => list.filter((p: any) => p.id !== id));
-  }
-
-  getById(id: number): Project | undefined {
-    return this.projects().find((p: any) => p.id === id);
-  }
 }

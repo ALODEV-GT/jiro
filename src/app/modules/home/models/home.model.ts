@@ -2,7 +2,7 @@ export interface Project {
     id: number;
     name: string;
     description: string;
-    status: 'Abierto' | 'Cerrado';
+    active: boolean;
     monthlyIncome: number;
     createdAt?: Date;
 }

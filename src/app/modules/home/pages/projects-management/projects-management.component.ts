@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { Project } from '../../models/home.model';
-import { ProjectService } from '../../services/project.service';
+import { ProjectManagementService } from '../../services/project-management.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -15,7 +15,7 @@ export class ProjectsManagementComponent {
   formData = signal<Partial<Project>>(this.emptyForm());
   editingId = signal<number | null>(null);
   projects: any
-  constructor(private service: ProjectService) {
+  constructor(private service: ProjectManagementService) {
     this.projects = this.service.allProjects;
   }
 
@@ -23,7 +23,7 @@ export class ProjectsManagementComponent {
     return {
       name: '',
       description: '',
-      status: 'Abierto',
+      active: true,
       monthlyIncome: 0
     };
   }
@@ -50,13 +50,13 @@ export class ProjectsManagementComponent {
       this.service.update(this.editingId()!, {
         name: data.name.trim(),
         description: data.description?.trim() ?? '',
-        status: data.status as 'Abierto' | 'Cerrado'
+        active: data.active as boolean
       });
     } else {
       this.service.add({
         name: data.name.trim(),
         description: data.description?.trim() ?? '',
-        status: data.status as 'Abierto' | 'Cerrado',
+        active: data.active as boolean,
         monthlyIncome: data.monthlyIncome
       });
     }
