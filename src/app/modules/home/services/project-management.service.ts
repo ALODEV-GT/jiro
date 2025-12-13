@@ -1,29 +1,29 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Project } from '../models/home.model';
+import { HttpClient } from '@angular/common/http';
+import { ApiConfig } from '../../../shared/services/api-config.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectManagementService {
+  private readonly htpp = inject(HttpClient)
+  private readonly apiConfig = inject(ApiConfig)
+
   private projects = signal<Project[]>([
     {
       id: 1,
       name: 'Edificio Centro',
       description: 'Construcción de 20 pisos en el centro',
       active: true,
-      monthlyIncome: 450000
+      client: "",
+      monthlyIncome: 450000.00
     }
   ]);
 
-  allProjects = this.projects.asReadonly();
-
-  add(project: Omit<Project, 'id' | 'createdAt'>) {
-    const newProject: Project = {
-      ...project,
-      id: Math.max(...this.projects().map(p => p.id), 0) + 1,
-      createdAt: new Date()
-    };
-    this.projects.update((list: any) => [...list, newProject]);
+  add(project: Partial<Project>): Observable<Partial<Project>> {
+    return this.htpp.post<Partial<Project>>(`${this.apiConfig.API_PROJECT}`, project)
   }
 
   update(id: number, changes: Pick<Project, 'name' | 'description' | 'active'>) {

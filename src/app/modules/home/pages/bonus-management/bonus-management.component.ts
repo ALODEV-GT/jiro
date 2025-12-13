@@ -31,7 +31,6 @@ export class BonusManagementComponent {
   ) {
     this.bonuses = this.bonusService.allBonuses;
     this.employees = this.employeeService.allEmployees;
-    this.projects = this.projectService.allProjects;
   }
 
   save() {

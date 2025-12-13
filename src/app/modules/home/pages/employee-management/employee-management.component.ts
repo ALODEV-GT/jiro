@@ -30,7 +30,6 @@ export class EmployeeManagementComponent {
   ) {
     this.contracts = this.contractService.allContracts;
     this.employees = this.employeeService.allEmployees;
-    this.projects = this.projectService.allProjects;
   }
 
   private emptyForm(): Partial<Contract> {

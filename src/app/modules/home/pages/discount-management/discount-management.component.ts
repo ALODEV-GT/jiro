@@ -31,7 +31,6 @@ export class DiscountManagementComponent {
   ) {
     this.deductions = this.deductionService.allDeductions;
     this.employees = this.employeeService.allEmployees;
-    this.projects = this.projectService.allProjects;
   }
 
   save() {

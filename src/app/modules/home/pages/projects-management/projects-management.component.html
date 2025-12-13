@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-bold text-primary">Proyectos</h1>
-            <button class="btn btn-primary btn-lg" (click)="openCreateModal()">
+            <button class="btn btn-primary" (click)="openCreateModal()">
                 + Nuevo Proyecto
             </button>
         </div>
@@ -19,17 +19,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let project of projects()">
+                    @for(project of projects; track project.id){
+                    <tr>
                         <td class="font-semibold">{{ project.name }}</td>
                         <td class="max-w-xs truncate">{{ project.description || '-' }}</td>
                         <td>
-                            <div class="badge badge-lg" [class.badge-success]="project.status === 'Abierto'"
-                                [class.badge-error]="project.status === 'Cerrado'">
-                                {{ project.status }}
+                            <div class="badge badge-lg" [class.badge-success]="project.active"
+                                [class.badge-error]="!project.active ">
+                                {{ project.active ? 'Activo': 'Cerrado' }}
                             </div>
                         </td>
                         <td class="font-bold text-primary">
-                            {{ formatCurrency(project.monthlyIncome) }}
+                            {{ project.monthlyIncome | currency:'GTQ':'symbol-narrow':'1.2-2' }}
                         </td>
                         <td class="text-center">
                             <div class="flex gap-2 justify-center">
@@ -42,14 +43,29 @@
                             </div>
                         </td>
                     </tr>
+                    }
                 </tbody>
             </table>
 
             <!-- Empty state -->
-            <div *ngIf="projects().length === 0" class="text-center py-16">
-                <p class="text-2xl text-base-content/60">Aún no hay proyectos creados</p>
-                <p class="text-lg mt-2">Haz clic en "Nuevo Proyecto" para comenzar</p>
+            @if (projects.length === 0) {
+            <div class="hero min-h-[60vh] bg-base-200">
+                <div class="hero-content text-center">
+                    <div class="max-w-md">
+                        <svg class="mx-auto h-24 w-24 text-base-content/30 mb-6" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2">
+                            </path>
+                        </svg>
+                        <h1 class="text-4xl font-bold mb-4">Aún no hay proyectos creados</h1>
+                        <p class="text-lg text-base-content/70 mb-8">
+                            Haz clic en "Nuevo Proyecto" para comenzar
+                        </p>
+                    </div>
+                </div>
             </div>
+            }
         </div>
     </div>
 </div>
@@ -58,7 +74,7 @@
 <dialog id="project_modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
         <h3 class="text-2xl font-bold mb-6">
-            {{ editingId() ? 'Editar Proyecto' : 'Nuevo Proyecto' }}
+            {{ isEdit ? 'Editar Proyecto' : 'Nuevo Proyecto' }}
         </h3>
 
         <form (ngSubmit)="save()" class="space-y-6">
@@ -66,7 +82,7 @@
                 <label class="label">
                     <span class="label-text font-medium">Nombre del proyecto *</span>
                 </label>
-                <input type="text" [(ngModel)]="formData().name" name="name" class="input input-bordered" required
+                <input type="text" name="name" class="input input-bordered" required
                     placeholder="Ej: Residencial Los Olivos" />
             </div>
 
@@ -74,8 +90,8 @@
                 <label class="label">
                     <span class="label-text">Descripción</span>
                 </label>
-                <textarea [(ngModel)]="formData().description" name="description"
-                    class="textarea textarea-bordered h-32" placeholder="Detalles del proyecto..."></textarea>
+                <textarea name="description" class="textarea textarea-bordered h-32"
+                    placeholder="Detalles del proyecto..."></textarea>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -83,7 +99,7 @@
                     <label class="label">
                         <span class="label-text font-medium">Estado</span>
                     </label>
-                    <select [(ngModel)]="formData().active" name="status" class="select select-bordered">
+                    <select name="status" class="select select-bordered">
                         <option value="Abierto">Abierto</option>
                         <option value="Cerrado">Cerrado</option>
                     </select>
@@ -93,9 +109,8 @@
                     <label class="label">
                         <span class="label-text font-medium">Ingreso mensual *</span>
                     </label>
-                    <input type="number" [(ngModel)]="formData().monthlyIncome" name="monthlyIncome"
-                        class="input input-bordered" required min="0" step="1000" [readonly]="!!editingId()"
-                        [class.input-disabled]="!!editingId()" />
+                    <input type="number" name="monthlyIncome" class="input input-bordered" required min="0" step="1000"
+                        [readonly]="true" [class.input-disabled]="true" />
                     <label class="label">
                         <span class="label-text-alt text-warning">Solo se define al crear el proyecto</span>
                     </label>
@@ -105,7 +120,7 @@
             <div class="modal-action">
                 <button type="button" class="btn" (click)="closeModal()">Cancelar</button>
                 <button type="submit" class="btn btn-primary">
-                    {{ editingId() ? 'Guardar cambios' : 'Crear proyecto' }}
+                    {{ isEdit ? 'Guardar cambios' : 'Crear proyecto' }}
                 </button>
             </div>
         </form>
