@@ -6,11 +6,12 @@ import { ProjectManagementService } from '../../services/project-management.serv
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { Page } from '../../../../shared/models/page';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 
 @Component({
   selector: 'app-projects-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, InfiniteScrollDirective],
   templateUrl: './projects-management.component.html',
   styleUrl: './projects-management.component.scss'
 })

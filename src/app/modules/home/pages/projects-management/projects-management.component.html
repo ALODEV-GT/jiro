@@ -18,7 +18,12 @@
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody 
+                    infiniteScroll
+                    [infiniteScrollDistance]="2" 
+                    [infiniteScrollThrottle]="50" 
+                    (scrolled)="getProjectPage()"
+                >
                     @for(project of projects; track project.id){
                     <tr>
                         <td class="font-semibold">{{ project.name }}</td>
