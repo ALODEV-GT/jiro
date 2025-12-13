@@ -1,66 +1,138 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Project } from '../../models/home.model';
 import { ProjectManagementService } from '../../services/project-management.service';
-import { FormBuilder, FormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { Page } from '../../../../shared/models/page';
 
 @Component({
   selector: 'app-projects-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './projects-management.component.html',
   styleUrl: './projects-management.component.scss'
 })
 export class ProjectsManagementComponent implements OnInit {
-  private readonly fb = inject(FormBuilder)
-  private readonly projectManagementService = inject(ProjectManagementService)
+  private readonly fb = inject(FormBuilder);
+  private readonly projectManagementService = inject(ProjectManagementService);
   private readonly toast = inject(ToastService);
 
-  isEdit: boolean = false
-  projects: Project[] = []
+  isEdit = false;
+  loading = false;
+  private isLastPage = false;
+  private page = 1
+  formError = '';
+  projects: Project[] = [];
+  private editingId: string | null = null;
 
   projectForm = this.fb.group({
-    name: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(40)]],
-    description: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(250)]],
+    name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]],
+    description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(250)]],
+    client: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
     monthlyIncome: [0, [Validators.required, Validators.min(1)]],
-    active: [true, []]
-  })
+    active: [false],
+  });
 
   ngOnInit(): void {
+    this.getProjectPage()
+  }
+
+  getProjectPage() {
+    if (!this.isLastPage) {
+      this.projectManagementService.getAll(this.page).subscribe({
+        next: (page: Page<Project>) => {
+          this.projects = [...this.projects, ...page.items]
+          this.page += 1
+          this.isLastPage = page.lastPage
+        },
+        error: (error: ErrorResponse) => {
+          this.toast.error(error.message)
+        }
+      })
+    }
+  }
+
+  getProject() {
 
   }
 
   openCreateModal() {
+    this.isEdit = false;
+    this.editingId = null;
+    this.formError = '';
+    this.loading = false;
+    this.active?.setValue(true)
+    this.active?.disable()
+
+    this.projectForm.reset({
+      name: '',
+      description: '',
+      monthlyIncome: 0,
+      active: true,
+    });
+
+    this.monthlyIncome?.enable();
     this.showModal();
   }
 
   openEditModal(project: Project) {
+    this.isEdit = true;
+    this.editingId = project.id;
+    this.formError = '';
+    this.loading = false;
+    this.active?.enable()
+
+    this.projectForm.patchValue({
+      name: project.name ?? '',
+      description: project.description ?? '',
+      monthlyIncome: project.monthlyIncome ?? 0,
+      active: project.active ?? true,
+    });
+
+    this.monthlyIncome?.disable();
     this.showModal();
   }
 
   save() {
+    this.formError = '';
+
     if (this.projectForm.invalid) {
-      return
+      this.projectForm.markAllAsTouched();
+      return;
     }
 
-    const newProject: Partial<Project> = this.projectForm.getRawValue() as Partial<Project>;
+    this.loading = true;
 
-    this.projectManagementService.add(newProject).subscribe({
-      next: (response: Partial<Project>) => {
-        this.toast.success('Se ha creado el proyecto')
+    const payload = this.projectForm.getRawValue() as Partial<Project>;
+
+    const req$ = this.isEdit && this.editingId != null
+      ? this.projectManagementService.update(this.editingId, payload)
+      : this.projectManagementService.add(payload);
+
+    req$.subscribe({
+      next: () => {
+        this.toast.success(this.isEdit ? 'Proyecto actualizado' : 'Se ha creado el proyecto');
+        this.closeModal();
       },
       error: (error: ErrorResponse) => {
-        this.toast.error(`${error.message}`)
+        this.formError = error.message || 'Ocurrió un error';
+        this.toast.error(this.formError);
+      },
+      complete: () => {
+        this.loading = false;
       }
-    })
-
-    this.closeModal();
+    });
   }
 
-  delete(id: number) {
-  }
+  delete(id: string) { }
+
+  get name() { return this.projectForm.get('name'); }
+  get description() { return this.projectForm.get('description'); }
+  get client() { return this.projectForm.get('client'); }
+  get monthlyIncome() { return this.projectForm.get('monthlyIncome'); }
+  get active() { return this.projectForm.get('active'); }
 
   private showModal() {
     (document.getElementById('project_modal') as any)?.showModal();
@@ -68,5 +140,6 @@ export class ProjectsManagementComponent implements OnInit {
 
   closeModal() {
     (document.getElementById('project_modal') as any)?.close();
+    this.loading = false;
   }
 }

@@ -1,42 +1,64 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Project } from '../models/home.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { ApiConfig } from '../../../shared/services/api-config.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { Page } from '../../../shared/models/page';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectManagementService {
-  private readonly htpp = inject(HttpClient)
+  private readonly http = inject(HttpClient)
   private readonly apiConfig = inject(ApiConfig)
-
-  private projects = signal<Project[]>([
-    {
-      id: 1,
-      name: 'Edificio Centro',
-      description: 'Construcción de 20 pisos en el centro',
-      active: true,
-      client: "",
-      monthlyIncome: 450000.00
-    }
-  ]);
+  private readonly PAGE_SIZE = 20;
 
   add(project: Partial<Project>): Observable<Partial<Project>> {
-    return this.htpp.post<Partial<Project>>(`${this.apiConfig.API_PROJECT}`, project)
+    return this.http.post<Partial<Project>>(`${this.apiConfig.API_PROJECT}`, project)
   }
 
-  update(id: number, changes: Pick<Project, 'name' | 'description' | 'active'>) {
-    this.projects.update((list: any) =>
-      list.map((p: any) => p.id === id ? { ...p, ...changes } : p)
-    );
+  update(id: string, project: Partial<Project>): Observable<Partial<Project>> {
+    return this.http.post<Partial<Project>>(`${this.apiConfig.API_PROJECT}`, project)
   }
 
-  delete(id: number) {
-    this.projects.update((list: any) => list.filter((p: any) => p.id !== id));
+  delete(id: string) {
+    const params = new HttpParams()
+      .set('id', id)
+
+    return this.http.delete<Project>(`${this.apiConfig.API_PROJECT}`, { params })
   }
 
-  getById(id: number): Project | undefined {
-    return this.projects().find((p: any) => p.id === id);
+  getAll(page: number): Observable<Page<Project>> {
+    //to test infinity scroll
+    const items: Project[] = Array.from({ length: this.PAGE_SIZE }, (_, index) => {
+      const id: string = (page * this.PAGE_SIZE + index + 1).toString();
+
+      return {
+        id,
+        name: `Proyecto ${id}`,
+        client: "",
+        description: 'This is a description',
+        active: true,
+        monthlyIncome: 0,
+        closedAt: '2025-12-11T20:10:46.700534Z',
+        createdAt: '2025-12-11T20:10:46.700534Z',
+        updatedAt: '2025-12-11T20:10:46.700534Z'
+
+      };
+    });
+
+    return of({
+      page,
+      size: this.PAGE_SIZE,
+      items,
+      firstPage: true,
+      lastPage: false
+    });
+
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', this.PAGE_SIZE)
+
+    return this.http.get<Page<Project>>(`${this.apiConfig.API_PROJECT}`, { params })
   }
 }

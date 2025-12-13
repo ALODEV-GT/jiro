@@ -6,6 +6,7 @@ import { AuthStore } from '../../../auth/store/auth.store';
 import { Page } from '../../../../shared/models/page';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { ToastService } from '../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-home',
@@ -16,17 +17,11 @@ import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 export class HomeComponent implements OnInit {
   private readonly projectService = inject(ProjectService)
   private readonly authStore = inject(AuthStore)
+  private readonly toast = inject(ToastService)
 
   page: number = 1
   isLastPage = false
   projects: Project[] = []
-
-  /** 
-  projects: Project[] = [
-    { id: 1, name: 'Rediseño Frontend', description: 'Nueva interfaz del panel de cliente', active: true, monthlyIncome: 0 },
-    { id: 2, name: 'Backend App Móvil', description: 'API en Node.js para la app móvil', active: false, monthlyIncome: 0 }
-  ];
-  */
 
   ngOnInit() {
     this.getProjectPage()
@@ -41,7 +36,7 @@ export class HomeComponent implements OnInit {
           this.isLastPage = page.lastPage
         },
         error: (error: ErrorResponse) => {
-          //TODO: Handle error
+          this.toast.error(error.message)
         }
       })
     }

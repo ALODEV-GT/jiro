@@ -1,11 +1,13 @@
 export interface Project {
-    id: number;
+    id: string;
     name: string;
     description: string;
     client: string;
     monthlyIncome: number;
     active: boolean;
-    createdAt?: Date;
+    createdAt?: string;
+    updatedAt?: string;
+    closedAt?: string;
 }
 
 export interface Employee {

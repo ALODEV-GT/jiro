@@ -14,29 +14,6 @@ export class ProjectService {
     private readonly SIZE = 20
 
     getProjectsByUserId(userId: string, page: number): Observable<Page<Project>> {
-
-        /*
-        //to test infinity scroll
-        const items = Array.from({ length: this.SIZE }, (_, index) => {
-            const id = page * this.SIZE + index + 1;
-
-            return {
-                id,
-                name: `Proyecto ${id}`,
-                description: 'This is a description',
-                active: true,
-                monthlyIncome: 0,
-            };
-        });
-
-        return of({
-            page,
-            size: this.SIZE,
-            items,
-            isLastPage: false
-        });
-        */
-
         const params = new HttpParams()
             .set('page', page)
             .set('size', this.SIZE)
