@@ -9,7 +9,7 @@ import { Toast, ToastPosition } from '../models/toast.model';
     imports: [CommonModule],
     template: `
     <ng-container *ngFor="let group of grouped()">
-      <div class="toast" [ngClass]="positionClass(group.position)" aria-live="polite" aria-atomic="true">
+      <div class="toast z-40" [ngClass]="positionClass(group.position)" aria-live="polite" aria-atomic="true">
         <div
           *ngFor="let t of group.items"
           class="alert"

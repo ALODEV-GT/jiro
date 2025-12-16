@@ -7,6 +7,7 @@ import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { Page } from '../../../../shared/models/page';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-projects-management',
@@ -60,17 +61,20 @@ export class ProjectsManagementComponent implements OnInit {
     this.editingId = null;
     this.formError = '';
     this.loading = false;
-    this.active?.setValue(true)
-    this.active?.disable()
+
+    this.projectForm.enable({ emitEvent: false });
 
     this.projectForm.reset({
       name: '',
       description: '',
+      client: '',
       monthlyIncome: 0,
       active: true,
     });
 
+    this.active?.disable(); 
     this.monthlyIncome?.enable();
+
     this.showModal();
   }
 
@@ -112,14 +116,33 @@ export class ProjectsManagementComponent implements OnInit {
     this.loading = true;
 
     const payload = this.projectForm.getRawValue() as Partial<Project>;
+    const isClosingProject = this.isEdit && payload.active === false;
 
-    const req$ = this.isEdit && this.editingId != null
-      ? this.projectManagementService.update(this.editingId, payload)
-      : this.projectManagementService.add(payload);
+    let req$: Observable<Partial<Project>>;
+
+    if (this.isEdit && this.editingId != null) {
+      if (isClosingProject) {
+        req$ = this.closeProject(this.editingId);
+      }
+      else {
+        req$ = this.projectManagementService.update(this.editingId, payload);
+      }
+    }
+    else {
+      req$ = this.projectManagementService.add(payload);
+    }
 
     req$.subscribe({
       next: () => {
-        this.toast.success(this.isEdit ? 'Proyecto actualizado' : 'Se ha creado el proyecto');
+        let message = 'Se ha creado el proyecto';
+
+        if (this.isEdit) {
+          message = isClosingProject
+            ? 'Proyecto cerrado correctamente'
+            : 'Proyecto actualizado';
+        }
+
+        this.toast.success(message);
         this.closeModal();
       },
       error: (error: ErrorResponse) => {
@@ -132,7 +155,21 @@ export class ProjectsManagementComponent implements OnInit {
     });
   }
 
-  delete(id: string) { }
+  delete(id: string) {
+    this.projectManagementService.delete(id).subscribe({
+      next: () => {
+        this.toast.success('Se ha eliminado el proyecto');
+      },
+      error: () => {
+        this.toast.error('Ocurrion un error al eliminar el proyecto');
+      }
+    })
+  }
+
+  closeProject(id: string) {
+    return this.projectManagementService.closeProject(id);
+  }
+
 
   get name() { return this.projectForm.get('name'); }
   get description() { return this.projectForm.get('description'); }

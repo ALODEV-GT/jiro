@@ -1,8 +1,8 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Project } from '../models/home.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ApiConfig } from '../../../shared/services/api-config.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Page } from '../../../shared/models/page';
 
 @Injectable({
@@ -18,17 +18,22 @@ export class ProjectManagementService {
   }
 
   update(id: string, project: Partial<Project>): Observable<Partial<Project>> {
-    return this.http.post<Partial<Project>>(`${this.apiConfig.API_PROJECT}`, project)
+    return this.http.put<Partial<Project>>(`${this.apiConfig.API_PROJECT}/${id}`, project)
   }
 
-  delete(id: string) {
+  closeProject(id: string): Observable<Partial<Project>> {
+    return this.http.patch<Project>(`${this.apiConfig.API_PROJECT}/${id}/close`, {})
+  }
+
+  delete(id: string): Observable<void> {
     const params = new HttpParams()
       .set('id', id)
 
-    return this.http.delete<Project>(`${this.apiConfig.API_PROJECT}`, { params })
+    return this.http.delete<void>(`${this.apiConfig.API_PROJECT}`, { params })
   }
 
   getAll(page: number): Observable<Page<Project>> {
+    /*
     //to test infinity scroll
     const items: Project[] = Array.from({ length: this.PAGE_SIZE }, (_, index) => {
       const id: string = (page * this.PAGE_SIZE + index + 1).toString();
@@ -39,7 +44,7 @@ export class ProjectManagementService {
         client: "",
         description: 'This is a description',
         active: true,
-        monthlyIncome: 0,
+        monthlyIncome: 45000,
         closedAt: '2025-12-11T20:10:46.700534Z',
         createdAt: '2025-12-11T20:10:46.700534Z',
         updatedAt: '2025-12-11T20:10:46.700534Z'
@@ -52,9 +57,9 @@ export class ProjectManagementService {
       size: this.PAGE_SIZE,
       items,
       firstPage: true,
-      lastPage: false
+      lastPage: true
     });
-
+    */
     const params = new HttpParams()
       .set('page', page)
       .set('size', this.PAGE_SIZE)

@@ -199,7 +199,7 @@
             <div class="modal-action">
                 <button type="button" class="btn" (click)="closeModal()">Cancelar</button>
 
-                <button type="submit" class="btn btn-primary" [disabled]="loading || projectForm.invalid">
+                <button type="submit" class="btn btn-primary" [disabled]="loading || projectForm.invalid || (isEdit && !active?.value)">>
                     @if (loading) { <span class="loading loading-spinner"></span> }
                     {{ isEdit ? 'Guardar cambios' : 'Crear proyecto' }}
                 </button>
