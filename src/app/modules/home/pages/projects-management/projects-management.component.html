@@ -18,12 +18,8 @@
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody 
-                    infiniteScroll
-                    [infiniteScrollDistance]="2" 
-                    [infiniteScrollThrottle]="50" 
-                    (scrolled)="getProjectPage()"
-                >
+                <tbody infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+                    (scrolled)="getProjectPage()">
                     @for(project of projects; track project.id){
                     <tr>
                         <td class="font-semibold">{{ project.name }}</td>
@@ -81,6 +77,12 @@
         <h3 class="text-2xl font-bold mb-6">
             {{ isEdit ? 'Editar Proyecto' : 'Nuevo Proyecto' }}
         </h3>
+
+        @if (isEdit && !active?.value) {
+        <div class="alert alert-warning mb-4">
+            <span>Este proyecto está cerrado y no puede ser editado.</span>
+        </div>
+        }
 
         <!-- General error -->
         @if (formError) {

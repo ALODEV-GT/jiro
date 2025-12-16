@@ -55,10 +55,6 @@ export class ProjectsManagementComponent implements OnInit {
     }
   }
 
-  getProject() {
-
-  }
-
   openCreateModal() {
     this.isEdit = false;
     this.editingId = null;
@@ -83,18 +79,27 @@ export class ProjectsManagementComponent implements OnInit {
     this.editingId = project.id;
     this.formError = '';
     this.loading = false;
-    this.active?.enable()
 
     this.projectForm.patchValue({
       name: project.name ?? '',
       description: project.description ?? '',
+      client: project.client ?? '',
       monthlyIncome: project.monthlyIncome ?? 0,
       active: project.active ?? true,
     });
 
     this.monthlyIncome?.disable();
+
+    if (project.active === false) {
+      this.projectForm.disable({ emitEvent: false });
+    } else {
+      this.projectForm.enable({ emitEvent: false });
+      this.monthlyIncome?.disable();
+    }
+
     this.showModal();
   }
+
 
   save() {
     this.formError = '';
