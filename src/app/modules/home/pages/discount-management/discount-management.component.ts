@@ -39,7 +39,7 @@ export class DiscountManagementComponent {
         employeeId: this.form().employeeId,
         projectId: this.form().projectId,
         amount: this.form().amount,
-        date: new Date(this.form().date),
+        date: '2025-01-01',
         reason: this.form().reason
       });
       this.resetForm();

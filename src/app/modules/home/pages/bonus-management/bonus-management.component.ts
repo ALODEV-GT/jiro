@@ -39,7 +39,7 @@ export class BonusManagementComponent {
         employeeId: this.form().employeeId,
         projectId: this.form().projectId,
         amount: this.form().amount,
-        date: new Date(this.form().date),
+        date: '2025-01-01',
         description: this.form().description
       });
       this.resetForm();

@@ -14,7 +14,7 @@ export interface Employee {
     id: number;
     name: string;
     email: string;
-    hiredDate?: Date;
+    hiredDate?: string;
 }
 
 export interface Contract {
@@ -23,8 +23,8 @@ export interface Contract {
     projectId: number;
     baseSalary: number;
     role: 'Project Manager' | 'Project Owner' | 'Frontend' | 'Backend' | 'Fullstack';
-    startDate: Date;
-    endDate?: Date;
+    startDate: string;
+    endDate?: string;
     isActive: boolean;
 }
 
@@ -33,7 +33,7 @@ export interface Bonus {
     employeeId: number;
     projectId: number;
     amount: number;
-    date: Date;
+    date: string;
     description?: string;
 }
 
@@ -42,7 +42,23 @@ export interface Discount {
     employeeId: number;
     projectId: number;
     amount: number;
-    date: Date;
+    date: string;
     reason?: string;
 }
 
+//Roles
+export interface Rol {
+    id: number;
+    name: string;
+    description: string;
+    color: string;
+    permissions: number[]
+}
+
+export interface Permissions {
+    id: number;
+    key: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+}

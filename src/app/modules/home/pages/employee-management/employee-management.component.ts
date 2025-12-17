@@ -38,7 +38,7 @@ export class EmployeeManagementComponent {
       projectId: undefined,
       baseSalary: 0,
       role: 'Project Manager',
-      startDate: new Date()
+      startDate: '2025-01-01'
     };
   }
 

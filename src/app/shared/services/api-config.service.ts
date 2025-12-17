@@ -9,5 +9,7 @@ export class ApiConfig {
 
     public readonly API_AUTH = `${this.API_BASE}/auth`
     public readonly API_PROJECT = `${this.API_BASE}/projects`
-
+    public readonly API_ROL = `${this.API_BASE}/roles`
+    public readonly API_PERMISSIONS = `${this.API_BASE}/permissions`
+    
 }

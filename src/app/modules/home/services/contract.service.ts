@@ -14,7 +14,7 @@ export class ContractService {
       projectId: 1,
       baseSalary: 5000,
       role: 'Project Manager',
-      startDate: new Date('2025-01-01'),
+      startDate: '2025-01-01',
       isActive: true
     }
   ]);
