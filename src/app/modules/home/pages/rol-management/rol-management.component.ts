@@ -4,13 +4,14 @@ import { Rol } from '../../models/home.model';
 import { Page } from '../../../../shared/models/page';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-rol-management',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './rol-management.component.html',
   styleUrl: './rol-management.component.scss'
 })
@@ -22,7 +23,7 @@ export class RolManagementComponent implements OnInit {
   isEdit = false;
   loading = false;
   private isLastPage = false;
-  private page = 1
+  private page = 0
   formError = ''
   roles: Rol[] = []
   private editingId: number | null = null;
@@ -57,6 +58,7 @@ export class RolManagementComponent implements OnInit {
     this.editingId = null;
     this.formError = '';
     this.loading = false;
+    this.rolForm.get('name')?.enable()
     this.showModal();
   }
 
@@ -73,7 +75,7 @@ export class RolManagementComponent implements OnInit {
           description: rol.description ?? '',
           color: rol.color ?? '',
         });
-
+        this.rolForm.get('name')?.disable()
         this.showModal();
       },
       error: (error: ErrorResponse) => {
@@ -108,6 +110,7 @@ export class RolManagementComponent implements OnInit {
     req$.subscribe({
       next: () => {
         this.toast.success('Rol actualizado');
+        this.resetPagination()
         this.closeModal();
       },
       error: (error: ErrorResponse) => {
@@ -118,6 +121,13 @@ export class RolManagementComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  resetPagination() {
+    this.roles = []
+    this.page = 0
+    this.isLastPage = false
+    this.getRolPage()
   }
 
   deleteRol(rol: Rol) {

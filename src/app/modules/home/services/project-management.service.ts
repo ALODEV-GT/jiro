@@ -29,6 +29,10 @@ export class ProjectManagementService {
     return this.http.delete<void>(`${this.apiConfig.API_PROJECT}/${id}`)
   }
 
+  getProject(id: string): Observable<Project> {
+    return this.http.get<Project>(`${this.apiConfig.API_PROJECT}/${id}`)
+  }
+
   getAll(page: number): Observable<Page<Project>> {
     /*
     //to test infinity scroll

@@ -21,13 +21,16 @@
                     @for(rol of roles; track rol.id){
                     <tr class="hover">
                         <td>
-                            <span class="badge bg-yellow-200 p-3 font-bold">Admin</span>
+                            <span class="badge p-3 font-bold"
+                                [ngStyle]="{ 'background-color': rol.color }">{{rol.name}}</span>
                         </td>
-                        <td>Acceso total al sistema</td>
+                        <td>{{rol.description}}</td>
                         <td class="text-center">
                             <div class="flex justify-center gap-2">
-                                <button class="btn btn-sm btn-outline btn-info" (click)="openEditModal(rol)">Editar</button>
-                                <button class="btn btn-sm btn-outline btn-error" (click)="deleteRol(rol)">Eliminar</button>
+                                <button class="btn btn-sm btn-outline btn-info"
+                                    (click)="openEditModal(rol)">Editar</button>
+                                <button class="btn btn-sm btn-outline btn-error"
+                                    (click)="deleteRol(rol)">Eliminar</button>
                             </div>
                         </td>
                     </tr>
@@ -43,19 +46,20 @@
     <div class="modal-box w-11/12 max-w-2xl">
         <h3 class="text-2xl font-bold mb-6">Nuevo Rol</h3>
 
-        <form class="space-y-6">
+        <form [formGroup]="rolForm" (ngSubmit)="save()" class="space-y-6">
             <div class="form-control">
                 <label class="label">
                     <span class="label-text font-medium">Nombre del Rol *</span>
                 </label>
-                <input type="text" placeholder="Ej: DevOps Engineer" class="input input-bordered w-full" />
+                <input formControlName="name" type="text" placeholder="Ej: DevOps Engineer"
+                    class="input input-bordered w-full" />
             </div>
 
             <div class="form-control">
                 <label class="label">
                     <span class="label-text font-medium">Descripción</span>
                 </label>
-                <textarea class="textarea textarea-bordered h-32"
+                <textarea formControlName="description" class="textarea textarea-bordered h-32"
                     placeholder="Responsabilidades y permisos de este rol..."></textarea>
             </div>
 
@@ -63,14 +67,7 @@
                 <label class="label">
                     <span class="label-text font-medium">Color del Rol</span>
                 </label>
-                <div class="grid grid-cols-6 gap-3">
-                    <input type="radio" name="color" class="btn btn-error btn-circle checked:bg-error" />
-                    <input type="radio" name="color" class="btn btn-warning btn-circle checked:bg-warning" />
-                    <input type="radio" name="color" class="btn btn-success btn-circle checked:bg-success" />
-                    <input type="radio" name="color" class="btn btn-info btn-circle checked:bg-info" />
-                    <input type="radio" name="color" class="btn btn-purple btn-circle checked:bg-purple-600" />
-                    <input type="radio" name="color" class="btn btn-accent btn-circle checked:bg-accent" />
-                </div>
+                <input formControlName="color" type="color">
             </div>
 
             <div class="modal-action">

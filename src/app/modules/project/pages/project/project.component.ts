@@ -1,43 +1,58 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BoardComponent } from '../../components/board/board.component';
 import { SprintsComponent } from '../../components/sprints/sprints.component';
 import { TopbarComponent } from '../../../home/components/topbar/topbar.component';
 import { LogActivityComponent } from '../../components/log-activity/log-activity.component';
-
-interface Project {
-  name: string;
-  code: string;
-  description: string;
-}
+import { ProjectManagementService } from '../../../home/services/project-management.service';
+import { ErrorResponse } from '../../../../shared/models/errors';
+import { ToastService } from '../../../../shared/services/toast.service';
+import { Project } from '../../../home/models/home.model';
+import { Member } from '../../models/project.model';
+import { CommonModule } from '@angular/common';
+import { MembersService } from '../../../home/services/members.service';
+import { Page } from '../../../../shared/models/page';
 
 @Component({
   selector: 'app-project',
   standalone: true,
-  imports: [BoardComponent, SprintsComponent, TopbarComponent, LogActivityComponent],
+  imports: [BoardComponent, SprintsComponent, TopbarComponent, LogActivityComponent, CommonModule],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss'
 })
 export class ProjectComponent {
-  project: Project = {
-    name: 'Rediseño Frontend',
-    code: 'FR-2025-XK9',
-    description: 'Nueva interfaz del panel de cliente'
-  };
+  private activatedRoute = inject(ActivatedRoute);
+  private projectService = inject(ProjectManagementService)
+  private memberService = inject(MembersService)
+  private toast = inject(ToastService)
 
-  currentUserName = 'Juan Pérez';
-  currentUserInitials = 'JP';
+  members: Member[] = []
+  project: Project | null = null
 
-  activeTab: 'board' | 'members' | 'sprints' | 'finances' | 'reports' | 'activity' = 'board';
+  activeTab: 'board' | 'members' | 'sprints' | 'finances' | 'reports' | 'activity' = 'sprints';
 
-  constructor(private router: Router) { }
-
-  goBack() {
-    this.router.navigate(['/']);
+  constructor() {
+    this.activatedRoute.params.subscribe(params => {
+      this.projectService.getProject(params['id']).subscribe({
+        next: (project: Project) => {
+          this.project = project
+          this.getMembers(this.project.id)
+        },
+        error: (error: ErrorResponse) => {
+          this.toast.error(error.message)
+        }
+      })
+    });
   }
 
-  logout() {
-    alert('Sesión cerrada');
-    this.router.navigate(['/login']);
+  getMembers(id: string) {
+    this.memberService.getProjectMembers(id).subscribe({
+      next: (page: Page<Member>) => {
+        this.members = page.items
+      },
+      error: (error: ErrorResponse) => {
+        this.toast.error(error.message)
+      }
+    })
   }
 }
