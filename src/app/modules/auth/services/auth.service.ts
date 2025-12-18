@@ -12,7 +12,7 @@ export class AuthService {
   private readonly http = inject(HttpClient)
 
   login(credentials: LoginCredentials): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiBase.API_AUTH}`, credentials)
+    return this.http.post<LoginResponse>(`${this.apiBase.API_AUTH}/sign-in`, credentials)
   }
 
   signup(request: SignupRequest): Observable<SignupResponse> {

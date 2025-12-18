@@ -38,6 +38,9 @@
                                 <button class="btn btn-sm btn-outline btn-info" (click)="openEditModal(project)">
                                     Editar
                                 </button>
+                                <button class="btn btn-sm btn-outline btn-error" (click)="closeProject(project.id)">
+                                    Cerrar
+                                </button>
                                 <button class="btn btn-sm btn-outline btn-error" (click)="delete(project.id)">
                                     Eliminar
                                 </button>
@@ -179,27 +182,13 @@
                     </label>
                     }
                 </div>
-
-                <!-- State -->
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-medium">Estado</span>
-                    </label>
-
-                    <!-- active boolean -->
-                    <div class="flex flex-row items-center gap-2 ml-1">
-                        <input type="checkbox" class="toggle toggle-success" formControlName="active" />
-                        <span class="label-text-alt" [class.text-success]="active?.value!!">
-                            {{active?.value ? 'Activo': 'Cerrado'}}
-                        </span>
-                    </div>
-                </div>
             </div>
 
             <div class="modal-action">
                 <button type="button" class="btn" (click)="closeModal()">Cancelar</button>
 
-                <button type="submit" class="btn btn-primary" [disabled]="loading || projectForm.invalid || (isEdit && !active?.value)">>
+                <button type="submit" class="btn btn-primary"
+                    [disabled]="loading || projectForm.invalid || (!active?.value && isEdit)">
                     @if (loading) { <span class="loading loading-spinner"></span> }
                     {{ isEdit ? 'Guardar cambios' : 'Crear proyecto' }}
                 </button>

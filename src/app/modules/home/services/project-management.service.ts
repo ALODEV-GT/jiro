@@ -26,10 +26,7 @@ export class ProjectManagementService {
   }
 
   delete(id: string): Observable<void> {
-    const params = new HttpParams()
-      .set('id', id)
-
-    return this.http.delete<void>(`${this.apiConfig.API_PROJECT}`, { params })
+    return this.http.delete<void>(`${this.apiConfig.API_PROJECT}/${id}`)
   }
 
   getAll(page: number): Observable<Page<Project>> {

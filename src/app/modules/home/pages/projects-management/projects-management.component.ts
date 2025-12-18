@@ -24,7 +24,7 @@ export class ProjectsManagementComponent implements OnInit {
   isEdit = false;
   loading = false;
   private isLastPage = false;
-  private page = 1
+  private page = 0
   formError = '';
   projects: Project[] = [];
   private editingId: string | null = null;
@@ -72,7 +72,7 @@ export class ProjectsManagementComponent implements OnInit {
       active: true,
     });
 
-    this.active?.disable(); 
+    this.active?.disable();
     this.monthlyIncome?.enable();
 
     this.showModal();
@@ -116,17 +116,11 @@ export class ProjectsManagementComponent implements OnInit {
     this.loading = true;
 
     const payload = this.projectForm.getRawValue() as Partial<Project>;
-    const isClosingProject = this.isEdit && payload.active === false;
 
     let req$: Observable<Partial<Project>>;
 
     if (this.isEdit && this.editingId != null) {
-      if (isClosingProject) {
-        req$ = this.closeProject(this.editingId);
-      }
-      else {
-        req$ = this.projectManagementService.update(this.editingId, payload);
-      }
+      req$ = this.projectManagementService.update(this.editingId, payload);
     }
     else {
       req$ = this.projectManagementService.add(payload);
@@ -137,12 +131,11 @@ export class ProjectsManagementComponent implements OnInit {
         let message = 'Se ha creado el proyecto';
 
         if (this.isEdit) {
-          message = isClosingProject
-            ? 'Proyecto cerrado correctamente'
-            : 'Proyecto actualizado';
+          message = 'Proyecto actualizado';
         }
 
         this.toast.success(message);
+        this.resetPagination()
         this.closeModal();
       },
       error: (error: ErrorResponse) => {
@@ -155,10 +148,24 @@ export class ProjectsManagementComponent implements OnInit {
     });
   }
 
+  resetPagination() {
+    this.projects = []
+    this.page = 0
+    this.isLastPage = false
+    this.getProjectPage()
+  }
+
   delete(id: string) {
+    const confirmed = confirm('¿Estás seguro de que deseas eliminar este proyecto?');
+
+    if (!confirmed) {
+      return;
+    }
+
     this.projectManagementService.delete(id).subscribe({
       next: () => {
         this.toast.success('Se ha eliminado el proyecto');
+        this.resetPagination()
       },
       error: () => {
         this.toast.error('Ocurrion un error al eliminar el proyecto');
@@ -167,7 +174,21 @@ export class ProjectsManagementComponent implements OnInit {
   }
 
   closeProject(id: string) {
-    return this.projectManagementService.closeProject(id);
+    const confirmed = confirm('¿Estás seguro de que deseas cerrar este proyecto?');
+
+    if (!confirmed) {
+      return;
+    }
+
+    return this.projectManagementService.closeProject(id).subscribe({
+      next: () => {
+        this.toast.success('Proyecto cerrado');
+        this.resetPagination()
+      },
+      error: (error: ErrorResponse) => {
+        this.toast.error(error.message);
+      }
+    })
   }
 
 
