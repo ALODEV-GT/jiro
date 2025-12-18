@@ -10,13 +10,14 @@ export interface UserStory {
 }
 
 export interface Sprint {
-    id: number;
+    id: string;
     name: string;
     description: string;
     startDate: Date;
-    durationWeeks: 1 | 2 | 3 | 4;
     endDate: Date;
-    status: 'Pendiente' | 'Activo' | 'Finalizado';
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface Member {

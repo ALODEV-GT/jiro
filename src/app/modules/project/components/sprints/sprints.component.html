@@ -54,7 +54,7 @@
         </div>
 
         <div class="space-y-8">
-            <div *ngFor="let sprint of sprints()">
+            <div *ngFor="let sprint of sprints">
                 <h3 class="text-xl font-bold text-secondary mb-4">{{ sprint.name }} ({{ sprint.status }})</h3>
                 <div class="overflow-x-auto">
                     <table class="table table-zebra">
@@ -98,7 +98,7 @@
             </div>
         </div>
 
-        <div *ngIf="sprints().length === 0" class="text-center py-8 text-xl text-base-content/60">
+        <div *ngIf="sprints.length === 0" class="text-center py-8 text-xl text-base-content/60">
             No hay sprints creados aún
         </div>
     </div>
@@ -149,7 +149,7 @@
                         <label class="label"><span class="label-text font-medium">Sprint</span></label>
                         <select [(ngModel)]="storyForm().sprintId" name="sprintId" class="select select-bordered">
                             <option [value]="undefined">Ninguno (Backlog)</option>
-                            <option *ngFor="let sprint of sprints()" [value]="sprint.id">{{ sprint.name }}</option>
+                            <option *ngFor="let sprint of sprints" [value]="sprint.id">{{ sprint.name }}</option>
                         </select>
                     </div>
                 </div>
@@ -191,8 +191,7 @@
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Duración (semanas) *</span></label>
-                        <select [(ngModel)]="sprintForm().durationWeeks" name="durationWeeks"
-                            class="select select-bordered" required>
+                        <select name="durationWeeks" class="select select-bordered" required>
                             <option value="1">1 semana</option>
                             <option value="2">2 semanas</option>
                             <option value="3">3 semanas</option>
@@ -202,9 +201,7 @@
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text">Fecha Fin (calculada)</span></label>
-                    <input type="text"
-                        [value]="formatDate(calculateEndDate(sprintForm().startDate!, sprintForm().durationWeeks!))"
-                        class="input input-bordered" readonly />
+                    <input type="text" [value]="2025-09-09" class="input input-bordered" readonly />
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text font-medium">Estado *</span></label>

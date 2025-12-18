@@ -1,10 +1,14 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Sprint, UserStory } from '../../models/project.model';
 import { UserStoryService } from '../../services/user-story.service';
-import { SprintService } from '../../services/sprint.service';
 import { EmployeeService } from '../../../home/services/employee.service';
+import { ActivatedRoute } from '@angular/router';
+import { SprintService } from '../../services/sprint.service';
+import { Page } from '../../../../shared/models/page';
+import { ErrorResponse } from '../../../../shared/models/errors';
+import { ToastService } from '../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-sprints',
@@ -14,8 +18,12 @@ import { EmployeeService } from '../../../home/services/employee.service';
   styleUrl: './sprints.component.scss'
 })
 export class SprintsComponent {
+  private activatedRoute = inject(ActivatedRoute);
+  private readonly sprintService = inject(SprintService)
+  private readonly toast = inject(ToastService)
+
   userStories: any
-  sprints: any
+  sprints: Sprint[] = []
   employees: any
 
   storyForm = signal<Partial<UserStory>>(this.emptyStoryForm());
@@ -25,12 +33,25 @@ export class SprintsComponent {
 
   constructor(
     private userStoryService: UserStoryService,
-    private sprintService: SprintService,
     private employeeService: EmployeeService
   ) {
     this.userStories = this.userStoryService.allUserStories;
-    this.sprints = this.sprintService.allSprints;
     this.employees = this.employeeService.allEmployees;
+
+    this.activatedRoute.params.subscribe(params => {
+      this.getSprints(params['id'])
+    });
+  }
+
+  getSprints(id: string) {
+    this.sprintService.getProjectSprints(id).subscribe({
+      next: (page: Page<Sprint>) => {
+        this.sprints = page.items
+      },
+      error: (error: ErrorResponse) => {
+        this.toast.error(error.message)
+      }
+    })
   }
 
   private emptyStoryForm(): Partial<UserStory> {
@@ -50,8 +71,8 @@ export class SprintsComponent {
       name: '',
       description: '',
       startDate: new Date('2025-12-09'),
-      durationWeeks: 2,
-      status: 'Pendiente'
+      status: 'Pendiente',
+      endDate: new Date('2025-12-25')
     };
   }
 
@@ -80,27 +101,27 @@ export class SprintsComponent {
   }
 
   openSprintModal(isEdit = false, sprint?: Sprint) {
-    this.editingSprintId.set(isEdit && sprint ? sprint.id : null);
-    this.sprintForm.set(isEdit && sprint ? { ...sprint } : this.emptySprintForm());
-    (document.getElementById('sprint_modal') as any)?.showModal();
+    // this.editingSprintId.set(isEdit && sprint ? sprint.id : null);
+    // this.sprintForm.set(isEdit && sprint ? { ...sprint } : this.emptySprintForm());
+    // (document.getElementById('sprint_modal') as any)?.showModal();
   }
 
   saveSprint() {
-    const data = this.sprintForm();
-    if (!data.name || !data.startDate || !data.durationWeeks) return;
+    // const data = this.sprintForm();
+    // if (!data.name || !data.startDate || !data.durationWeeks) return;
 
-    if (this.editingSprintId()) {
-      this.sprintService.update(this.editingSprintId()!, data as Sprint);
-    } else {
-      this.sprintService.add(data as Omit<Sprint, 'id' | 'endDate'>);
-    }
-    this.closeModal('sprint_modal');
+    // if (this.editingSprintId()) {
+    //   this.sprintService.update(this.editingSprintId()!, data as Sprint);
+    // } else {
+    //   this.sprintService.add(data as Omit<Sprint, 'id' | 'endDate'>);
+    // }
+    // this.closeModal('sprint_modal');
   }
 
   deleteSprint(id: number) {
-    if (confirm('¿Eliminar este sprint? Esto no afectará las historias asignadas.')) {
-      this.sprintService.delete(id);
-    }
+    // if (confirm('¿Eliminar este sprint? Esto no afectará las historias asignadas.')) {
+    //   this.sprintService.delete(id);
+    // }
   }
 
   calculateEndDate(start: Date, weeks: number): Date {
@@ -117,16 +138,16 @@ export class SprintsComponent {
     return this.employees().find((e: any) => e.id === id)?.name ?? '—';
   }
 
-  getSprintName(id: number | undefined): string {
-    if (!id) return 'Backlog';
-    return this.sprints().find((s: any) => s.id === id)?.name ?? '—';
+  getSprintName(id: number | undefined): void {
+    // if (!id) return 'Backlog';
+    // return this.sprints().find((s: any) => s.id === id)?.name ?? '—';
   }
 
   formatDate(date: Date): string {
     return new Date(date).toLocaleDateString('es-PE');
   }
 
-  getStoriesForSprint(sprintId: number): UserStory[] {
+  getStoriesForSprint(sprintId: string): UserStory[] {
     return this.userStories().filter((s: any) => s.sprintId === sprintId);
   }
 
