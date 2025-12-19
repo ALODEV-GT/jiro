@@ -50,12 +50,17 @@
     <div class="bg-base-100 rounded-xl shadow-xl p-6">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-3xl font-bold text-primary">Sprints</h2>
-            <button class="btn btn-primary" (click)="openSprintModal()">+ Nuevo Sprint</button>
+            <button class="btn btn-primary" (click)="openCreateSprintModal()">+ Nuevo Sprint</button>
         </div>
 
         <div class="space-y-8">
             <div *ngFor="let sprint of sprints">
-                <h3 class="text-xl font-bold text-secondary mb-4">{{ sprint.name }} ({{ sprint.status }})</h3>
+                <td class="flex gap-2">
+                    <h3 class="text-xl font-bold text-secondary mb-4">{{ sprint.name }} ({{ sprint.status }})</h3>
+                    <button class="btn btn-sm btn-outline btn-info"
+                        (click)="openEditSprintModal(sprint)">Editar</button>
+                    <button class="btn btn-sm btn-outline btn-error" (click)="deleteSprint(sprint.id)">Eliminar</button>
+                </td>
                 <div class="overflow-x-auto">
                     <table class="table table-zebra">
                         <thead>
@@ -111,18 +116,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Nombre *</span></label>
-                        <input type="text" [(ngModel)]="storyForm().name" name="name" class="input input-bordered"
-                            required />
+                        <input type="text" name="name" class="input input-bordered" required />
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Puntos *</span></label>
-                        <input type="number" [(ngModel)]="storyForm().points" name="points" class="input input-bordered"
-                            min="1" required />
+                        <input type="number" name="points" class="input input-bordered" min="1" required />
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Prioridad *</span></label>
-                        <select [(ngModel)]="storyForm().priority" name="priority" class="select select-bordered"
-                            required>
+                        <select name="priority" class="select select-bordered" required>
                             <option value="Baja">Baja</option>
                             <option value="Media">Media</option>
                             <option value="Alta">Alta</option>
@@ -131,23 +133,21 @@
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Product Owner *</span></label>
-                        <select [(ngModel)]="storyForm().productOwnerId" name="productOwnerId"
-                            class="select select-bordered" required>
+                        <select name="productOwnerId" class="select select-bordered" required>
                             <option value="0" disabled>Selecciona</option>
                             <option *ngFor="let emp of employees()" [value]="emp.id">{{ emp.name }}</option>
                         </select>
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Asignado a *</span></label>
-                        <select [(ngModel)]="storyForm().assigneeId" name="assigneeId" class="select select-bordered"
-                            required>
+                        <select name="assigneeId" class="select select-bordered" required>
                             <option value="0" disabled>Selecciona</option>
                             <option *ngFor="let emp of employees()" [value]="emp.id">{{ emp.name }}</option>
                         </select>
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Sprint</span></label>
-                        <select [(ngModel)]="storyForm().sprintId" name="sprintId" class="select select-bordered">
+                        <select name="sprintId" class="select select-bordered">
                             <option [value]="undefined">Ninguno (Backlog)</option>
                             <option *ngFor="let sprint of sprints" [value]="sprint.id">{{ sprint.name }}</option>
                         </select>
@@ -156,8 +156,7 @@
                 <div class="form-control col-span-2">
                     <label class="label"><span class="label-text font-medium">Descripción (Criterios de
                             Aceptación)</span></label>
-                    <textarea [(ngModel)]="storyForm().description" name="description"
-                        class="textarea textarea-bordered h-32"></textarea>
+                    <textarea name="description" class="textarea textarea-bordered h-32"></textarea>
                 </div>
                 <div class="modal-action">
                     <button type="button" class="btn" (click)="closeModal('story_modal')">Cancelar</button>
@@ -171,41 +170,30 @@
     <!-- Modal Sprint -->
     <dialog id="sprint_modal" class="modal">
         <div class="modal-box">
-            <h3 class="text-2xl font-bold mb-6">{{ editingSprintId() ? 'Editar Sprint' : 'Nuevo Sprint' }}</h3>
-            <form (ngSubmit)="saveSprint()" class="space-y-4">
+            <h3 class="text-2xl font-bold mb-6">{{ editingSprintId ? 'Editar Sprint' : 'Nuevo Sprint' }}</h3>
+            <form [formGroup]="sprintForm" (ngSubmit)="saveSprint()" class="space-y-4">
                 <div class="form-control">
                     <label class="label"><span class="label-text font-medium">Nombre *</span></label>
-                    <input type="text" [(ngModel)]="sprintForm().name" name="name" class="input input-bordered"
-                        required />
+                    <input formControlName="name" type="text" name="name" class="input input-bordered" />
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text font-medium">Descripción</span></label>
-                    <textarea [(ngModel)]="sprintForm().description" name="description"
+                    <textarea formControlName="description" name="description"
                         class="textarea textarea-bordered"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Fecha Inicio *</span></label>
-                        <input type="date" [(ngModel)]="sprintForm().startDate" name="startDate"
-                            class="input input-bordered" required />
+                        <input formControlName="startDate" type="date" name="startDate" class="input input-bordered" />
                     </div>
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-medium">Duración (semanas) *</span></label>
-                        <select name="durationWeeks" class="select select-bordered" required>
-                            <option value="1">1 semana</option>
-                            <option value="2">2 semanas</option>
-                            <option value="3">3 semanas</option>
-                            <option value="4">4 semanas</option>
-                        </select>
+                        <label class="label"><span class="label-text font-medium">Fecha fin *</span></label>
+                        <input formControlName="endDate" type="date" name="startDate" class="input input-bordered" />
                     </div>
-                </div>
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Fecha Fin (calculada)</span></label>
-                    <input type="text" [value]="2025-09-09" class="input input-bordered" readonly />
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text font-medium">Estado *</span></label>
-                    <select [(ngModel)]="sprintForm().status" name="status" class="select select-bordered" required>
+                    <select name="status" class="select select-bordered">
                         <option value="Pendiente">Pendiente</option>
                         <option value="Activo">Activo</option>
                         <option value="Finalizado">Finalizado</option>

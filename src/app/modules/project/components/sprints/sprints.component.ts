@@ -1,6 +1,6 @@
-import { Component, signal, computed, inject } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Component, signal, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Sprint, UserStory } from '../../models/project.model';
 import { UserStoryService } from '../../services/user-story.service';
 import { EmployeeService } from '../../../home/services/employee.service';
@@ -9,27 +9,40 @@ import { SprintService } from '../../services/sprint.service';
 import { Page } from '../../../../shared/models/page';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-sprints',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './sprints.component.html',
   styleUrl: './sprints.component.scss'
 })
 export class SprintsComponent {
+  private readonly fb = inject(FormBuilder)
   private activatedRoute = inject(ActivatedRoute);
   private readonly sprintService = inject(SprintService)
   private readonly toast = inject(ToastService)
+
+  private projectId: string = ''
+
+  isEdit = false;
+  loading = false;
+  formError = ''
 
   userStories: any
   sprints: Sprint[] = []
   employees: any
 
-  storyForm = signal<Partial<UserStory>>(this.emptyStoryForm());
-  sprintForm = signal<Partial<Sprint>>(this.emptySprintForm());
   editingStoryId = signal<number | null>(null);
-  editingSprintId = signal<number | null>(null);
+  editingSprintId: number | null = null;
+
+  sprintForm = this.fb.group({
+    name: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
+    description: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+    startDate: ["", [Validators.required]],
+    endDate: ["", [Validators.required]]
+  })
 
   constructor(
     private userStoryService: UserStoryService,
@@ -39,12 +52,103 @@ export class SprintsComponent {
     this.employees = this.employeeService.allEmployees;
 
     this.activatedRoute.params.subscribe(params => {
-      this.getSprints(params['id'])
+      this.projectId = params['id']
+      this.getSprints()
     });
   }
 
-  getSprints(id: string) {
-    this.sprintService.getProjectSprints(id).subscribe({
+  openCreateSprintModal() {
+    this.isEdit = false;
+    this.editingSprintId = null;
+    this.formError = '';
+    this.loading = false;
+
+    this.sprintForm.enable({ emitEvent: false });
+
+    this.sprintForm.reset({
+      name: '',
+      description: '',
+      startDate: new Date().toString(),
+      endDate: new Date().toString()
+    });
+
+    this.showSprintModal();
+  }
+
+  openEditSprintModal(sprint: Sprint) {
+    this.isEdit = true;
+    this.editingSprintId = sprint.id;
+    this.formError = '';
+    this.loading = false;
+
+    this.sprintForm.patchValue({
+      name: sprint.name ?? '',
+      description: sprint.description ?? '',
+      startDate: sprint.startDate,
+      endDate: sprint.endDate
+    });
+
+    this.showSprintModal();
+  }
+
+  saveSprint() {
+    this.formError = '';
+
+    if (this.sprintForm.invalid) {
+      this.sprintForm.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+
+    const payload = this.sprintForm.getRawValue() as Partial<Sprint>;
+
+    let req$: Observable<Partial<Sprint>>;
+
+    if (this.isEdit && this.editingSprintId != null) {
+      req$ = this.sprintService.update(this.projectId, this.editingSprintId, payload);
+    }
+    else {
+      req$ = this.sprintService.create(this.projectId, payload);
+    }
+
+    req$.subscribe({
+      next: () => {
+        let message = 'Se ha creado el sprint';
+
+        if (this.isEdit) {
+          message = 'Proyecto actualizado';
+        }
+
+        this.toast.success(message);
+        this.resetPaginationSprint()
+        this.closeSprintModal();
+      },
+      error: (error: ErrorResponse) => {
+        this.formError = error.message || 'Ocurrió un error';
+        this.toast.error(this.formError);
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
+  }
+
+  resetPaginationSprint() {
+    this.sprints = []
+    this.getSprints()
+  }
+
+  showSprintModal() {
+    (document.getElementById('sprint_modal') as any)?.showModal();
+  }
+
+  closeSprintModal() {
+    (document.getElementById('sprint_modal') as any)?.close();
+  }
+
+  getSprints() {
+    this.sprintService.getProjectSprints(this.projectId).subscribe({
       next: (page: Page<Sprint>) => {
         this.sprints = page.items
       },
@@ -66,32 +170,32 @@ export class SprintsComponent {
     };
   }
 
-  private emptySprintForm(): Partial<Sprint> {
-    return {
-      name: '',
-      description: '',
-      startDate: new Date('2025-12-09'),
-      status: 'Pendiente',
-      endDate: new Date('2025-12-25')
-    };
+  private emptySprintForm() {
+    // return {
+    //   name: '',
+    //   description: '',
+    //   startDate: new Date('2025-12-09'),
+    //   status: 'Pendiente',
+    //   endDate: new Date('2025-12-25')
+    // };
   }
 
   openStoryModal(isEdit = false, story?: UserStory) {
-    this.editingStoryId.set(isEdit && story ? story.id : null);
-    this.storyForm.set(isEdit && story ? { ...story } : this.emptyStoryForm());
-    (document.getElementById('story_modal') as any)?.showModal();
+    // this.editingStoryId.set(isEdit && story ? story.id : null);
+    // this.storyForm.set(isEdit && story ? { ...story } : this.emptyStoryForm());
+    // (document.getElementById('story_modal') as any)?.showModal();
   }
 
   saveStory() {
-    const data = this.storyForm();
-    if (!data.name || data.points! <= 0 || !data.productOwnerId || !data.assigneeId) return;
+    // const data = this.storyForm();
+    // if (!data.name || data.points! <= 0 || !data.productOwnerId || !data.assigneeId) return;
 
-    if (this.editingStoryId()) {
-      this.userStoryService.update(this.editingStoryId()!, data as UserStory);
-    } else {
-      this.userStoryService.add(data as Omit<UserStory, 'id'>);
-    }
-    this.closeModal('story_modal');
+    // if (this.editingStoryId()) {
+    //   this.userStoryService.update(this.editingStoryId()!, data as UserStory);
+    // } else {
+    //   this.userStoryService.add(data as Omit<UserStory, 'id'>);
+    // }
+    // this.closeModal('story_modal');
   }
 
   deleteStory(id: number) {
@@ -106,22 +210,20 @@ export class SprintsComponent {
     // (document.getElementById('sprint_modal') as any)?.showModal();
   }
 
-  saveSprint() {
-    // const data = this.sprintForm();
-    // if (!data.name || !data.startDate || !data.durationWeeks) return;
 
-    // if (this.editingSprintId()) {
-    //   this.sprintService.update(this.editingSprintId()!, data as Sprint);
-    // } else {
-    //   this.sprintService.add(data as Omit<Sprint, 'id' | 'endDate'>);
-    // }
-    // this.closeModal('sprint_modal');
-  }
 
   deleteSprint(id: number) {
-    // if (confirm('¿Eliminar este sprint? Esto no afectará las historias asignadas.')) {
-    //   this.sprintService.delete(id);
-    // }
+    if (confirm('¿Eliminar este sprint? Esto no afectará las historias asignadas.')) {
+      this.sprintService.delete(this.projectId, id).subscribe({
+        next: () => {
+          this.toast.success("Sprint eliminado")
+          this.resetPaginationSprint()
+        },
+        error: (error: ErrorResponse) => {
+          this.toast.error(error.message)
+        }
+      })
+    }
   }
 
   calculateEndDate(start: Date, weeks: number): Date {
@@ -147,7 +249,7 @@ export class SprintsComponent {
     return new Date(date).toLocaleDateString('es-PE');
   }
 
-  getStoriesForSprint(sprintId: string): UserStory[] {
+  getStoriesForSprint(sprintId: number): UserStory[] {
     return this.userStories().filter((s: any) => s.sprintId === sprintId);
   }
 

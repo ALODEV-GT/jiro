@@ -20,4 +20,16 @@ export class SprintService {
 
         return this.http.get<Page<Sprint>>(`${this.apiConfig.API_PROJECT}/${id}/sprints`, { params })
     }
+
+    update(idProject: string, idSprint: number, update: Partial<Sprint>): Observable<Partial<Sprint>> {
+        return this.http.put<Partial<Sprint>>(`${this.apiConfig.API_PROJECT}/${idProject}/sprints/${idSprint}`, update)
+    }
+
+    create(idProject: string, newSprint: Partial<Sprint>): Observable<Partial<Sprint>> {
+        return this.http.post<Partial<Sprint>>(`${this.apiConfig.API_PROJECT}/${idProject}/sprints`, newSprint)
+    }
+
+    delete(idProject: string, idSprint: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiConfig.API_PROJECT}/${idProject}/sprints/${idSprint}`)
+    }
 }

@@ -31,7 +31,7 @@ export class RolManagementComponent implements OnInit {
   rolForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]],
     description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(250)]],
-    color: ['', [Validators.required]],
+    color: ['', [Validators.required]]
   });
 
   ngOnInit(): void {
