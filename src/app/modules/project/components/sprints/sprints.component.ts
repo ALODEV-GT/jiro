@@ -2,7 +2,7 @@ import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Sprint, UserStory } from '../../models/project.model';
-import { UserStoryService } from '../../services/user-story.service';
+import { StoryService } from '../../services/story.service';
 import { EmployeeService } from '../../../home/services/employee.service';
 import { ActivatedRoute } from '@angular/router';
 import { SprintService } from '../../services/sprint.service';
@@ -45,7 +45,7 @@ export class SprintsComponent {
   })
 
   constructor(
-    private userStoryService: UserStoryService,
+    private userStoryService: StoryService,
     private employeeService: EmployeeService
   ) {
     this.userStories = this.userStoryService.allUserStories;

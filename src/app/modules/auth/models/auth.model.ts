@@ -5,13 +5,14 @@ export interface LoginCredentials {
 
 export interface LoginResponse {
   id: string;
-  firstName: null;
+  firstName: string;
   lastName: string;
   dpi: string;
   email: string;
   token: string;
   role: string;
   permissions: string[];
+  color: string;
 }
 
 
@@ -29,5 +30,5 @@ export interface SignupResponse {
 
 export interface ConfirmationRequest {
   email: string;
-  code:  string;
+  code: string;
 }

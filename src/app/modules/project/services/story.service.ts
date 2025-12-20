@@ -4,7 +4,8 @@ import { UserStory } from '../models/project.model';
 @Injectable({
   providedIn: 'root'
 })
-export class UserStoryService {
+export class StoryService {
+  
   private userStories = signal<UserStory[]>([
     {
       id: 1,

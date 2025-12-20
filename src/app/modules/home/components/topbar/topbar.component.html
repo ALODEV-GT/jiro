@@ -8,12 +8,21 @@
     <!-- Center: Nav tabs -->
     <div>
         <div class="tabs tabs-boxed bg-base-200">
-            <a routerLink="/home/projects" routerLinkActive="tab-active" [routerLinkActiveOptions]="{exact: true}"
-                class="tab tab-lg">Proyectos</a>
-            <a routerLink="/home/employee" routerLinkActive="tab-active" class="tab tab-lg">Contratos</a>
-            <a routerLink="/home/bonus" routerLinkActive="tab-active" class="tab tab-lg">Bonos</a>
-            <a routerLink="/home/discount" routerLinkActive="tab-active" class="tab tab-lg">Descuentos</a>
-            <a routerLink="/home/rol" routerLinkActive="tab-active" class="tab tab-lg">Roles</a>
+            <a routerLink="/home/projects" routerLinkActive="tab-active" [routerLinkActiveOptions]="{ exact: true }"
+                class="tab tab-lg"> Proyectos
+            </a>
+            <a routerLink="/home/employee" routerLinkActive="tab-active" class="tab tab-lg">
+                Contratos
+            </a>
+            <a routerLink="/home/bonus" routerLinkActive="tab-active" class="tab tab-lg">
+                Bonos
+            </a>
+            <a routerLink="/home/discount" routerLinkActive="tab-active" class="tab tab-lg">
+                Descuentos
+            </a>
+            <a routerLink="/home/rol" routerLinkActive="tab-active" class="tab tab-lg">
+                Roles
+            </a>
         </div>
     </div>
 
@@ -21,18 +30,24 @@
     <div class="ml-8">
         <div class="dropdown dropdown-end">
             <div tabindex="0" role="button" class="avatar placeholder">
-                <div
-                    class="bg-neutral text-neutral-content rounded-full w-10 ring ring-primary ring-offset-base-100 ring-offset-1">
-                    <span class="text-xl uppercase">{{ initials }}</span>
+                <div class="rounded-full w-10 ring ring-primary ring-offset-base-100 ring-offset-1 flex items-center justify-center"
+                    [style.backgroundColor]="user()?.color || '#6b7280'">
+                    <span class="text-sm font-bold uppercase" [style.color]="textColor()">
+                        {{ initials() }}
+                    </span>
                 </div>
             </div>
+
             <ul tabindex="0" class="dropdown-content menu menu-sm bg-base-200 rounded-box z-10 w-52 p-2 shadow mt-3">
-                <li>
-                    <a routerLink="/perfil" class="justify-between">
-                        Perfil
-                    </a>
+                <li class="px-2 pt-1 text-sm opacity-80">
+                    {{ user()?.firstName }} {{ user()?.lastName }} - {{ user()?.role }}
                 </li>
-                <li><a (click)="logout()" class="text-error">Cerrar sesión</a></li>
+                <li class="px-2 pb-1 text-sm opacity-70">
+                    {{ user()?.email }}
+                </li>
+                <li>
+                    <a (click)="logout()" class="text-error">Cerrar sesión</a>
+                </li>
             </ul>
         </div>
     </div>
