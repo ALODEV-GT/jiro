@@ -6,6 +6,7 @@
     </div>
 
     <!-- Center: Nav tabs -->
+    @if (user()?.role == "ADMIN") {
     <div>
         <div class="tabs tabs-boxed bg-base-200">
             <a routerLink="/home/projects" routerLinkActive="tab-active" [routerLinkActiveOptions]="{ exact: true }"
@@ -25,6 +26,7 @@
             </a>
         </div>
     </div>
+    }
 
     <!-- Right Avatar + Dropdown -->
     <div class="ml-8">
