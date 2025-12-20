@@ -55,7 +55,7 @@ export interface Rol {
     permissions: number[]
 }
 
-export interface Permissions {
+export interface Permission {
     id: number;
     key: string;
     description: string;

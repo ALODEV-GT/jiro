@@ -38,10 +38,6 @@ export class RolService {
         return this.http.delete<void>(`${this.apiConfig.API_ROL}/${id}`)
     }
 
-    getPermissions(): Observable<Permissions[]> {
-        return this.http.get<Permissions[]>(`${this.apiConfig.API_PERMISSIONS}`)
-    }
-
     addPermissionToRol(idRol: number, permissionId: number) {
         return this.http.post<void>(`${this.apiConfig.API_ROL}/${idRol}/permissions`, { permissionId })
     }
