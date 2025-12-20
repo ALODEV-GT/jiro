@@ -8,6 +8,7 @@ import { ToastService } from '../../../../shared/services/toast.service';
 import { Page } from '../../../../shared/models/page';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-projects-management',
@@ -20,6 +21,7 @@ export class ProjectsManagementComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly projectManagementService = inject(ProjectManagementService);
   private readonly toast = inject(ToastService);
+  private readonly router = inject(Router)
 
   isEdit = false;
   loading = false;
@@ -146,6 +148,10 @@ export class ProjectsManagementComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  view(projectId: string) {
+    this.router.navigate(["/project", projectId])
   }
 
   resetPagination() {

@@ -7,7 +7,7 @@
             </button>
         </div>
 
-        <div class="bg-base-100 rounded-xl shadow-xl overflow-hidden">
+        <div class="bg-base-100 rounded-xl shadow-xl">
             <table class="table table-zebra w-full">
                 <thead>
                     <tr>
@@ -34,16 +34,37 @@
                             {{ project.monthlyIncome | currency:'GTQ':'symbol-narrow':'1.2-2' }}
                         </td>
                         <td class="text-center">
-                            <div class="flex gap-2 justify-center">
-                                <button class="btn btn-sm btn-outline btn-info" (click)="openEditModal(project)">
-                                    Editar
-                                </button>
-                                <button class="btn btn-sm btn-outline btn-error" (click)="closeProject(project.id)">
-                                    Cerrar
-                                </button>
-                                <button class="btn btn-sm btn-outline btn-error" (click)="delete(project.id)">
-                                    Eliminar
-                                </button>
+                            <div class="flex justify-center">
+                                <div class="dropdown dropdown-end">
+                                    <button class="btn btn-sm btn-primary font-bold" (click)="view(project.id)">
+                                        Ver
+                                    </button>
+
+                                    <button tabindex="1" class="btn btn-sm btn-ghost px-2">
+                                        ⋮
+                                    </button>
+
+                                    <ul tabindex="1"
+                                        class="dropdown-content menu menu-sm bg-base-200 rounded-box shadow w-40 z-40 font-bold">
+                                        <li>
+                                            <a (click)="openEditModal(project)">
+                                                Editar
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="text-warning" (click)="closeProject(project.id)">
+                                                Cerrar
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="text-error" (click)="delete(project.id)">
+                                                Eliminar
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </td>
                     </tr>
