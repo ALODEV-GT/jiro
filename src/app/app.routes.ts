@@ -13,6 +13,7 @@ import { EmployeeManagementComponent } from './modules/home/pages/employee-manag
 import { DiscountManagementComponent } from './modules/home/pages/discount-management/discount-management.component';
 import { BonusManagementComponent } from './modules/home/pages/bonus-management/bonus-management.component';
 import { RolManagementComponent } from './modules/home/pages/rol-management/rol-management.component';
+import { authGuard } from './shared/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -33,15 +34,12 @@ export const routes: Routes = [
     },
     {
         path: 'recover',
-        component: RecoverComponent
-    },
-    {
-        path: 'board',
-        component: BoardComponent
+        component: RecoverComponent,
     },
     {
         path: 'home',
         component: HomeLayoutComponent,
+        canActivate: [authGuard],
         children: [
             {
                 path: 'welcome',
@@ -76,7 +74,8 @@ export const routes: Routes = [
     },
     {
         path: 'project/:id',
-        component: ProjectComponent
+        component: ProjectComponent,
+        canActivate: [authGuard]
     },
     {
         path: '',
