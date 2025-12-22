@@ -76,7 +76,7 @@ export class SignupComponent {
     const request: SignupRequest = this.registerForm.getRawValue() as SignupRequest;
     this.authService.signup(request).subscribe({
       next: () => {
-        this.router.navigate(['/auth/confirmation', request.email]);
+        this.router.navigate(['/confirmation', request.email]);
       },
       error: (err: ErrorResponse) => {
         this.loading = false;

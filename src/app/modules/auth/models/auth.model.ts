@@ -19,7 +19,6 @@ export interface LoginResponse {
 export interface SignupRequest {
   firstName: string;
   lastName: string;
-  dpi: string;
   email: string;
   password: string;
 }
