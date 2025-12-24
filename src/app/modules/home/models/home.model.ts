@@ -17,13 +17,19 @@ export interface Employee {
     hiredDate?: string;
 }
 
+//Discount
 export interface Discount {
     id: number;
-    employeeId: number;
-    projectId: number;
     amount: number;
-    date: string;
-    reason?: string;
+    reason: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateOrUpdateDiscount {
+    amount: number;
+    reason: string;
+    createdAt: string;
 }
 
 //Roles

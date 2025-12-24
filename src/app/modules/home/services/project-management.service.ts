@@ -33,7 +33,7 @@ export class ProjectManagementService {
     return this.http.get<Project>(`${this.apiConfig.API_PROJECT}/${id}`)
   }
 
-  getAll(page: number): Observable<Page<Project>> {
+  getAll(page: number, size: number = this.PAGE_SIZE): Observable<Page<Project>> {
     /*
     //to test infinity scroll
     const items: Project[] = Array.from({ length: this.PAGE_SIZE }, (_, index) => {
@@ -63,7 +63,7 @@ export class ProjectManagementService {
     */
     const params = new HttpParams()
       .set('page', page)
-      .set('size', this.PAGE_SIZE)
+      .set('size', size)
 
     return this.http.get<Page<Project>>(`${this.apiConfig.API_PROJECT}`, { params })
   }
