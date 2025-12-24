@@ -7,9 +7,13 @@ import { environment } from "../../../environments/environment";
 export class ApiConfig {
     private readonly API_BASE = environment.API_BASE;
 
-    public readonly API_AUTH = `${this.API_BASE}/auth`
-    public readonly API_PROJECT = `${this.API_BASE}/projects`
-    public readonly API_ROL = `${this.API_BASE}/roles`
-    public readonly API_PERMISSIONS = `${this.API_BASE}/permissions`
+    public readonly API_AUTH = `${this.API_BASE}/id/auth`
+    public readonly API_PERMISSIONS = `${this.API_BASE}/id/permissions`
+    public readonly API_ROL = `${this.API_BASE}/id/roles`
+    public readonly API_USER = `${this.API_BASE}/id/users`
+    public readonly API_PROJECT = `${this.API_BASE}/sc/projects`
+    public readonly API_EMPLOYEES = `${this.API_BASE}/fi/employees`
+    
+    
     
 }

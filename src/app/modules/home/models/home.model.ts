@@ -17,17 +17,6 @@ export interface Employee {
     hiredDate?: string;
 }
 
-export interface Contract {
-    id: number;
-    employeeId: number;
-    projectId: number;
-    baseSalary: number;
-    role: 'Project Manager' | 'Project Owner' | 'Frontend' | 'Backend' | 'Fullstack';
-    startDate: string;
-    endDate?: string;
-    isActive: boolean;
-}
-
 export interface Bonus {
     id: number;
     employeeId: number;
@@ -62,3 +51,47 @@ export interface Permission {
     createdAt: string;
     updatedAt: string;
 }
+
+
+//Contracts
+export type ContractStatus = 'ACTIVE' | 'INACTIVE';
+export type ContractRole = 'BACKEND' | 'FRONTEND' | 'FULLSTACK' | string;
+
+export interface Contract {
+    id: number;
+    baseSalary: number;
+    role: ContractRole;
+    startDate: string;   // YYYY-MM-DD
+    endDate: string | null;
+    status: ContractStatus;
+    createdAt: string;  // ISO string
+    updatedAt: string;  // ISO string
+}
+
+export interface CreateOrUpdateContract {
+    baseSalary: number;
+    role: ContractRole;
+    startDate: string;
+    endDate: string | null;
+    status: ContractStatus;
+}
+
+//User
+export interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
+    dpi: string;
+    email: string;
+    roleId: string;
+    roleColor: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface UpdateMyUser {
+    firstName: string;
+    lastName: string;
+    password?: string;
+}
+

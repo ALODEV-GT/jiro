@@ -11,8 +11,6 @@
             <table class="table table-zebra w-full">
                 <thead>
                     <tr>
-                        <th>Empleado</th>
-                        <th>Proyecto</th>
                         <th>Rol</th>
                         <th>Salario Base</th>
                         <th>Fecha Inicio</th>
@@ -21,24 +19,26 @@
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    <tr *ngFor="let contract of contracts()">
-                        <td class="font-semibold">{{ getEmployeeName(contract.employeeId) }}</td>
-                        <td>{{ getProjectName(contract.projectId) }}</td>
-                        <td>{{ contract.role }}</td>
-                        <td class="font-bold text-primary">{{ formatCurrency(contract.baseSalary) }}</td>
-                        <td>{{ formatDate(contract.startDate) }}</td>
-                        <td>{{ formatDate(contract.endDate) }}</td>
+                    @for ( contract of contracts(); track contract.id) {
+                    <tr>
+                        <td class="font-semibold">{{ contract.role }}</td>
+                        <td class="font-bold text-primary">
+                            {{ formatCurrency(contract.baseSalary) }}
+                        </td>
+                        <td>{{ contract.startDate }}</td>
+                        <td>{{ contract.endDate ?? '-' }}</td>
                         <td>
-                            <div class="badge badge-lg" [class.badge-success]="contract.isActive"
-                                [class.badge-error]="!contract.isActive">
-                                {{ contract.isActive ? 'Activo' : 'Terminado' }}
+                            <div class="badge badge-lg" [class.badge-success]="contract.status === 'ACTIVE'"
+                                [class.badge-error]="contract.status === 'INACTIVE'">
+                                {{ contract.status === 'ACTIVE' ? 'Activo' : 'Terminado' }}
                             </div>
                         </td>
                         <td class="text-center">
                             <div class="flex gap-2 justify-center">
                                 <button class="btn btn-sm btn-outline btn-warning"
-                                    (click)="openTerminateModal(contract.id)" [disabled]="!contract.isActive">
+                                    (click)="openTerminateModal(contract.id)" [disabled]="contract.status !== 'ACTIVE'">
                                     Terminar
                                 </button>
                                 <button class="btn btn-sm btn-outline btn-error" (click)="delete(contract.id)">
@@ -47,79 +47,67 @@
                             </div>
                         </td>
                     </tr>
+                    }
                 </tbody>
             </table>
 
-            <div *ngIf="contracts().length === 0" class="text-center py-16">
+            @if (contracts().length === 0) {
+            <div class="text-center py-16">
                 <p class="text-2xl text-base-content/60">Aún no hay contratos creados</p>
                 <p class="text-lg mt-2">Haz clic en "Nuevo Contrato" para comenzar</p>
             </div>
+            }
         </div>
     </div>
 </div>
 
-<!-- Modal create contract -->
+<!-- Modal Crear Contrato -->
 <dialog id="contract_modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
         <h3 class="text-2xl font-bold mb-6">Nuevo Contrato</h3>
 
-        <form (ngSubmit)="save()" class="space-y-6">
+        <form [formGroup]="contractForm" (ngSubmit)="save()" class="space-y-6">
+
             <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-medium">Empleado *</span>
-                </label>
-                <select [(ngModel)]="formData().employeeId" name="employeeId" class="select select-bordered" required>
-                    <option value="" disabled>Selecciona un empleado</option>
-                    <option *ngFor="let emp of employees()" [value]="emp.id">
-                        {{ emp.name }} ({{ emp.email }})
+                <label class="label">Empleado *</label>
+                <select formControlName="employeeId" class="select select-bordered">
+                    <option [ngValue]="null" disabled selected>Selecciona un empleado</option>
+                    @for (user of users(); track user.id) {
+                    <option [value]="user.id">
+                        {{ user.firstName }} {{ user.lastName }} - {{ user.email }}
                     </option>
+                    }
                 </select>
             </div>
 
             <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-medium">Proyecto *</span>
-                </label>
-                <select [(ngModel)]="formData().projectId" name="projectId" class="select select-bordered" required>
-                    <option value="" disabled>Selecciona un proyecto</option>
-                    <option *ngFor="let proj of projects()" [value]="proj.id">
-                        {{ proj.name }}
-                    </option>
+                <label class="label">Rol *</label>
+                <select formControlName="role" class="select select-bordered">
+                    <option [ngValue]="null" disabled>Selecciona un rol</option>
+                    @for (rol of roles(); track rol.name) {
+                    <option [value]="rol.name">{{ rol.name }}</option>
+                    }
                 </select>
             </div>
 
+
             <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-medium">Rol en el proyecto *</span>
-                </label>
-                <select [(ngModel)]="formData().role" name="role" class="select select-bordered" required>
-                    <option value="Project Manager">Project Manager</option>
-                    <option value="Project Owner">Project Owner</option>
-                    <option value="Frontend">Frontend</option>
-                    <option value="Backend">Backend</option>
-                    <option value="Fullstack">Fullstack</option>
-                </select>
+                <label class="label">Salario base *</label>
+                <input type="number" formControlName="baseSalary" class="input input-bordered" />
             </div>
 
             <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-medium">Salario base mensual *</span>
-                </label>
-                <input type="number" [(ngModel)]="formData().baseSalary" name="baseSalary" class="input input-bordered"
-                    required min="0" step="100" />
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-medium">Fecha de contratación (para pruebas) *</span>
-                </label>
-                <input type="date" [(ngModel)]="formData().startDate" name="startDate" class="input input-bordered"
-                    required />
+                <label class="label">Fecha inicio *</label>
+                <input type="date" formControlName="startDate" class="input input-bordered" />
             </div>
 
             <div class="modal-action">
-                <button type="button" class="btn" (click)="closeModal('contract_modal')">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Crear contrato</button>
+                <button type="button" class="btn" (click)="closeModal('contract_modal')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary" [disabled]="contractForm.invalid">
+                    Crear contrato
+                </button>
             </div>
         </form>
     </div>
@@ -129,22 +117,24 @@
     </form>
 </dialog>
 
-<!-- Modal End Contract -->
+<!-- Modal Terminar Contrato -->
 <dialog id="terminate_modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
         <h3 class="text-2xl font-bold mb-6">Terminar Contrato</h3>
 
-        <form (ngSubmit)="terminate()" class="space-y-6">
+        <form [formGroup]="terminateForm" (ngSubmit)="terminate()" class="space-y-6">
             <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-medium">Fecha de terminación *</span>
-                </label>
-                <input type="date" name="endDate" class="input input-bordered" required />
+                <label class="label">Fecha de terminación *</label>
+                <input type="date" formControlName="endDate" class="input input-bordered" />
             </div>
 
             <div class="modal-action">
-                <button type="button" class="btn" (click)="closeModal('terminate_modal')">Cancelar</button>
-                <button type="submit" class="btn btn-warning">Terminar contrato</button>
+                <button type="button" class="btn" (click)="closeModal('terminate_modal')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-warning" [disabled]="terminateForm.invalid">
+                    Terminar contrato
+                </button>
             </div>
         </form>
     </div>

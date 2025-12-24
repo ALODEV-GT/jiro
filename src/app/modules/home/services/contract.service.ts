@@ -1,46 +1,61 @@
-import { Injectable, signal } from '@angular/core';
-import { Contract } from '../models/home.model';
+import { inject, Injectable } from '@angular/core';
+import { Contract, CreateOrUpdateContract } from '../models/home.model';
+import { HttpClient } from '@angular/common/http';
+import { ApiConfig } from '../../../shared/services/api-config.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContractService {
 
-  private contracts = signal<Contract[]>([
-    // Datos de prueba
-    {
-      id: 1,
-      employeeId: 1,
-      projectId: 1,
-      baseSalary: 5000,
-      role: 'Project Manager',
-      startDate: '2025-01-01',
-      isActive: true
-    }
-  ]);
+  private readonly http = inject(HttpClient);
+  private readonly apiConfig = inject(ApiConfig);
 
-  allContracts = this.contracts.asReadonly();
-
-  add(contract: Omit<Contract, 'id' | 'isActive' | 'endDate'>) {
-    const newContract: Contract = {
-      ...contract,
-      id: Math.max(...this.contracts().map(c => c.id), 0) + 1,
-      isActive: true
-    };
-    this.contracts.update((list: any) => [...list, newContract]);
-  }
-
-  terminate(id: number, endDate: Date) {
-    this.contracts.update((list: any) =>
-      list.map((c: any) => c.id === id ? { ...c, isActive: false, endDate } : c)
+  createContract(
+    employeeId: number,
+    body: CreateOrUpdateContract
+  ): Observable<Contract> {
+    return this.http.post<Contract>(
+      `${this.apiConfig.API_EMPLOYEES}/${employeeId}/contracts`,
+      body
     );
   }
 
-  delete(id: number) {
-    this.contracts.update((list: any) => list.filter((c: any) => c.id !== id));
+  updateContract(
+    employeeId: number,
+    contractId: number,
+    body: CreateOrUpdateContract
+  ): Observable<Contract> {
+    return this.http.put<Contract>(
+      `${this.apiConfig.API_EMPLOYEES}/${employeeId}/contracts/${contractId}`,
+      body
+    );
   }
 
-  getById(id: number): Contract | undefined {
-    return this.contracts().find((c: any) => c.id === id);
+  deleteContract(
+    employeeId: number,
+    contractId: number
+  ): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiConfig.API_EMPLOYEES}/${employeeId}/contracts/${contractId}`
+    );
+  }
+
+  getContract(
+    employeeId: number,
+    contractId: number
+  ): Observable<Contract> {
+    return this.http.get<Contract>(
+      `${this.apiConfig.API_EMPLOYEES}/${employeeId}/contracts/${contractId}`
+    );
+  }
+
+  getCurrentContract(
+    employeeId: number
+  ): Observable<Contract> {
+    return this.http.get<Contract>(
+      `${this.apiConfig.API_EMPLOYEES}/${employeeId}/contracts/current`
+    );
   }
 }

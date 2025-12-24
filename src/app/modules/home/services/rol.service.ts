@@ -13,11 +13,11 @@ export class RolService {
     private readonly apiConfig = inject(ApiConfig)
     private readonly SIZE = 20
 
-    getRoles(sortAttribute: string, order: 'DESC' | 'ASC', page: number): Observable<Page<Rol>> {
+    getRoles(sortAttribute: string, order: 'DESC' | 'ASC', page: number, size: number = this.SIZE): Observable<Page<Rol>> {
         const params = new HttpParams()
             .set('sort', `${sortAttribute},${order}`)
             .set('page', page)
-            .set('size', this.SIZE)
+            .set('size', size)
 
         return this.http.get<Page<Rol>>(`${this.apiConfig.API_ROL}`, { params })
     }
