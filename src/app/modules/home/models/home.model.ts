@@ -17,15 +17,6 @@ export interface Employee {
     hiredDate?: string;
 }
 
-export interface Bonus {
-    id: number;
-    employeeId: number;
-    projectId: number;
-    amount: number;
-    date: string;
-    description?: string;
-}
-
 export interface Discount {
     id: number;
     employeeId: number;
@@ -95,3 +86,17 @@ export interface UpdateMyUser {
     password?: string;
 }
 
+//Bonus
+export interface Bonus {
+    id: number;
+    amount: number;
+    reason: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateOrUpdateBonus {
+    amount: number;
+    reason: string;
+    createdAt: string;
+}

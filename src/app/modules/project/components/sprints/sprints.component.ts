@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Sprint, UserStory } from '../../models/project.model';
 import { StoryService } from '../../services/story.service';
-import { EmployeeService } from '../../../home/services/employee.service';
 import { ActivatedRoute } from '@angular/router';
 import { SprintService } from '../../services/sprint.service';
 import { Page } from '../../../../shared/models/page';
@@ -46,10 +45,8 @@ export class SprintsComponent {
 
   constructor(
     private userStoryService: StoryService,
-    private employeeService: EmployeeService
   ) {
     this.userStories = this.userStoryService.allUserStories;
-    this.employees = this.employeeService.allEmployees;
 
     this.activatedRoute.params.subscribe(params => {
       this.projectId = params['id']

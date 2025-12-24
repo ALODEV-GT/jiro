@@ -1,23 +1,69 @@
-import { Injectable, signal } from '@angular/core';
-import { Bonus } from '../models/home.model';
+import { inject, Injectable } from '@angular/core';
+import { Bonus, CreateOrUpdateBonus } from '../models/home.model';
+import { Observable } from 'rxjs';
+import { Page } from '../../../shared/models/page';
+import { HttpClient } from '@angular/common/http';
+import { ApiConfig } from '../../../shared/services/api-config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BonusService {
-  private bonuses = signal<Bonus[]>([]);
+  private readonly http = inject(HttpClient);
+  private readonly apiConfig = inject(ApiConfig);
 
-  allBonuses = this.bonuses.asReadonly();
-
-  add(bonus: Omit<Bonus, 'id'>) {
-    const newBonus: Bonus = {
-      ...bonus,
-      id: Math.max(...this.bonuses().map(b => b.id), 0) + 1
-    };
-    this.bonuses.update(list => [...list, newBonus]);
+  createBonus(
+    employeeId: number,
+    body: CreateOrUpdateBonus
+  ): Observable<Bonus> {
+    return this.http.post<Bonus>(
+      `${this.apiConfig.API_EMPLOYEES}/${employeeId}/bonuses`,
+      body
+    );
   }
 
-  delete(id: number) {
-    this.bonuses.update(list => list.filter(b => b.id !== id));
+  updateBonus(
+    employeeId: number,
+    bonusId: number,
+    body: CreateOrUpdateBonus
+  ): Observable<Bonus> {
+    return this.http.put<Bonus>(
+      `${this.apiConfig.API_EMPLOYEES}/${employeeId}/bonuses/${bonusId}`,
+      body
+    );
+  }
+
+  deleteBonus(
+    employeeId: number,
+    bonusId: number
+  ): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiConfig.API_EMPLOYEES}/${employeeId}/bonuses/${bonusId}`
+    );
+  }
+
+  getBonus(
+    employeeId: number,
+    bonusId: number
+  ): Observable<Bonus> {
+    return this.http.get<Bonus>(
+      `${this.apiConfig.API_EMPLOYEES}/${employeeId}/bonuses/${bonusId}`
+    );
+  }
+
+  getBonuses(
+    employeeId: number,
+    page = 0,
+    size = 20
+  ): Observable<Page<Bonus>> {
+    return this.http.get<Page<Bonus>>(
+      `${this.apiConfig.API_EMPLOYEES}/${employeeId}/bonuses`,
+      {
+        params: {
+          page,
+          size
+        }
+      }
+    );
   }
 }

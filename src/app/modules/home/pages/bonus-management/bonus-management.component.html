@@ -1,31 +1,46 @@
 <div class="p-6 min-h-screen bg-base-200">
     <div class="max-w-7xl mx-auto">
+
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-bold text-primary">Bonos</h1>
-            <button class="btn btn-success btn-lg" (click)="openCreateModal()">
+
+            <button class="btn btn-success" [disabled]="!selectedEmployeeId()" (click)="openCreateModal()">
                 + Registrar Bono
             </button>
         </div>
 
+        <!-- Selector de empleado -->
+        <div class="mb-6 max-w-md">
+            <label class="label">
+                <span class="label-text font-medium">Empleado</span>
+            </label>
+            <select class="select select-bordered w-full" [formControl]="bonusForm.controls.employeeId"
+                (change)="onEmployeeChange()">
+                <option [ngValue]="null">Seleccionar empleado</option>
+                <option *ngFor="let e of users()" [ngValue]="e.id">
+                    {{ e.firstName }} {{ e.lastName }}
+                </option>
+            </select>
+        </div>
+
+        <!-- Tabla -->
         <div class="bg-base-100 rounded-xl shadow-xl overflow-hidden">
             <table class="table table-zebra">
                 <thead>
                     <tr>
-                        <th>Empleado</th>
-                        <th>Proyecto</th>
                         <th>Monto</th>
                         <th>Fecha</th>
-                        <th>Descripción</th>
+                        <th>Motivo</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let b of bonuses()">
-                        <td class="font-medium">{{ getEmployeeName(b.employeeId) }}</td>
-                        <td>{{ getProjectName(b.projectId) }}</td>
-                        <td class="font-bold text-success">{{ formatCurrency(b.amount) }}</td>
-                        <td>{{ formatDate(b.date) }}</td>
-                        <td>{{ b.description || '—' }}</td>
+                        <td class="font-bold text-success">
+                            {{ formatCurrency(b.amount) }}
+                        </td>
+                        <td>{{ formatDate(b.createdAt) }}</td>
+                        <td>{{ b.reason || '—' }}</td>
                         <td>
                             <button class="btn btn-sm btn-error btn-outline" (click)="delete(b.id)">
                                 Eliminar
@@ -34,58 +49,57 @@
                     </tr>
                 </tbody>
             </table>
+
             <div *ngIf="bonuses().length === 0" class="text-center py-16 text-xl text-base-content/60">
-                No hay bonos registrados aún
+                No hay bonos registrados
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Create Bonus -->
+<!-- Modal -->
 <dialog id="bonus_modal" class="modal">
     <div class="modal-box">
-        <h3 class="text-2xl font-bold mb-6 text-success">Registrar Bono</h3>
-        <form (ngSubmit)="save()" class="space-y-5">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div class="form-control">
-                    <label class="label"><span class="label-text font-medium">Empleado *</span></label>
-                    <select [(ngModel)]="form().employeeId" name="employeeId" class="select select-bordered" required>
-                        <option value="0" disabled selected>Seleccionar empleado</option>
-                        <option *ngFor="let e of employees()" [value]="e.id">{{ e.name }}</option>
-                    </select>
-                </div>
+        <h3 class="text-2xl font-bold mb-6 text-success">
+            Registrar Bono
+        </h3>
 
-                <div class="form-control">
-                    <label class="label"><span class="label-text font-medium">Proyecto *</span></label>
-                    <select [(ngModel)]="form().projectId" name="projectId" class="select select-bordered" required>
-                        <option value="0" disabled selected>Seleccionar proyecto</option>
-                        <option *ngFor="let p of projects()" [value]="p.id">{{ p.name }}</option>
-                    </select>
-                </div>
+        <form [formGroup]="bonusForm" (ngSubmit)="save()" class="space-y-5">
 
-                <div class="form-control">
-                    <label class="label"><span class="label-text font-medium">Monto *</span></label>
-                    <input type="number" [(ngModel)]="form().amount" name="amount" class="input input-bordered" min="1"
-                        required />
-                </div>
-
-                <div class="form-control">
-                    <label class="label"><span class="label-text font-medium">Fecha *</span></label>
-                    <input type="date" [(ngModel)]="form().date" name="date" class="input input-bordered" required />
-                </div>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">Monto *</span>
+                </label>
+                <input type="number" formControlName="amount" class="input input-bordered" min="1" />
             </div>
 
             <div class="form-control">
-                <label class="label"><span class="label-text">Descripción (opcional)</span></label>
-                <textarea [(ngModel)]="form().description" name="description"
-                    class="textarea textarea-bordered"></textarea>
+                <label class="label">
+                    <span class="label-text font-medium">Fecha *</span>
+                </label>
+                <input type="date" formControlName="createdAt" class="input input-bordered" />
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Motivo</span>
+                </label>
+                <textarea formControlName="reason" class="textarea textarea-bordered">
+        </textarea>
             </div>
 
             <div class="modal-action">
-                <button type="button" class="btn" (click)="closeModal()">Cancelar</button>
-                <button type="submit" class="btn btn-success">Guardar Bono</button>
+                <button type="button" class="btn" (click)="closeModal('bonus_modal')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-success">
+                    Guardar Bono
+                </button>
             </div>
         </form>
     </div>
-    <form method="dialog" class="modal-backdrop"><button>cerrar</button></form>
+
+    <form method="dialog" class="modal-backdrop">
+        <button>Cerrar</button>
+    </form>
 </dialog>

@@ -1,7 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DiscountService } from '../../services/discount.service';
-import { EmployeeService } from '../../services/employee.service';
 import { ProjectManagementService } from '../../services/project-management.service';
 
 @Component({
@@ -26,11 +25,9 @@ export class DiscountManagementComponent {
 
   constructor(
     private deductionService: DiscountService,
-    private employeeService: EmployeeService,
     private projectService: ProjectManagementService
   ) {
     this.deductions = this.deductionService.allDeductions;
-    this.employees = this.employeeService.allEmployees;
   }
 
   save() {
