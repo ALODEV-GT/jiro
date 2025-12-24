@@ -9,19 +9,13 @@
     @if (user()?.role == "ADMIN") {
     <div>
         <div class="tabs tabs-boxed bg-base-200">
-            <a routerLink="/home/projects" routerLinkActive="tab-active" [routerLinkActiveOptions]="{ exact: true }"
+            <a routerLink="/app/projects" routerLinkActive="tab-active" [routerLinkActiveOptions]="{ exact: true }"
                 class="tab tab-lg"> Proyectos
             </a>
-            <a routerLink="/home/employee" routerLinkActive="tab-active" class="tab tab-lg">
-                Contratos
+            <a routerLink="/app/employee" routerLinkActive="tab-active" class="tab tab-lg">
+                Empleados
             </a>
-            <a routerLink="/home/bonus" routerLinkActive="tab-active" class="tab tab-lg">
-                Bonos
-            </a>
-            <a routerLink="/home/discount" routerLinkActive="tab-active" class="tab tab-lg">
-                Descuentos
-            </a>
-            <a routerLink="/home/rol" routerLinkActive="tab-active" class="tab tab-lg">
+            <a routerLink="/app/rol" routerLinkActive="tab-active" class="tab tab-lg">
                 Roles
             </a>
         </div>

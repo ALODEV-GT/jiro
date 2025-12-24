@@ -67,9 +67,9 @@ export class ConfirmationComponent {
       next: (response: LoginResponse) => {
         this.authStore.loginSuccess(response)
         if (response.role == "ADMIN") {
-          this.router.navigate(['/home/projects']);
+          this.router.navigate(['/app/projects']);
         } else {
-          this.router.navigate(['/home/welcome']);
+          this.router.navigate(['/app/welcome']);
         }
       },
       error: (err: ErrorResponse) => {

@@ -16,7 +16,7 @@ import { Page } from '../../../../shared/models/page';
 @Component({
   selector: 'app-project',
   standalone: true,
-  imports: [BoardComponent, SprintsComponent, TopbarComponent, LogActivityComponent, CommonModule],
+  imports: [BoardComponent, SprintsComponent, LogActivityComponent, CommonModule],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss'
 })

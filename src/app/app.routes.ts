@@ -8,11 +8,9 @@ import { HomeComponent } from './modules/home/pages/home/home.component';
 import { ProjectComponent } from './modules/project/pages/project/project.component';
 import { HomeLayoutComponent } from './modules/home/components/home-layout/home-layout.component';
 import { ProjectsManagementComponent } from './modules/home/pages/projects-management/projects-management.component';
-import { EmployeeManagementComponent } from './modules/home/pages/employee-management/employee-management.component';
-import { DiscountManagementComponent } from './modules/home/pages/discount-management/discount-management.component';
-import { BonusManagementComponent } from './modules/home/pages/bonus-management/bonus-management.component';
 import { RolManagementComponent } from './modules/home/pages/rol-management/rol-management.component';
 import { authGuard } from './shared/guards/auth.guard';
+import { EmployeeManagementComponent } from './modules/home/pages/employee-management/employee-management.component';
 
 export const routes: Routes = [
     {
@@ -36,7 +34,7 @@ export const routes: Routes = [
         component: RecoverComponent,
     },
     {
-        path: 'home',
+        path: 'app',
         component: HomeLayoutComponent,
         canActivate: [authGuard],
         children: [
@@ -53,28 +51,20 @@ export const routes: Routes = [
                 component: EmployeeManagementComponent
             },
             {
-                path: 'bonus',
-                component: BonusManagementComponent
-            },
-            {
-                path: 'discount',
-                component: DiscountManagementComponent
-            },
-            {
                 path: 'rol',
                 component: RolManagementComponent
             },
             {
+                path: 'project/:id',
+                component: ProjectComponent,
+                canActivate: [authGuard]
+            },
+            {
                 path: '',
-                redirectTo: 'projects',
+                redirectTo: 'welcome',
                 pathMatch: 'full'
-            }
+            },
         ]
-    },
-    {
-        path: 'project/:id',
-        component: ProjectComponent,
-        canActivate: [authGuard]
     },
     {
         path: '',
