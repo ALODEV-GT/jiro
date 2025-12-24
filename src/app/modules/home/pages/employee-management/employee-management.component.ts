@@ -17,15 +17,15 @@ import { UserService } from '../../services/user.service';
 })
 export class EmployeeManagementComponent implements OnInit {
 
-  private readonly fb = inject(FormBuilder)
-  private readonly contractService = inject(ContractService)
-  private readonly rolService = inject(RolService)
-  private readonly toast = inject(ToastService)
-  private readonly userService = inject(UserService)
+  private readonly fb = inject(FormBuilder);
+  private readonly contractService = inject(ContractService);
+  private readonly rolService = inject(RolService);
+  private readonly toast = inject(ToastService);
+  private readonly userService = inject(UserService);
 
   contracts = signal<Contract[]>([]);
-  roles = signal<Rol[]>([])
-  users = signal<User[]>([])
+  roles = signal<Rol[]>([]);
+  users = signal<User[]>([]);
   selectedEmployeeId = signal<number>(1);
 
   terminatingId = signal<number | null>(null);
@@ -50,23 +50,23 @@ export class EmployeeManagementComponent implements OnInit {
   loadRoles() {
     this.rolService.getRoles('name', 'DESC', 0, 100).subscribe({
       next: (page: Page<Rol>) => {
-        this.roles.set(page.items)
+        this.roles.set(page.items);
       },
       error: (error: ErrorResponse) => {
-        this.toast.error(error.message)
+        this.toast.error(error.message);
       }
-    })
+    });
   }
 
   loadUsers() {
     this.userService.getUsers(0, 1000).subscribe({
       next: (page: Page<User>) => {
-        this.users.set(page.items)
+        this.users.set(page.items);
       },
       error: (error: ErrorResponse) => {
-        this.toast.error(error.message)
+        this.toast.error(error.message);
       }
-    })
+    });
   }
 
   loadCurrentContract() {
@@ -74,7 +74,10 @@ export class EmployeeManagementComponent implements OnInit {
       .getCurrentContract(this.selectedEmployeeId())
       .subscribe({
         next: contract => this.contracts.set([contract]),
-        error: () => this.contracts.set([])
+        error: (error: ErrorResponse) => {
+          this.contracts.set([]);
+          this.toast.error(error.message);
+        }
       });
   }
 
@@ -90,7 +93,6 @@ export class EmployeeManagementComponent implements OnInit {
 
     this.showModal('contract_modal');
   }
-
 
   save() {
     if (this.contractForm.invalid) return;
@@ -110,9 +112,14 @@ export class EmployeeManagementComponent implements OnInit {
 
     this.contractService
       .createContract(employeeId, body)
-      .subscribe(contract => {
-        this.contracts.set([contract]);
-        this.closeModal('contract_modal');
+      .subscribe({
+        next: contract => {
+          this.contracts.set([contract]);
+          this.closeModal('contract_modal');
+        },
+        error: (error: ErrorResponse) => {
+          this.toast.error(error.message);
+        }
       });
   }
 
@@ -138,9 +145,14 @@ export class EmployeeManagementComponent implements OnInit {
         endDate: this.terminateForm.getRawValue().endDate,
         status: 'INACTIVE'
       }
-    ).subscribe(updated => {
-      this.contracts.set([updated]);
-      this.closeModal('terminate_modal');
+    ).subscribe({
+      next: updated => {
+        this.contracts.set([updated]);
+        this.closeModal('terminate_modal');
+      },
+      error: (error: ErrorResponse) => {
+        this.toast.error(error.message);
+      }
     });
   }
 
@@ -149,7 +161,14 @@ export class EmployeeManagementComponent implements OnInit {
 
     this.contractService
       .deleteContract(this.selectedEmployeeId(), contractId)
-      .subscribe(() => this.contracts.set([]));
+      .subscribe({
+        next: () => {
+          this.contracts.set([]);
+        },
+        error: (error: ErrorResponse) => {
+          this.toast.error(error.message);
+        }
+      });
   }
 
   formatCurrency(value: number): string {
