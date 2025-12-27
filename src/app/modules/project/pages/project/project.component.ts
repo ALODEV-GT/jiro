@@ -13,11 +13,12 @@ import { MembersService } from '../../../home/services/members.service';
 import { Page } from '../../../../shared/models/page';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IncomingManagementComponent } from '../../../home/pages/incoming-management/incoming-management.component';
+import { ExpenseManagementComponent } from "../../../home/pages/expense-management/expense-management.component";
 
 @Component({
   selector: 'app-project',
   standalone: true,
-  imports: [BoardComponent, SprintsComponent, LogActivityComponent, CommonModule, ReactiveFormsModule, IncomingManagementComponent],
+  imports: [BoardComponent, SprintsComponent, LogActivityComponent, CommonModule, ReactiveFormsModule, IncomingManagementComponent, ExpenseManagementComponent],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss'
 })
@@ -31,7 +32,7 @@ export class ProjectComponent {
   members: Member[] = []
   project: Project | null = null
 
-  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' | 'activity' = 'income';
+  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' | 'activity' = 'expense';
 
 
   isEditingProject = false;

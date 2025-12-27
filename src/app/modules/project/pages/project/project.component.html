@@ -153,8 +153,9 @@
 
             @if (activeTab === 'expense') {
             <div class="text-center py-20">
-                <h2 class="text-3xl font-bold mb-4">Egresos</h2>
-                <p class="text-base-content/60">Presupuesto, horas facturables, costos, etc.</p>
+                @if (project) {
+                <app-expense-management [projectId]="project.id"></app-expense-management>
+                }
             </div>
             }
 

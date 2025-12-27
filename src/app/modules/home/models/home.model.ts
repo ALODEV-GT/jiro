@@ -168,3 +168,30 @@ export interface CreateOrUpdateIncome {
     description: string;
     billingDate: string;
 }
+
+
+//Expense
+export interface Expense {
+    id: number;
+    projectId: string;
+    employeeId: string | null;
+    description: string;
+    amount: number;
+    type: ExpenseType;
+    expenseDate: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+
+export interface CreateOrUpdateExpense {
+    employeeId?: string | null;
+    description: string;
+    amount: number;
+    type: ExpenseType;
+    expenseDate: string;
+}
+
+export type ExpenseType =
+    | 'SALARY'
+    | 'OPERATIONAL'
