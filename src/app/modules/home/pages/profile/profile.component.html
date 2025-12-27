@@ -83,7 +83,11 @@
 
         <div>
             @switch (activeTab) {
-            @case ('income') { Ingresos }
+            @case ('income') {
+            @if (user) {
+            <app-payroll-management [employeeId]="user.id"></app-payroll-management>
+            }
+            }
             @case ('discount') { Descuentos }
             @case ('bonus') { Bonos }
             @case ('suspension') { Suspensiones }

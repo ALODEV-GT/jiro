@@ -106,3 +106,28 @@ export interface CreateOrUpdateBonus {
     reason: string;
     createdAt: string;
 }
+
+
+//Payroll
+export interface Payroll {
+    id: number;
+    employeeId: string;
+    baseSalary: number;
+    totalBonuses: number;
+    totalDiscounts: number;
+    totalPaid: number;
+    paymentDate: string;
+    fromDate: string;
+    toDate: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateOrUpdatePayroll {
+    baseSalary: number;
+    totalBonuses: number;
+    totalDiscounts: number;
+    paymentDate: string;
+    fromDate: string;
+    toDate: string;
+}

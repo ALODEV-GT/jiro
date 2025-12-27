@@ -8,11 +8,12 @@ import { ToastService } from '../../../../shared/services/toast.service';
 import { ContractManagementComponent } from '../contract-management/contract-management.component';
 import { AuthStore } from '../../../auth/store/auth.store';
 import { LoginResponse } from '../../../auth/models/auth.model';
+import { PayrollManagementComponent } from '../payroll-management/payroll-management.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, ContractManagementComponent],
+  imports: [FormsModule, ContractManagementComponent, PayrollManagementComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -32,9 +33,9 @@ export class ProfileComponent {
     password: ''
   };
 
-  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' = 'contract';
+  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' = 'income';
 
-  canEdit(): boolean{
+  canEdit(): boolean {
     const authUser: LoginResponse = this.authStore.user()!;
     return !!authUser && !!this.user && authUser.id == this.user.id;
   }
