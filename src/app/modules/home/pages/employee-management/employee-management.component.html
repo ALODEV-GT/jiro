@@ -1,49 +1,78 @@
-<app-topbar class="relative"></app-topbar>
-<div class="min-h-screen bg-base-200">
-    <div class="mx-auto px-10 pt-8 pb-4">
-        <h1 class="text-lg"><span class="font-bold">Proyecto:</span> Nombre del proyecto</h1>
-        <p class="text-sm text-cyan-800">Esta es la descripcion del proyecto</p>
-    </div>
-
-    <!-- Project tabs -->
-    <div class="container mx-auto px-4 pb-8">
-        <div class="tabs tabs-bordered tabs-lg mb-8">
-            <a class="tab" [class.tab-active]="activeTab === 'income'" (click)="activeTab = 'income'">
-                Ingresos
-            </a>
-            <a class="tab" [class.tab-active]="activeTab === 'discount'" (click)="activeTab = 'discount'">
-                Descuentos
-            </a>
-            <a class="tab" [class.tab-active]="activeTab === 'bonus'" (click)="activeTab = 'bonus'">
-                Bonos
-            </a>
-            <a class="tab" [class.tab-active]="activeTab === 'suspension'" (click)="activeTab = 'suspension'">
-                Suspensiones
-            </a>
-            <a class="tab" [class.tab-active]="activeTab === 'contract'" (click)="activeTab = 'contract'">
-                Contratos
-            </a>cambio de colores pantalla
+<div class="p-6 min-h-screen bg-base-200">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-bold text-primary">Empleados</h1>
         </div>
 
-        <!-- Tabs content -->
-        <div class="bg-base-100 rounded-xl shadow-lg min-h-[60vh]">
+        <div class="bg-base-100 rounded-xl shadow-xl">
+            <table class="table table-zebra w-full">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>DPI</th>
+                        <th>Rol</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+                    (scrolled)="getUserPage()">
+                    @for(user of users; track user.id){
+                    <tr>
+                        <td class="font-semibold">{{ user.firstName }} {{ user.lastName }}</td>
+                        <td class="max-w-xs truncate">{{ user.dpi }}</td>
+                        <td class="font-medium">
+                            <span class="badge p-3" [ngStyle]="{ 'background-color': user.roleColor}">
+                                <span class="text-sm font-bold uppercase"
+                                    [style.color]="colorService.getTextColor(user.roleColor)">
+                                    {{ getRoleName(user.roleId) }}
+                                </span>
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <div class="flex justify-center">
+                                <div class="dropdown dropdown-end">
+                                    <button class="btn btn-sm btn-primary font-bold" (click)="view(user.id)">
+                                        Ver
+                                    </button>
 
-            @switch (activeTab) {
-            @case ('income') {
-            Ingresos
-            }
-            @case ('discount') {
-            Discounts
-            }
-            @case ('bonus') {
-            Bonus
-            }
-            @case ('suspension') {
-            Suspension
-            }
-            @case ('contract') {
-            Contratos
-            }
+                                    <button tabindex="1" class="btn btn-sm btn-ghost px-2">
+                                        ⋮
+                                    </button>
+
+                                    <ul tabindex="1"
+                                        class="dropdown-content menu menu-sm bg-base-200 rounded-box shadow w-40 z-40 font-bold">
+                                        <li>
+                                            <a class="text-error" (click)="delete(user.id)">
+                                                Bloquear
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- Empty state -->
+            @if (users.length === 0) {
+            <div class="hero min-h-[60vh] bg-base-200">
+                <div class="hero-content text-center">
+                    <div class="max-w-md">
+                        <svg class="mx-auto h-24 w-24 text-base-content/30 mb-6" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2">
+                            </path>
+                        </svg>
+                        <h1 class="text-4xl font-bold mb-4">Aún no hay empleados</h1>
+                        <p class="text-lg text-base-content/70 mb-8">
+                            Espera a que alguien se registre
+                        </p>
+                    </div>
+                </div>
+            </div>
             }
         </div>
     </div>

@@ -1,0 +1,49 @@
+<div class="min-h-screen bg-base-200">
+    <div class="mx-auto px-10 pt-8 pb-4">
+        <h1 class="text-lg"><span class="font-bold">Proyecto:</span> Nombre del proyecto</h1>
+        <p class="text-sm text-cyan-800">Esta es la descripcion del proyecto</p>
+    </div>
+
+    <!-- Project tabs -->
+    <div class="container mx-auto px-4 pb-8">
+        <div class="tabs tabs-bordered tabs-lg mb-8">
+            <a class="tab" [class.tab-active]="activeTab === 'income'" (click)="activeTab = 'income'">
+                Ingresos
+            </a>
+            <a class="tab" [class.tab-active]="activeTab === 'discount'" (click)="activeTab = 'discount'">
+                Descuentos
+            </a>
+            <a class="tab" [class.tab-active]="activeTab === 'bonus'" (click)="activeTab = 'bonus'">
+                Bonos
+            </a>
+            <a class="tab" [class.tab-active]="activeTab === 'suspension'" (click)="activeTab = 'suspension'">
+                Suspensiones
+            </a>
+            <a class="tab" [class.tab-active]="activeTab === 'contract'" (click)="activeTab = 'contract'">
+                Contratos
+            </a>cambio de colores pantalla
+        </div>
+
+        <!-- Tabs content -->
+        <div class="bg-base-100 rounded-xl shadow-lg min-h-[60vh]">
+
+            @switch (activeTab) {
+            @case ('income') {
+            Ingresos
+            }
+            @case ('discount') {
+            Discounts
+            }
+            @case ('bonus') {
+            Bonus
+            }
+            @case ('suspension') {
+            Suspension
+            }
+            @case ('contract') {
+            Contratos
+            }
+            }
+        </div>
+    </div>
+</div>

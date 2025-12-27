@@ -28,7 +28,8 @@
             <div tabindex="0" role="button" class="avatar placeholder">
                 <div class="rounded-full w-10 ring ring-primary ring-offset-base-100 ring-offset-1 flex items-center justify-center"
                     [style.backgroundColor]="user()?.color || '#6b7280'">
-                    <span class="text-sm font-bold uppercase" [style.color]="textColor()">
+                    <span class="text-sm font-bold uppercase"
+                        [style.color]="colorService.getTextColor(user()?.color || '#6b7280')">
                         {{ initials() }}
                     </span>
                 </div>

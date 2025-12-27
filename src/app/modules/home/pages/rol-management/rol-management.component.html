@@ -21,8 +21,12 @@
                     @for(rol of roles; track rol.id){
                     <tr class="hover">
                         <td>
-                            <span class="badge p-3 font-bold"
-                                [ngStyle]="{ 'background-color': rol.color }">{{rol.name}}</span>
+                            <span class="badge p-3" [ngStyle]="{ 'background-color': rol.color}">
+                                <span class="text-sm font-bold uppercase"
+                                    [style.color]="colorService.getTextColor(rol.color)">
+                                    {{ rol.name }}
+                                </span>
+                            </span>
                         </td>
                         <td>{{rol.description}}</td>
                         <td class="text-center">

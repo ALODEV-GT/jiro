@@ -7,6 +7,7 @@ import { ToastService } from '../../../../shared/services/toast.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { ColorService } from '../../services/color.service';
 
 @Component({
   selector: 'app-rol-management',
@@ -19,6 +20,7 @@ export class RolManagementComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly rolService = inject(RolService)
   private readonly toast = inject(ToastService)
+  public colorService = inject(ColorService)
 
   isEdit = false;
   loading = false;
