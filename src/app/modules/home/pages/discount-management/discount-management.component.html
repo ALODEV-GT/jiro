@@ -1,145 +1,102 @@
-<div class="p-6 min-h-screen bg-base-200">
-    <div class="max-w-7xl mx-auto">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-4xl font-bold text-primary">Descuentos</h1>
-            <button class="btn btn-error" (click)="openCreateModal()">
-                + Registrar Descuento
-            </button>
-        </div>
+<div>
 
-        <div class="bg-base-100 rounded-xl shadow-xl overflow-hidden">
-            <table class="table table-zebra">
-                <thead>
-                    <tr>
-                        <th>Empleado</th>
-                        <th>Proyecto</th>
-                        <th>Monto</th>
-                        <th>Fecha</th>
-                        <th>Motivo</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
+    <!-- Header -->
+    <div class="flex justify-end mb-6">
+        <button class="btn btn-primary" (click)="openCreateModal()">
+            + Nuevo Descuento
+        </button>
+    </div>
 
-                <tbody>
-                    @for (d of deductions(); track d.id) {
-                    <tr>
-                        <td class="font-medium">
-                            Pendiente
-                        </td>
-                        <td>
-                            Pendiente
-                        </td>
-                        <td class="font-bold text-error">
-                            - {{ formatCurrency(d.amount) }}
-                        </td>
-                        <td>
-                            {{ formatDate(d.createdAt) }}
-                        </td>
-                        <td>
-                            {{ d.reason || '—' }}
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-error btn-outline" (click)="delete(d.id)">
+    <!-- Tabla -->
+    <div class="bg-base-100 rounded-xl shadow overflow-hidden">
+        <table class="table table-zebra w-full">
+            <thead>
+                <tr>
+                    <th>Motivo</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody infiniteScroll
+                   [infiniteScrollDistance]="2"
+                   [infiniteScrollThrottle]="50"
+                   (scrolled)="loadDiscountsPage()">
+                @for (discount of discounts; track discount.id) {
+                <tr>
+                    <td class="font-semibold">{{ discount.reason }}</td>
+                    <td class="font-bold text-error">
+                        {{ formatCurrency(discount.amount) }}
+                    </td>
+                    <td>{{ discount.createdAt | date:'yyyy-MM-dd' }}</td>
+                    <td class="text-center">
+                        <div class="flex gap-2 justify-center">
+                            <button class="btn btn-sm btn-outline btn-warning"
+                                    (click)="openEditModal(discount)">
+                                Editar
+                            </button>
+
+                            <button class="btn btn-sm btn-outline btn-error"
+                                    (click)="delete(discount.id)">
                                 Eliminar
                             </button>
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
 
-            @if (deductions().length === 0) {
-            <div class="text-center py-16 text-xl text-base-content/60">
-                No hay descuentos registrados aún
-            </div>
-            }
+        @if (discounts.length === 0) {
+        <div class="text-center py-12 text-base-content/60">
+            No hay descuentos registrados
         </div>
+        }
     </div>
 </div>
 
-<!-- Modal Crear Descuento -->
+<!-- Modal Crear / Editar -->
 <dialog id="discount_modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
-        <h3 class="text-2xl font-bold mb-6 text-error">
-            Registrar Descuento
+        <h3 class="text-xl font-bold mb-6">
+            {{ editingId ? 'Editar Descuento' : 'Nuevo Descuento' }}
         </h3>
 
-        <form [formGroup]="form" (ngSubmit)="save()" class="space-y-5">
+        <form [formGroup]="discountForm"
+              (ngSubmit)="save()"
+              class="space-y-4">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                <!-- Empleado -->
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-medium">Empleado *</span>
-                    </label>
-                    <select class="select select-bordered" formControlName="employeeId">
-                        <option [ngValue]="null" disabled>
-                            Seleccionar empleado
-                        </option>
-                        @for (e of employees(); track e.id) {
-                        <option [value]="e.id">
-                            {{ e.firstName }} {{ e.lastName }}
-                        </option>
-                        }
-                    </select>
-                </div>
-
-                <!-- Proyecto -->
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-medium">Proyecto *</span>
-                    </label>
-                    <select class="select select-bordered" formControlName="projectId">
-                        <option [ngValue]="null" disabled>
-                            Seleccionar proyecto
-                        </option>
-                        @for (p of projects(); track p.id) {
-                        <option [value]="p.id">
-                            {{ p.name }}
-                        </option>
-                        }
-                    </select>
-                </div>
-
-                <!-- Monto -->
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-medium">Monto *</span>
-                    </label>
-                    <input type="number" class="input input-bordered" formControlName="amount" min="1" />
-                </div>
-
-                <!-- Fecha -->
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-medium">Fecha *</span>
-                    </label>
-                    <input type="date" class="input input-bordered" formControlName="date" />
-                </div>
+            <div class="form-control">
+                <label class="label">Motivo *</label>
+                <input type="text"
+                       formControlName="reason"
+                       class="input input-bordered" />
             </div>
 
-            <!-- Motivo -->
             <div class="form-control">
-                <label class="label">
-                    <span class="label-text">Motivo (opcional)</span>
-                </label>
-                <textarea class="textarea textarea-bordered" formControlName="reason">
-        </textarea>
+                <label class="label">Monto *</label>
+                <input type="number"
+                       formControlName="amount"
+                       class="input input-bordered" />
             </div>
 
             <div class="modal-action">
-                <button type="button" class="btn" (click)="closeModal()">
+                <button type="button"
+                        class="btn"
+                        (click)="closeModal('discount_modal')">
                     Cancelar
                 </button>
-                <button type="submit" class="btn btn-error" [disabled]="form.invalid">
-                    Guardar Descuento
+                <button type="submit"
+                        class="btn btn-primary"
+                        [disabled]="discountForm.invalid">
+                    Guardar
                 </button>
             </div>
         </form>
     </div>
 
     <form method="dialog" class="modal-backdrop">
-        <button>cerrar</button>
+        <button></button>
     </form>
 </dialog>

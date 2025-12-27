@@ -1,167 +1,126 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DiscountService } from '../../services/discount.service';
-import { ProjectManagementService } from '../../services/project-management.service';
-import { Discount } from '../../models/home.model';
+import { CreateOrUpdateDiscount, Discount } from '../../models/home.model';
 import { Page } from '../../../../shared/models/page';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { ErrorResponse } from '../../../../shared/models/errors';
-import { UserService } from '../../services/user.service';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 
 @Component({
   selector: 'app-discount-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, InfiniteScrollDirective],
   templateUrl: './discount-management.component.html',
   styleUrl: './discount-management.component.scss'
 })
-export class DiscountManagementComponent implements OnInit {
+export class DiscountManagementComponent implements OnChanges {
+  @Input({ required: true }) employeeId!: string;
 
   private readonly fb = inject(FormBuilder);
   private readonly discountService = inject(DiscountService);
-  private readonly userService = inject(UserService);
-  private readonly projectService = inject(ProjectManagementService);
   private readonly toast = inject(ToastService);
 
-  deductions = signal<Discount[]>([]);
-  employees = signal<any[]>([]);
-  projects = signal<any[]>([]);
+  page = 0;
+  isLastPage = false;
 
-  /** Empleado seleccionado para listar descuentos */
-  selectedEmployeeId = signal<number | null>(null);
+  discounts: Discount[] = [];
+  editingId: number | null = null;
 
-  form = this.fb.nonNullable.group({
-    employeeId: [null as number | null, Validators.required],
-    projectId: [null as number | null, Validators.required],
-    amount: [0, [Validators.required, Validators.min(1)]],
-    date: ['', Validators.required],
-    reason: ['']
+  discountForm = this.fb.nonNullable.group({
+    reason: ['', Validators.required],
+    amount: [0, [Validators.required, Validators.min(1)]]
   });
 
-  ngOnInit() {
-    this.loadEmployees();
-    this.loadProjects();
+  ngOnChanges() {
+    if (!this.employeeId) return;
+
+    this.page = 0;
+    this.discounts = [];
+    this.isLastPage = false;
+
+    this.loadDiscountsPage();
   }
 
-  /* ===================== LOADERS ===================== */
+  loadDiscountsPage() {
+    if (this.isLastPage) return;
 
-  loadEmployees() {
-    this.userService.getUsers(0, 1000).subscribe({
-      next: (page: Page<any>) => {
-        this.employees.set(page.items);
-      },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message);
-      }
-    });
-  }
-
-  loadProjects() {
-    this.projectService.getAll(0, 1000).subscribe({
-      next: page => {
-        this.projects.set(page.items);
-      },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message);
-      }
-    });
-  }
-
-  loadDiscounts(employeeId: number) {
-    this.selectedEmployeeId.set(employeeId);
-
-    this.discountService.getDiscounts(employeeId).subscribe({
+    this.discountService.getDiscounts(this.employeeId, this.page).subscribe({
       next: (page: Page<Discount>) => {
-        this.deductions.set(page.items);
+        this.discounts = [...this.discounts, ...page.items];
+        this.page++;
+        this.isLastPage = page.lastPage;
       },
-      error: (error: ErrorResponse) => {
-        this.deductions.set([]);
-        this.toast.error(error.message);
-      }
+      error: (e: ErrorResponse) => this.toast.error(e.message)
     });
   }
-
-  /* ===================== ACTIONS ===================== */
 
   openCreateModal() {
-    this.form.reset({
-      employeeId: null,
-      projectId: null,
-      amount: 0,
-      date: new Date().toISOString().split('T')[0],
-      reason: ''
+    this.editingId = null;
+    this.discountForm.reset({
+      reason: '',
+      amount: 0
     });
+    this.showModal('discount_modal');
+  }
 
+  openEditModal(discount: Discount) {
+    this.editingId = discount.id;
+    this.discountForm.reset({
+      reason: discount.reason,
+      amount: discount.amount
+    });
     this.showModal('discount_modal');
   }
 
   save() {
-    if (this.form.invalid) return;
+    if (this.discountForm.invalid) return;
 
-    const { employeeId, amount, date, reason } = this.form.getRawValue();
+    const body: CreateOrUpdateDiscount = this.discountForm.getRawValue();
 
-    if (!employeeId) return;
+    const request$ = this.editingId
+      ? this.discountService.updateDiscount(this.employeeId, this.editingId, body)
+      : this.discountService.createDiscount(this.employeeId, body);
 
-    this.discountService.createDiscount(employeeId, {
-      amount,
-      reason: reason ?? '',
-      createdAt: date
-    }).subscribe({
+    request$.subscribe({
       next: discount => {
-        this.deductions.update(list => [discount, ...list]);
-        this.closeModal();
+        if (this.editingId) {
+          this.discounts = this.discounts.map(d =>
+            d.id === discount.id ? discount : d
+          );
+        } else {
+          this.discounts = [discount, ...this.discounts];
+        }
+        this.closeModal('discount_modal');
       },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message);
-      }
+      error: (e: ErrorResponse) => this.toast.error(e.message)
     });
   }
 
   delete(discountId: number) {
-    const employeeId = this.selectedEmployeeId();
-    if (!employeeId) return;
+    if (!confirm('¿Eliminar descuento?')) return;
 
-    if (!confirm('¿Eliminar este descuento?')) return;
-
-    this.discountService.deleteDiscount(employeeId, discountId).subscribe({
+    this.discountService.deleteDiscount(this.employeeId, discountId).subscribe({
       next: () => {
-        this.deductions.update(list =>
-          list.filter(d => d.id !== discountId)
-        );
+        this.discounts = this.discounts.filter(d => d.id !== discountId);
       },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message);
-      }
+      error: (e: ErrorResponse) => this.toast.error(e.message)
     });
   }
 
-  /* ===================== HELPERS ===================== */
-
-  getEmployeeName(id: number) {
-    return this.employees().find(e => e.id === id)?.name ?? '—';
-  }
-
-  getProjectName(id: number) {
-    return this.projects().find(p => p.id === id)?.name ?? '—';
-  }
-
-  formatCurrency(value: number) {
-    return new Intl.NumberFormat('es-PE', {
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('es-GT', {
       style: 'currency',
-      currency: 'PEN'
+      currency: 'QTZ'
     }).format(value);
-  }
-
-  formatDate(date: string) {
-    return new Date(date).toLocaleDateString('es-PE');
-  }
-
-  closeModal() {
-    (document.getElementById('discount_modal') as HTMLDialogElement)?.close();
   }
 
   private showModal(id: string) {
     (document.getElementById(id) as HTMLDialogElement)?.showModal();
+  }
+
+  closeModal(id: string) {
+    (document.getElementById(id) as HTMLDialogElement)?.close();
   }
 }

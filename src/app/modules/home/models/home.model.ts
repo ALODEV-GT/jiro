@@ -29,7 +29,6 @@ export interface Discount {
 export interface CreateOrUpdateDiscount {
     amount: number;
     reason: string;
-    createdAt: string;
 }
 
 //Roles

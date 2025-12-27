@@ -9,11 +9,12 @@ import { ContractManagementComponent } from '../contract-management/contract-man
 import { AuthStore } from '../../../auth/store/auth.store';
 import { LoginResponse } from '../../../auth/models/auth.model';
 import { PayrollManagementComponent } from '../payroll-management/payroll-management.component';
+import { DiscountManagementComponent } from '../discount-management/discount-management.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, ContractManagementComponent, PayrollManagementComponent],
+  imports: [FormsModule, ContractManagementComponent, PayrollManagementComponent, DiscountManagementComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -33,7 +34,7 @@ export class ProfileComponent {
     password: ''
   };
 
-  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' = 'income';
+  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' = 'discount';
 
   canEdit(): boolean {
     const authUser: LoginResponse = this.authStore.user()!;

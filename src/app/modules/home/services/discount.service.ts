@@ -14,7 +14,7 @@ export class DiscountService {
   private readonly apiConfig = inject(ApiConfig);
 
   createDiscount(
-    employeeId: number,
+    employeeId: string,
     body: CreateOrUpdateDiscount
   ): Observable<Discount> {
     return this.http.post<Discount>(
@@ -24,7 +24,7 @@ export class DiscountService {
   }
 
   updateDiscount(
-    employeeId: number,
+    employeeId: string,
     discountId: number,
     body: CreateOrUpdateDiscount
   ): Observable<Discount> {
@@ -35,7 +35,7 @@ export class DiscountService {
   }
 
   deleteDiscount(
-    employeeId: number,
+    employeeId: string,
     discountId: number
   ): Observable<void> {
     return this.http.delete<void>(
@@ -44,7 +44,7 @@ export class DiscountService {
   }
 
   getDiscount(
-    employeeId: number,
+    employeeId: string,
     discountId: number
   ): Observable<Discount> {
     return this.http.get<Discount>(
@@ -53,7 +53,7 @@ export class DiscountService {
   }
 
   getDiscounts(
-    employeeId: number,
+    employeeId: string,
     page = 0,
     size = 20
   ): Observable<Page<Discount>> {
