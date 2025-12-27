@@ -44,6 +44,11 @@ export const routes: Routes = [
                 component: HomeComponent
             },
             {
+                path: 'projects/:id',
+                component: ProjectComponent,
+                canActivate: [authGuard]
+            },
+            {
                 path: 'projects',
                 component: ProjectsManagementComponent
             },
@@ -58,11 +63,6 @@ export const routes: Routes = [
             {
                 path: 'rol',
                 component: RolManagementComponent
-            },
-            {
-                path: 'project/:id',
-                component: ProjectComponent,
-                canActivate: [authGuard]
             },
             {
                 path: '',

@@ -151,7 +151,7 @@ export class ProjectsManagementComponent implements OnInit {
   }
 
   view(projectId: string) {
-    this.router.navigate(["/project", projectId])
+    this.router.navigate(["/app/projects", projectId])
   }
 
   resetPagination() {
