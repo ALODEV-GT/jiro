@@ -1,0 +1,92 @@
+<div>
+
+    <!-- Header -->
+    <div class="flex justify-end mb-6">
+        <button class="btn btn-primary" (click)="openCreateModal()">
+            + Agregar miembro
+        </button>
+    </div>
+
+    <!-- Tabla -->
+    <div class="bg-base-100 rounded-xl shadow overflow-hidden">
+        <table class="table table-zebra w-full">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+                (scrolled)="loadMembersPage()">
+                @for (member of members; track member.id) {
+                <tr>
+                    <td class="font-semibold">
+                        {{ member.firstName }} {{ member.lastName }}
+                    </td>
+                    <td>{{ member.email }}</td>
+                    <td>
+                        <span class="badge badge-lg" [style.background]="member.color"
+                            [style.color]="colorService.getTextColor(member.color)">
+                            {{ member.role }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline btn-error" (click)="removeMember(member.id)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (members.length === 0) {
+        <div class="text-center py-12 text-base-content/60">
+            No hay miembros asignados al proyecto
+        </div>
+        }
+    </div>
+</div>
+
+<!-- Modal Agregar Miembro -->
+<dialog id="member_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+        <h3 class="text-xl font-bold mb-6">Agregar miembro</h3>
+
+        <form [formGroup]="memberForm" (ngSubmit)="addMember()" class="space-y-5">
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Empleado *</span>
+                </label>
+
+                <select class="select select-bordered" formControlName="userId">
+                    <option value="" disabled selected>
+                        Seleccione un empleado
+                    </option>
+
+                    <option *ngFor="let user of availableUsers" [value]="user.id">
+                        {{ user.firstName }} {{ user.lastName }} — {{ user.email }}
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="modal-action">
+                <button type="button" class="btn" (click)="closeModal('member_modal')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary" [disabled]="memberForm.invalid">
+                    Agregar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+        <button></button>
+    </form>
+</dialog>

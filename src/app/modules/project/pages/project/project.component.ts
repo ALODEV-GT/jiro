@@ -1,8 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { BoardComponent } from '../../components/board/board.component';
 import { SprintsComponent } from '../../components/sprints/sprints.component';
-import { LogActivityComponent } from '../../components/log-activity/log-activity.component';
 import { ProjectManagementService } from '../../../home/services/project-management.service';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
@@ -14,11 +13,12 @@ import { Page } from '../../../../shared/models/page';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IncomingManagementComponent } from '../../../home/pages/incoming-management/incoming-management.component';
 import { ExpenseManagementComponent } from "../../../home/pages/expense-management/expense-management.component";
+import { MemberManagementComponent } from '../../../home/pages/member-management/member-management.component';
 
 @Component({
   selector: 'app-project',
   standalone: true,
-  imports: [BoardComponent, SprintsComponent, LogActivityComponent, CommonModule, ReactiveFormsModule, IncomingManagementComponent, ExpenseManagementComponent],
+  imports: [BoardComponent, SprintsComponent, CommonModule, ReactiveFormsModule, IncomingManagementComponent, ExpenseManagementComponent, MemberManagementComponent],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss'
 })
@@ -32,8 +32,7 @@ export class ProjectComponent {
   members: Member[] = []
   project: Project | null = null
 
-  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' | 'activity' = 'expense';
-
+  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' = 'members';
 
   isEditingProject = false;
 
@@ -107,7 +106,7 @@ export class ProjectComponent {
   }
 
   getMembers(id: string) {
-    this.memberService.getProjectMembers(id).subscribe({
+    this.memberService.getMembers(id).subscribe({
       next: (page: Page<Member>) => {
         this.members = page.items
       },

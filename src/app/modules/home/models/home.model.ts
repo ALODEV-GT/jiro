@@ -195,3 +195,18 @@ export interface CreateOrUpdateExpense {
 export type ExpenseType =
     | 'SALARY'
     | 'OPERATIONAL'
+
+
+//Member
+export interface AddMemberRequest {
+    userId: string;
+}
+
+export interface ProjectMember {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+    color: string;
+}

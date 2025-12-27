@@ -1,23 +1,50 @@
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { ApiConfig } from "../../../shared/services/api-config.service";
 import { Observable } from "rxjs";
 import { Page } from "../../../shared/models/page";
-import { Member } from "../../project/models/project.model";
+import { AddMemberRequest, ProjectMember } from "../models/home.model";
 
 @Injectable({
     providedIn: 'root'
 })
 export class MembersService {
-    private readonly http = inject(HttpClient)
-    private readonly apiConfig = inject(ApiConfig)
-    private readonly SIZE = 100
+    private readonly http = inject(HttpClient);
+    private readonly apiConfig = inject(ApiConfig);
+    private readonly SIZE = 20;
 
-    getProjectMembers(id: string): Observable<Page<Member>> {
-        const params = new HttpParams()
-            .set('page', 0)
-            .set('size', this.SIZE)
+    addMember(
+        projectId: string,
+        body: AddMemberRequest
+    ): Observable<void> {
+        return this.http.post<void>(
+            `${this.apiConfig.API_PROJECT}/${projectId}/members`,
+            body
+        );
+    }
 
-        return this.http.get<Page<Member>>(`${this.apiConfig.API_PROJECT}/${id}/members`, { params })
+    removeMember(
+        projectId: string,
+        userId: string
+    ): Observable<void> {
+        return this.http.delete<void>(
+            `${this.apiConfig.API_PROJECT}/${projectId}/members/${userId}`
+        );
+    }
+
+    getMembers(
+        projectId: string,
+        page = 0,
+        size = this.SIZE
+    ): Observable<Page<ProjectMember>> {
+        return this.http.get<Page<ProjectMember>>(
+            `${this.apiConfig.API_PROJECT}/${projectId}/members`,
+            {
+                params: {
+                    page,
+                    size
+                }
+            }
+        );
     }
 }
