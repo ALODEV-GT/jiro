@@ -11,6 +11,7 @@ import { ProjectsManagementComponent } from './modules/home/pages/projects-manag
 import { RolManagementComponent } from './modules/home/pages/rol-management/rol-management.component';
 import { authGuard } from './shared/guards/auth.guard';
 import { EmployeeManagementComponent } from './modules/home/pages/employee-management/employee-management.component';
+import { ProfileComponent } from './modules/home/pages/profile/profile.component';
 
 export const routes: Routes = [
     {
@@ -45,6 +46,10 @@ export const routes: Routes = [
             {
                 path: 'projects',
                 component: ProjectsManagementComponent
+            },
+            {
+                path: 'employee/:id',
+                component: ProfileComponent
             },
             {
                 path: 'employee',

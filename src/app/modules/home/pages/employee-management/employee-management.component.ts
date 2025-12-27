@@ -70,7 +70,7 @@ export class EmployeeManagementComponent {
   }
 
   view(userId: string) {
-    this.router.navigate(["/employee", userId])
+    this.router.navigate(['app/employee', userId]);
   }
 
   resetPagination() {
