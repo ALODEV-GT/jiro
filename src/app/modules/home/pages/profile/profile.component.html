@@ -1,48 +1,93 @@
 <div class="min-h-screen bg-base-200">
-    <div class="mx-auto px-10 pt-8 pb-4">
-        <h1 class="text-lg"><span class="font-bold">Proyecto:</span> Nombre del proyecto</h1>
-        <p class="text-sm text-cyan-800">Esta es la descripcion del proyecto</p>
-    </div>
 
-    <!-- Project tabs -->
-    <div class="container mx-auto px-4 pb-8">
-        <div class="tabs tabs-bordered tabs-lg mb-8">
-            <a class="tab" [class.tab-active]="activeTab === 'income'" (click)="activeTab = 'income'">
-                Ingresos
-            </a>
-            <a class="tab" [class.tab-active]="activeTab === 'discount'" (click)="activeTab = 'discount'">
-                Descuentos
-            </a>
-            <a class="tab" [class.tab-active]="activeTab === 'bonus'" (click)="activeTab = 'bonus'">
-                Bonos
-            </a>
-            <a class="tab" [class.tab-active]="activeTab === 'suspension'" (click)="activeTab = 'suspension'">
-                Suspensiones
-            </a>
-            <a class="tab" [class.tab-active]="activeTab === 'contract'" (click)="activeTab = 'contract'">
-                Contratos
-            </a>cambio de colores pantalla
+    <!-- User header -->
+    <div class="bg-base-100 shadow-md">
+        <div class="container mx-auto px-6 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+
+            <!-- User info -->
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white"
+                    [style.background]="user?.roleColor || '#999'">
+                    {{ user?.firstName?.charAt(0) }}{{ user?.lastName?.charAt(0) }}
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold">
+                        {{ user?.firstName }} {{ user?.lastName }}
+                    </h2>
+                    <p class="text-sm text-base-content/60">
+                        {{ user?.email }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-2">
+                @if (!editing) {
+                <button class="btn btn-outline btn-primary" (click)="enableEdit()">
+                    Editar perfil
+                </button>
+                }
+
+                @if (editing) {
+                <button class="btn btn-primary" (click)="saveProfile()">
+                    Guardar
+                </button>
+
+                <button class="btn" (click)="cancelEdit()">
+                    Cancelar
+                </button>
+                }
+            </div>
         </div>
 
-        <!-- Tabs content -->
-        <div class="bg-base-100 rounded-xl shadow-lg min-h-[60vh]">
+        <!-- Edit form -->
+        @if (editing) {
+        <div class="border-t border-base-300">
+            <div class="container mx-auto px-6 py-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Nombre</span>
+                    </label>
+                    <input type="text" class="input input-bordered" [(ngModel)]="editForm.firstName" />
+                </div>
 
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Apellido</span>
+                    </label>
+                    <input type="text" class="input input-bordered" [(ngModel)]="editForm.lastName" />
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Nueva contraseña (opcional)</span>
+                    </label>
+                    <input type="password" class="input input-bordered" [(ngModel)]="editForm.password" />
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Tabs -->
+    <div class="container mx-auto px-4 pb-8 mt-6">
+        <div class="tabs tabs-bordered tabs-lg mb-8">
+            <a class="tab" [class.tab-active]="activeTab === 'income'" (click)="activeTab = 'income'">Ingresos</a>
+            <a class="tab" [class.tab-active]="activeTab === 'discount'" (click)="activeTab = 'discount'">Descuentos</a>
+            <a class="tab" [class.tab-active]="activeTab === 'bonus'" (click)="activeTab = 'bonus'">Bonos</a>
+            <a class="tab" [class.tab-active]="activeTab === 'suspension'"
+                (click)="activeTab = 'suspension'">Suspensiones</a>
+            <a class="tab" [class.tab-active]="activeTab === 'contract'" (click)="activeTab = 'contract'">Contratos</a>
+        </div>
+
+        <div class="bg-base-100 rounded-xl shadow-lg min-h-[60vh] p-6">
             @switch (activeTab) {
-            @case ('income') {
-            Ingresos
-            }
-            @case ('discount') {
-            Discounts
-            }
-            @case ('bonus') {
-            Bonus
-            }
-            @case ('suspension') {
-            Suspension
-            }
-            @case ('contract') {
-            Contratos
-            }
+            @case ('income') { Ingresos }
+            @case ('discount') { Descuentos }
+            @case ('bonus') { Bonos }
+            @case ('suspension') { Suspensiones }
+            @case ('contract') { Contratos }
             }
         </div>
     </div>
