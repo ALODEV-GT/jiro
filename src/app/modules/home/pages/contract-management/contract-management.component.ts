@@ -138,7 +138,7 @@ export class ContractManagementComponent implements OnChanges {
         baseSalary: contract.baseSalary,
         startDate: contract.startDate,
         endDate: this.terminateForm.getRawValue().endDate,
-        status: 'INACTIVE'
+        status: 'TERMINATED'
       }
     ).subscribe({
       next: updated => {

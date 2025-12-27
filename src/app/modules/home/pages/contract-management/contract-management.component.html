@@ -23,7 +23,7 @@
 
             <tbody infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
                 (scrolled)="loadContractsPage()">
-                @for (contract of contracts; track contract?.id ?? $index) {
+                @for (contract of contracts; track contract.id) {
                 <tr>
                     <td class="font-semibold">{{ contract.role }}</td>
                     <td class="font-bold text-primary">
@@ -33,7 +33,7 @@
                     <td>{{ contract.endDate ?? '—' }}</td>
                     <td>
                         <span class="badge badge-lg" [class.badge-success]="contract.status === 'ACTIVE'"
-                            [class.badge-error]="contract.status === 'INACTIVE'">
+                            [class.badge-error]="contract.status === 'TERMINATED'">
                             {{ contract.status === 'ACTIVE' ? 'Activo' : 'Terminado' }}
                         </span>
                     </td>

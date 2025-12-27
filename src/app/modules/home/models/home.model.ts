@@ -51,7 +51,7 @@ export interface Permission {
 
 
 //Contracts
-export type ContractStatus = 'ACTIVE' | 'INACTIVE';
+export type ContractStatus = 'ACTIVE' | 'TERMINATED' | 'SUSPENDED';
 export type ContractRole = 'BACKEND' | 'FRONTEND' | 'FULLSTACK' | string;
 
 export interface Contract {
