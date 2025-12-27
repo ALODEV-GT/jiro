@@ -2,8 +2,7 @@
     <!-- Project info here -->
     @if (project) {
     <div class="container mx-auto px-4 py-6 mb-6">
-        <div class="bg-base-100 rounded-xl shadow-lg p-6">
-
+        <div>
             <div class="flex justify-between items-start mb-6">
                 <div>
                     <h1 class="text-3xl font-bold">
@@ -26,20 +25,19 @@
                 <!-- Nombre -->
                 <div class="form-control">
                     <label class="label">Nombre</label>
-                    <input class="input input-bordered" formControlName="name" [disabled]="!isEditingProject" />
+                    <input class="input input-bordered" formControlName="name" />
                 </div>
 
                 <!-- Cliente -->
                 <div class="form-control">
                     <label class="label">Cliente</label>
-                    <input class="input input-bordered" formControlName="client" [disabled]="!isEditingProject" />
+                    <input class="input input-bordered" formControlName="client" />
                 </div>
 
                 <!-- Ingreso mensual -->
                 <div class="form-control">
                     <label class="label">Ingreso mensual</label>
-                    <input type="number" class="input input-bordered" formControlName="monthlyIncome"
-                        [disabled]="!isEditingProject" />
+                    <input type="number" class="input input-bordered" formControlName="monthlyIncome" />
                 </div>
 
                 <!-- Estado -->
@@ -51,8 +49,7 @@
                 <!-- Descripción -->
                 <div class="form-control md:col-span-2">
                     <label class="label">Descripción</label>
-                    <textarea class="textarea textarea-bordered" formControlName="description"
-                        [disabled]="!isEditingProject"></textarea>
+                    <textarea class="textarea textarea-bordered" formControlName="description"></textarea>
                 </div>
 
             </form>
@@ -62,7 +59,7 @@
                 <button class="btn" (click)="cancelEdit()">
                     Cancelar
                 </button>
-                <button class="btn btn-primary" (click)="saveProject()" [disabled]="projectForm.invalid">
+                <button class="btn btn-primary" (click)="saveProject()">
                     Guardar cambios
                 </button>
             </div>
@@ -72,32 +69,34 @@
     </div>
     }
 
-
     <!-- Project tabs -->
     <div class="container mx-auto px-4 pb-8">
         <div class="tabs tabs-bordered tabs-lg mb-8">
             <a class="tab" [class.tab-active]="activeTab === 'board'" (click)="activeTab = 'board'">
                 Tablero
             </a>
-            <a class="tab" [class.tab-active]="activeTab === 'members'" (click)="activeTab = 'members'">
-                Miembros
-            </a>
             <a class="tab" [class.tab-active]="activeTab === 'sprints'" (click)="activeTab = 'sprints'">
                 Sprints
             </a>
-            <a class="tab" [class.tab-active]="activeTab === 'finances'" (click)="activeTab = 'finances'">
-                Finanzas
+            <a class="tab" [class.tab-active]="activeTab === 'members'" (click)="activeTab = 'members'">
+                Miembros
             </a>
-            <a class="tab" [class.tab-active]="activeTab === 'reports'" (click)="activeTab = 'reports'">
-                Reportes
+            <a class="tab" [class.tab-active]="activeTab === 'income'" (click)="activeTab = 'income'">
+                Ingresos
+            </a>
+            <a class="tab" [class.tab-active]="activeTab === 'expense'" (click)="activeTab = 'expense'">
+                Egresos
             </a>
             <a class="tab" [class.tab-active]="activeTab === 'activity'" (click)="activeTab = 'activity'">
                 Actividad
             </a>
+            <a class="tab" [class.tab-active]="activeTab === 'reports'" (click)="activeTab = 'reports'">
+                Reportes
+            </a>
         </div>
 
         <!-- Tabs content -->
-        <div class="bg-base-100 rounded-xl shadow-lg min-h-[60vh]">
+        <div class=" min-h-[60vh]">
 
             @if (activeTab === 'board') {
             <div class="text-center">
@@ -144,9 +143,17 @@
             </div>
             }
 
-            @if (activeTab === 'finances') {
+            @if (activeTab === 'income') {
+            <div>
+                @if (project) {
+                <app-incoming-management [projectId]="project.id"></app-incoming-management>
+                }
+            </div>
+            }
+
+            @if (activeTab === 'expense') {
             <div class="text-center py-20">
-                <h2 class="text-3xl font-bold mb-4">Finanzas</h2>
+                <h2 class="text-3xl font-bold mb-4">Egresos</h2>
                 <p class="text-base-content/60">Presupuesto, horas facturables, costos, etc.</p>
             </div>
             }

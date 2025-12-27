@@ -149,3 +149,22 @@ export interface CreateOrUpdateSuspension {
     endDate: string;
     createdAt: string;
 }
+
+
+//Income
+export interface Income {
+    id: number;
+    amount: number;
+    type: 'FIXED_PRICE' | 'HOURLY_RATE';
+    description: string;
+    billingDate: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateOrUpdateIncome {
+    amount: number;
+    type: string;
+    description: string;
+    billingDate: string;
+}

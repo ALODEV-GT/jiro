@@ -12,11 +12,12 @@ import { CommonModule } from '@angular/common';
 import { MembersService } from '../../../home/services/members.service';
 import { Page } from '../../../../shared/models/page';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { IncomingManagementComponent } from '../../../home/pages/incoming-management/incoming-management.component';
 
 @Component({
   selector: 'app-project',
   standalone: true,
-  imports: [BoardComponent, SprintsComponent, LogActivityComponent, CommonModule, ReactiveFormsModule],
+  imports: [BoardComponent, SprintsComponent, LogActivityComponent, CommonModule, ReactiveFormsModule, IncomingManagementComponent],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss'
 })
@@ -30,17 +31,18 @@ export class ProjectComponent {
   members: Member[] = []
   project: Project | null = null
 
-  activeTab: 'board' | 'members' | 'sprints' | 'finances' | 'reports' | 'activity' = 'sprints';
+  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' | 'activity' = 'income';
 
 
   isEditingProject = false;
 
   projectForm = this.fb.nonNullable.group({
-    name: ['', Validators.required],
-    description: ['', Validators.required],
-    client: ['', Validators.required],
-    monthlyIncome: [0, [Validators.required, Validators.min(0)]]
+    name: [{ value: '', disabled: true }, Validators.required],
+    description: [{ value: '', disabled: true }, Validators.required],
+    client: [{ value: '', disabled: true }, Validators.required],
+    monthlyIncome: [{ value: 0, disabled: true }, [Validators.required, Validators.min(0)]]
   });
+
 
   constructor() {
     this.activatedRoute.params.subscribe(params => {
@@ -64,21 +66,26 @@ export class ProjectComponent {
 
   enableEdit() {
     if (!this.project) return;
+
+    this.projectForm.enable();
     this.isEditingProject = true;
   }
+
 
   cancelEdit() {
     if (!this.project) return;
 
-    this.projectForm.patchValue({
+    this.projectForm.reset({
       name: this.project.name,
       description: this.project.description,
       client: this.project.client,
       monthlyIncome: this.project.monthlyIncome
     });
 
+    this.projectForm.disable();
     this.isEditingProject = false;
   }
+
 
   saveProject() {
     if (!this.project || this.projectForm.invalid) return;
@@ -88,6 +95,7 @@ export class ProjectComponent {
     this.projectService.update(this.project.id, body).subscribe({
       next: (updated: Project) => {
         this.project = updated;
+        this.projectForm.disable();
         this.isEditingProject = false;
         this.toast.success('Proyecto actualizado correctamente');
       },
