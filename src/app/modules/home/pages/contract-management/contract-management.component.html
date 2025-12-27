@@ -73,7 +73,7 @@
                 <label class="label">Rol *</label>
                 <select formControlName="role" class="select select-bordered">
                     <option [ngValue]="null" disabled>Selecciona un rol</option>
-                    @for (rol of roles(); track rol.id) {
+                    @for (rol of roles; track rol.id) {
                     <option [value]="rol.name">{{ rol.name }}</option>
                     }
                 </select>

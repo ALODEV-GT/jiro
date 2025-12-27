@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnChanges, signal } from '@angular/core';
+import { Component, inject, Input, OnChanges } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Contract, CreateOrUpdateContract, Rol } from '../../models/home.model';
 import { ContractService } from '../../services/contract.service';
@@ -28,8 +28,8 @@ export class ContractManagementComponent implements OnChanges {
   isLastPage = false;
 
   contracts: Contract[] = [];
-  roles = signal<Rol[]>([]);
-  terminatingId = signal<number | null>(null);
+  roles: Rol[] = [];
+  terminatingId: number | null = null;
 
   contractForm = this.fb.nonNullable.group({
     role: [null as string | null, Validators.required],
@@ -54,7 +54,7 @@ export class ContractManagementComponent implements OnChanges {
 
   loadRoles() {
     this.rolService.getRoles('name', 'ASC', 0, 100).subscribe({
-      next: (page: Page<Rol>) => this.roles.set(page.items),
+      next: (page: Page<Rol>) => this.roles = page.items,
       error: (e: ErrorResponse) => this.toast.error(e.message)
     });
   }
@@ -62,23 +62,14 @@ export class ContractManagementComponent implements OnChanges {
   loadContractsPage() {
     if (this.isLastPage) return;
 
-    this.contractService
-      .getUserContracts(this.employeeId, this.page)
-      .subscribe({
-        next: (page: Page<Contract>) => {
-          this.contracts = [...this.contracts, ...page.items];
-          this.page++;
-          this.isLastPage = page.lastPage;
-        },
-        error: (e: ErrorResponse) => this.toast.error(e.message)
-      });
-  }
-
-  resetPagination() {
-    this.contracts = []
-    this.page = 0
-    this.isLastPage = false
-    this.loadContractsPage()
+    this.contractService.getUserContracts(this.employeeId, this.page).subscribe({
+      next: (page: Page<Contract>) => {
+        this.contracts = [...this.contracts, ...page.items];
+        this.page++;
+        this.isLastPage = page.lastPage;
+      },
+      error: (e: ErrorResponse) => this.toast.error(e.message)
+    });
   }
 
   openCreateModal() {
@@ -94,11 +85,7 @@ export class ContractManagementComponent implements OnChanges {
     if (this.contractForm.invalid) return;
 
     const { role, baseSalary, startDate } = this.contractForm.getRawValue();
-
-    if (!role) {
-      this.toast.error('Debe seleccionar un rol');
-      return;
-    }
+    if (!role) return;
 
     const body: CreateOrUpdateContract = {
       role,
@@ -118,16 +105,15 @@ export class ContractManagementComponent implements OnChanges {
   }
 
   openTerminateModal(contractId: number) {
-    this.terminatingId.set(contractId);
+    this.terminatingId = contractId;
     this.terminateForm.reset();
     this.showModal('terminate_modal');
   }
 
   terminate() {
-    const id = this.terminatingId();
-    if (!id || this.terminateForm.invalid) return;
+    if (!this.terminatingId || this.terminateForm.invalid) return;
 
-    const contract = this.contracts.find(c => c.id === id);
+    const contract = this.contracts.find(c => c.id === this.terminatingId);
     if (!contract) return;
 
     this.contractService.updateContract(
