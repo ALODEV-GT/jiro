@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ErrorResponse } from '../../../../shared/models/errors';
@@ -10,11 +10,20 @@ import { AuthStore } from '../../../auth/store/auth.store';
 import { LoginResponse } from '../../../auth/models/auth.model';
 import { PayrollManagementComponent } from '../payroll-management/payroll-management.component';
 import { DiscountManagementComponent } from '../discount-management/discount-management.component';
+import { BonusManagementComponent } from '../bonus-management/bonus-management.component';
+import { SuspensionManagementComponent } from '../suspension-management/suspension-management.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, ContractManagementComponent, PayrollManagementComponent, DiscountManagementComponent],
+  imports: [
+    FormsModule,
+    ContractManagementComponent,
+    PayrollManagementComponent,
+    DiscountManagementComponent,
+    BonusManagementComponent,
+    SuspensionManagementComponent
+  ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -34,7 +43,7 @@ export class ProfileComponent {
     password: ''
   };
 
-  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' = 'discount';
+  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' = 'suspension';
 
   canEdit(): boolean {
     const authUser: LoginResponse = this.authStore.user()!;

@@ -13,7 +13,7 @@ export class BonusService {
   private readonly apiConfig = inject(ApiConfig);
 
   createBonus(
-    employeeId: number,
+    employeeId: string,
     body: CreateOrUpdateBonus
   ): Observable<Bonus> {
     return this.http.post<Bonus>(
@@ -23,7 +23,7 @@ export class BonusService {
   }
 
   updateBonus(
-    employeeId: number,
+    employeeId: string,
     bonusId: number,
     body: CreateOrUpdateBonus
   ): Observable<Bonus> {
@@ -34,7 +34,7 @@ export class BonusService {
   }
 
   deleteBonus(
-    employeeId: number,
+    employeeId: string,
     bonusId: number
   ): Observable<void> {
     return this.http.delete<void>(
@@ -43,7 +43,7 @@ export class BonusService {
   }
 
   getBonus(
-    employeeId: number,
+    employeeId: string,
     bonusId: number
   ): Observable<Bonus> {
     return this.http.get<Bonus>(
@@ -52,7 +52,7 @@ export class BonusService {
   }
 
   getBonuses(
-    employeeId: number,
+    employeeId: string,
     page = 0,
     size = 20
   ): Observable<Page<Bonus>> {

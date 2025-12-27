@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, OnChanges, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BonusService } from '../../services/bonus.service';
 import { ToastService } from '../../../../shared/services/toast.service';
@@ -7,127 +7,105 @@ import { Bonus, CreateOrUpdateBonus, User } from '../../models/home.model';
 import { Page } from '../../../../shared/models/page';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { UserService } from '../../services/user.service';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 
 @Component({
   selector: 'app-bonus-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, InfiniteScrollDirective],
   templateUrl: './bonus-management.component.html',
   styleUrl: './bonus-management.component.scss'
 })
-export class BonusManagementComponent implements OnInit {
+export class BonusManagementComponent implements OnChanges {
+
+  @Input({ required: true }) employeeId!: string;
 
   private readonly fb = inject(FormBuilder);
   private readonly bonusService = inject(BonusService);
-  private readonly userService = inject(UserService);
   private readonly toast = inject(ToastService);
 
-  bonuses = signal<Bonus[]>([]);
-  users = signal<User[]>([]);
-  selectedEmployeeId = signal<number | null>(null);
+  bonuses: Bonus[] = [];
+  page = 0;
+  isLastPage = false;
+
+  editingId: number | null = null;
 
   bonusForm = this.fb.nonNullable.group({
-    employeeId: [null as number | null, Validators.required],
     amount: [0, [Validators.required, Validators.min(1)]],
-    createdAt: ['', Validators.required],
-    reason: ['']
+    reason: ['', Validators.required]
   });
 
-  ngOnInit() {
-    this.loadUsers();
+  ngOnChanges() {
+    if (!this.employeeId) return;
+
+    this.page = 0;
+    this.bonuses = [];
+    this.isLastPage = false;
+
+    this.loadBonuses();
   }
 
-  loadUsers() {
-    this.userService.getUsers(0, 1000).subscribe({
-      next: (page: Page<User>) => {
-        this.users.set(page.items);
-      },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message);
-      }
-    });
-  }
+  loadBonuses() {
+    if (this.isLastPage) return;
 
-  loadBonuses(employeeId: number) {
-    this.selectedEmployeeId.set(employeeId);
-
-    this.bonusService.getBonuses(employeeId).subscribe({
+    this.bonusService.getBonuses(this.employeeId, this.page).subscribe({
       next: (page: Page<Bonus>) => {
-        this.bonuses.set(page.items);
+        this.bonuses = [...this.bonuses, ...page.items];
+        this.page++;
+        this.isLastPage = page.lastPage;
       },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message);
-      }
+      error: (e: ErrorResponse) => this.toast.error(e.message)
     });
   }
 
   openCreateModal() {
-    this.bonusForm.reset({
-      employeeId: this.selectedEmployeeId(),
-      amount: 0,
-      createdAt: new Date().toISOString().split('T')[0],
-      reason: ''
-    });
+    this.editingId = null;
+    this.bonusForm.reset({ amount: 0, reason: '' });
+    this.showModal('bonus_modal');
+  }
 
+  openEditModal(bonus: Bonus) {
+    this.editingId = bonus.id;
+    this.bonusForm.reset({
+      amount: bonus.amount,
+      reason: bonus.reason
+    });
     this.showModal('bonus_modal');
   }
 
   save() {
     if (this.bonusForm.invalid) return;
 
-    const { employeeId, amount, createdAt, reason } =
-      this.bonusForm.getRawValue();
+    const body: CreateOrUpdateBonus = this.bonusForm.getRawValue();
 
-    if (!employeeId) return;
+    const request$ = this.editingId
+      ? this.bonusService.updateBonus(this.employeeId, this.editingId, body)
+      : this.bonusService.createBonus(this.employeeId, body);
 
-    const body: CreateOrUpdateBonus = {
-      amount,
-      reason,
-      createdAt: new Date(createdAt).toISOString()
-    };
-
-    this.bonusService
-      .createBonus(employeeId, body)
-      .subscribe({
-        next: bonus => {
-          this.bonuses.update(b => [...b, bonus]);
-          this.closeModal('bonus_modal');
-        },
-        error: (error: ErrorResponse) => {
-          this.toast.error(error.message);
+    request$.subscribe({
+      next: bonus => {
+        if (this.editingId) {
+          this.bonuses = this.bonuses.map(b =>
+            b.id === bonus.id ? bonus : b
+          );
+        } else {
+          this.bonuses = [bonus, ...this.bonuses];
         }
-      });
+        this.closeModal('bonus_modal');
+      },
+      error: (e: ErrorResponse) => this.toast.error(e.message)
+    });
   }
 
   delete(bonusId: number) {
-    const employeeId = this.selectedEmployeeId();
-    if (!employeeId) return;
+    if (!confirm('¿Eliminar bono?')) return;
 
-    if (!confirm('¿Eliminar este bono?')) return;
-
-    this.bonusService
-      .deleteBonus(employeeId, bonusId)
-      .subscribe({
-        next: () => {
-          this.bonuses.update(b => b.filter(x => x.id !== bonusId));
-        },
-        error: (error: ErrorResponse) => {
-          this.toast.error(error.message);
-        }
-      });
-  }
-
-  onEmployeeChange() {
-    const employeeId = this.bonusForm.getRawValue().employeeId;
-    if (employeeId) {
-      this.loadBonuses(employeeId);
-    } else {
-      this.bonuses.set([]);
-    }
-  }
-
-  getEmployeeName(id: string) {
-    return this.users().find((e: User) => e.id === id)?.firstName ?? '—';
+    this.bonusService.deleteBonus(this.employeeId, bonusId).subscribe({
+      next: () => {
+        this.bonuses = this.bonuses.filter(b => b.id !== bonusId);
+      },
+      error: (e: ErrorResponse) => this.toast.error(e.message)
+    });
   }
 
   formatCurrency(value: number): string {
@@ -135,10 +113,6 @@ export class BonusManagementComponent implements OnInit {
       style: 'currency',
       currency: 'QTZ'
     }).format(value);
-  }
-
-  formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('es-GT');
   }
 
   private showModal(id: string) {

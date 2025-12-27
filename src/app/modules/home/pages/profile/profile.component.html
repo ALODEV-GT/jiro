@@ -93,8 +93,16 @@
             <app-discount-management [employeeId]="user.id"></app-discount-management>
             }
             }
-            @case ('bonus') { Bonos }
-            @case ('suspension') { Suspensiones }
+            @case ('bonus') {
+            @if (user) {
+            <app-bonus-management [employeeId]="user.id"></app-bonus-management>
+            }
+            }
+            @case ('suspension') {
+            @if (user) {
+            <app-suspension-management [employeeId]="user.id"></app-suspension-management>
+            }
+            }
             @case ('contract') {
             @if (user) {
             <app-contract-management [employeeId]="user.id"></app-contract-management>

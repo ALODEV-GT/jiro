@@ -103,7 +103,6 @@ export interface Bonus {
 export interface CreateOrUpdateBonus {
     amount: number;
     reason: string;
-    createdAt: string;
 }
 
 
@@ -129,4 +128,24 @@ export interface CreateOrUpdatePayroll {
     paymentDate: string;
     fromDate: string;
     toDate: string;
+}
+
+
+//Suspension
+export interface Suspension {
+    id: number;
+    amount: number;
+    reason: string;
+    startDate: string;
+    endDate: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateOrUpdateSuspension {
+    amount: number;
+    reason: string;
+    startDate: string;
+    endDate: string;
+    createdAt: string;
 }

@@ -1,0 +1,101 @@
+<div>
+
+    <!-- Header -->
+    <div class="flex justify-end mb-6">
+        <button class="btn btn-primary" (click)="openCreateModal()">
+            + Nueva Suspensión
+        </button>
+    </div>
+
+    <!-- Tabla -->
+    <div class="bg-base-100 rounded-xl shadow overflow-hidden">
+        <table class="table table-zebra w-full">
+            <thead>
+                <tr>
+                    <th>Monto</th>
+                    <th>Motivo</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+                (scrolled)="loadSuspensionsPage()">
+                @for (suspension of suspensions; track suspension.id) {
+                <tr>
+                    <td class="font-bold text-primary">
+                        {{ suspension.amount | number:'1.2-2' }}
+                    </td>
+                    <td>{{ suspension.reason }}</td>
+                    <td>{{ suspension.startDate }}</td>
+                    <td>{{ suspension.endDate }}</td>
+                    <td class="text-center">
+                        <div class="flex gap-2 justify-center">
+                            <button class="btn btn-sm btn-outline btn-warning" (click)="openEditModal(suspension)">
+                                Editar
+                            </button>
+
+                            <button class="btn btn-sm btn-outline btn-error" (click)="delete(suspension.id)">
+                                Eliminar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (suspensions.length === 0) {
+        <div class="text-center py-12 text-base-content/60">
+            No hay suspensiones registradas
+        </div>
+        }
+    </div>
+</div>
+
+<!-- Modal Crear / Editar -->
+<dialog id="suspension_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+        <h3 class="text-xl font-bold mb-6">
+            {{ editingId ? 'Editar Suspensión' : 'Nueva Suspensión' }}
+        </h3>
+
+        <form [formGroup]="suspensionForm" (ngSubmit)="save()" class="space-y-5">
+
+            <div class="form-control">
+                <label class="label">Monto *</label>
+                <input type="number" formControlName="amount" class="input input-bordered" />
+            </div>
+
+            <div class="form-control">
+                <label class="label">Motivo *</label>
+                <textarea formControlName="reason" class="textarea textarea-bordered"></textarea>
+            </div>
+
+            <div class="form-control">
+                <label class="label">Fecha inicio *</label>
+                <input type="date" formControlName="startDate" class="input input-bordered" />
+            </div>
+
+            <div class="form-control">
+                <label class="label">Fecha fin *</label>
+                <input type="date" formControlName="endDate" class="input input-bordered" />
+            </div>
+
+            <div class="modal-action">
+                <button type="button" class="btn" (click)="closeModal('suspension_modal')">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn btn-primary" [disabled]="suspensionForm.invalid">
+                    {{ editingId ? 'Actualizar' : 'Crear' }}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+        <button></button>
+    </form>
+</dialog>
