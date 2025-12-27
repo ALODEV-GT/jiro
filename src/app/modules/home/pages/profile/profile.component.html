@@ -87,7 +87,9 @@
             @case ('discount') { Descuentos }
             @case ('bonus') { Bonos }
             @case ('suspension') { Suspensiones }
-            @case ('contract') { Contratos }
+            @case ('contract') {
+            <app-contract-management [employeeId]="user!.id"></app-contract-management>
+            }
             }
         </div>
     </div>

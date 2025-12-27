@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, OnChanges, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Contract, CreateOrUpdateContract, Rol, User } from '../../models/home.model';
+import { Contract, CreateOrUpdateContract, Rol } from '../../models/home.model';
 import { ContractService } from '../../services/contract.service';
 import { RolService } from '../../services/rol.service';
 import { Page } from '../../../../shared/models/page';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
-import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-contract-management',
@@ -15,23 +14,19 @@ import { UserService } from '../../services/user.service';
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './contract-management.component.html'
 })
-export class ContractManagementComponent implements OnInit {
+export class ContractManagementComponent implements OnChanges {
+  @Input({ required: true }) employeeId!: string;
 
-  private readonly fb = inject(FormBuilder);
-  private readonly contractService = inject(ContractService);
-  private readonly rolService = inject(RolService);
-  private readonly toast = inject(ToastService);
-  private readonly userService = inject(UserService);
+  private fb = inject(FormBuilder);
+  private contractService = inject(ContractService);
+  private rolService = inject(RolService);
+  private toast = inject(ToastService);
 
   contracts = signal<Contract[]>([]);
   roles = signal<Rol[]>([]);
-  users = signal<User[]>([]);
-  selectedEmployeeId = signal<number>(1);
-
   terminatingId = signal<number | null>(null);
 
   contractForm = this.fb.nonNullable.group({
-    employeeId: [null as number | null, Validators.required],
     role: [null as string | null, Validators.required],
     baseSalary: [0, [Validators.required, Validators.min(1)]],
     startDate: ['', Validators.required]
@@ -41,66 +36,45 @@ export class ContractManagementComponent implements OnInit {
     endDate: ['', Validators.required]
   });
 
-  ngOnInit() {
-    this.loadCurrentContract();
-    this.loadRoles();
-    this.loadUsers();
+  ngOnChanges() {
+    if (this.employeeId) {
+      this.loadCurrentContract();
+      this.loadRoles();
+    }
   }
 
   loadRoles() {
-    this.rolService.getRoles('name', 'DESC', 0, 100).subscribe({
-      next: (page: Page<Rol>) => {
-        this.roles.set(page.items);
-      },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message);
-      }
-    });
-  }
-
-  loadUsers() {
-    this.userService.getUsers(0, 1000).subscribe({
-      next: (page: Page<User>) => {
-        this.users.set(page.items);
-      },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message);
-      }
+    this.rolService.getRoles('name', 'ASC', 0, 100).subscribe({
+      next: (page: Page<Rol>) => this.roles.set(page.items),
+      error: (e: ErrorResponse) => this.toast.error(e.message)
     });
   }
 
   loadCurrentContract() {
-    this.contractService
-      .getCurrentContract(this.selectedEmployeeId())
-      .subscribe({
-        next: contract => this.contracts.set([contract]),
-        error: (error: ErrorResponse) => {
-          this.contracts.set([]);
-          this.toast.error(error.message);
-        }
-      });
+    this.contractService.getCurrentContract(this.employeeId).subscribe({
+      next: c => this.contracts.set(c ? [c] : []),
+      error: () => this.contracts.set([])
+    });
   }
 
   openCreateModal() {
-    this.loadUsers();
-
     this.contractForm.reset({
-      employeeId: null,
       role: null,
       baseSalary: 0,
       startDate: ''
     });
-
     this.showModal('contract_modal');
   }
 
   save() {
     if (this.contractForm.invalid) return;
 
-    const { employeeId, role, baseSalary, startDate } =
-      this.contractForm.getRawValue();
+    const { role, baseSalary, startDate } = this.contractForm.getRawValue();
 
-    if (!employeeId || !role) return;
+    if (!role) {
+      this.toast.error('Debe seleccionar un rol');
+      return;
+    }
 
     const body: CreateOrUpdateContract = {
       role,
@@ -110,39 +84,33 @@ export class ContractManagementComponent implements OnInit {
       status: 'ACTIVE'
     };
 
-    this.contractService
-      .createContract(employeeId, body)
-      .subscribe({
-        next: contract => {
-          this.contracts.set([contract]);
-          this.closeModal('contract_modal');
-        },
-        error: (error: ErrorResponse) => {
-          this.toast.error(error.message);
-        }
-      });
+    this.contractService.createContract(this.employeeId, body).subscribe({
+      next: contract => {
+        this.contracts.set([contract]);
+        this.closeModal('contract_modal');
+      },
+      error: error => this.toast.error(error.message)
+    });
   }
+
 
   openTerminateModal(contractId: number) {
     this.terminatingId.set(contractId);
-    this.terminateForm.reset({ endDate: '' });
+    this.terminateForm.reset();
     this.showModal('terminate_modal');
   }
 
   terminate() {
-    if (this.terminateForm.invalid || !this.terminatingId()) return;
+    if (!this.terminatingId()) return;
 
-    const contract = this.contracts().find(c => c.id === this.terminatingId());
-    if (!contract) return;
+    const contract = this.contracts()[0];
 
     this.contractService.updateContract(
-      this.selectedEmployeeId(),
+      this.employeeId,
       contract.id,
       {
-        baseSalary: contract.baseSalary,
-        role: contract.role,
-        startDate: contract.startDate,
-        endDate: this.terminateForm.getRawValue().endDate,
+        ...contract,
+        endDate: this.terminateForm.value.endDate!,
         status: 'INACTIVE'
       }
     ).subscribe({
@@ -150,25 +118,17 @@ export class ContractManagementComponent implements OnInit {
         this.contracts.set([updated]);
         this.closeModal('terminate_modal');
       },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message);
-      }
+      error: (e: ErrorResponse) => this.toast.error(e.message)
     });
   }
 
   delete(contractId: number) {
     if (!confirm('¿Eliminar contrato?')) return;
 
-    this.contractService
-      .deleteContract(this.selectedEmployeeId(), contractId)
-      .subscribe({
-        next: () => {
-          this.contracts.set([]);
-        },
-        error: (error: ErrorResponse) => {
-          this.toast.error(error.message);
-        }
-      });
+    this.contractService.deleteContract(this.employeeId, contractId).subscribe({
+      next: () => this.contracts.set([]),
+      error: (e: ErrorResponse) => this.toast.error(e.message)
+    });
   }
 
   formatCurrency(value: number): string {

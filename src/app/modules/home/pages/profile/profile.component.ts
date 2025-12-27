@@ -5,11 +5,12 @@ import { ErrorResponse } from '../../../../shared/models/errors';
 import { UserService } from '../../services/user.service';
 import { UpdateMyUser, User } from '../../models/home.model';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { ContractManagementComponent } from '../contract-management/contract-management.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ContractManagementComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })

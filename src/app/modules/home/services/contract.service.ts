@@ -13,7 +13,7 @@ export class ContractService {
   private readonly apiConfig = inject(ApiConfig);
 
   createContract(
-    employeeId: number,
+    employeeId: string,
     body: CreateOrUpdateContract
   ): Observable<Contract> {
     return this.http.post<Contract>(
@@ -23,7 +23,7 @@ export class ContractService {
   }
 
   updateContract(
-    employeeId: number,
+    employeeId: string,
     contractId: number,
     body: CreateOrUpdateContract
   ): Observable<Contract> {
@@ -34,7 +34,7 @@ export class ContractService {
   }
 
   deleteContract(
-    employeeId: number,
+    employeeId: string,
     contractId: number
   ): Observable<void> {
     return this.http.delete<void>(
@@ -43,7 +43,7 @@ export class ContractService {
   }
 
   getContract(
-    employeeId: number,
+    employeeId: string,
     contractId: number
   ): Observable<Contract> {
     return this.http.get<Contract>(
@@ -52,7 +52,7 @@ export class ContractService {
   }
 
   getCurrentContract(
-    employeeId: number
+    employeeId: string
   ): Observable<Contract> {
     return this.http.get<Contract>(
       `${this.apiConfig.API_EMPLOYEES}/${employeeId}/contracts/current`
