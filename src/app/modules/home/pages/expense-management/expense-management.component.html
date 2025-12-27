@@ -1,100 +1,119 @@
-<div class="flex flex-col gap-4">
-
+<div>
     <!-- Header -->
-    <div class="flex justify-between items-center">
-        <h2 class="text-xl font-bold">Gastos</h2>
+    <div class="flex justify-end mb-6">
         <button class="btn btn-primary" (click)="openCreateModal()">
-            Nuevo gasto
+            + Nuevo gasto
         </button>
     </div>
 
-    <!-- Listado -->
-    <div class="flex flex-col gap-2" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300"
-        (scrolled)="loadExpensesPage()">
-        <div *ngFor="let expense of expenses" class="card bg-base-100 shadow-sm border border-base-300">
-            <div class="card-body p-4 flex justify-between">
-                <div>
-                    <p class="font-semibold">{{ expense.description }}</p>
-                    <p class="text-sm text-gray-500">
-                        {{ expense.type }} · {{ expense.expenseDate | date:'shortDate' }}
-                    </p>
-                </div>
+    <!-- Tabla -->
+    <div class="bg-base-100 rounded-xl shadow overflow-hidden">
+        <table class="table table-zebra w-full">
+            <thead>
+                <tr>
+                    <th>Monto</th>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
 
-                <div class="flex items-center gap-4">
-                    <span class="font-bold text-primary">
+            <tbody infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300"
+                (scrolled)="loadExpensesPage()">
+                @for (expense of expenses; track expense.id) {
+                <tr>
+                    <td class="font-bold text-primary">
                         {{ formatCurrency(expense.amount) }}
-                    </span>
-                    <button class="btn btn-sm btn-error" (click)="delete(expense.id)">
-                        Eliminar
-                    </button>
-                </div>
-            </div>
+                    </td>
+
+                    <td>
+                        {{ expense.type }}
+                    </td>
+
+                    <td>
+                        {{ expense.expenseDate | date:'shortDate' }}
+                    </td>
+
+                    <td>
+                        {{ expense.description }}
+                    </td>
+
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline btn-error" (click)="delete(expense.id)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (expenses.length === 0) {
+        <div class="text-center py-12 text-base-content/60">
+            No hay gastos registrados
         </div>
+        }
     </div>
 </div>
 
 <!-- MODAL -->
-<dialog id="expense_modal" class="modal">
-    <form method="dialog" class="modal-box" [formGroup]="expenseForm" (ngSubmit)="save()">
-        <h3 class="font-bold text-lg mb-4">Nuevo gasto</h3>
+<dialog id="expense_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+        <h3 class="text-xl font-bold mb-6">Nuevo gasto</h3>
 
-        <!-- TYPE (PRIMERO POR UX) -->
-        <div class="form-control mb-3">
-            <label class="label">
-                <span class="label-text">Tipo de gasto</span>
-            </label>
-            <select class="select select-bordered" formControlName="type">
-                <option *ngFor="let t of expenseTypes" [value]="t">
-                    {{ t }}
-                </option>
-            </select>
-        </div>
+        <form [formGroup]="expenseForm" (ngSubmit)="save()" class="space-y-5">
 
-        <!-- EMPLEADO (CONDICIONAL) -->
-        <div class="form-control mb-3" *ngIf="expenseForm.controls.type.value === 'SALARY'">
-            <label class="label">
-                <span class="label-text">Empleado</span>
-            </label>
-            <select class="select select-bordered" formControlName="employeeId">
-                <option [ngValue]="null">Seleccione un empleado</option>
-                <option *ngFor="let user of users" [value]="user.id">
-                    {{ user.firstName }} {{ user.lastName }}
-                </option>
-            </select>
-        </div>
+            <!-- TYPE -->
+            <div class="form-control">
+                <label class="label">Tipo de gasto *</label>
+                <select class="select select-bordered" formControlName="type">
+                    <option *ngFor="let t of expenseTypes" [value]="t">
+                        {{ t }}
+                    </option>
+                </select>
+            </div>
 
-        <!-- DESCRIPCIÓN -->
-        <div class="form-control mb-3">
-            <label class="label">
-                <span class="label-text">Descripción</span>
-            </label>
-            <input type="text" class="input input-bordered" formControlName="description" />
-        </div>
+            <!-- EMPLEADO (SALARY) -->
+            @if (expenseForm.controls.type.value === 'SALARY') {
+            <div class="form-control">
+                <label class="label">Empleado *</label>
+                <select class="select select-bordered" formControlName="employeeId">
+                    <option [ngValue]="null">Seleccione un empleado</option>
+                    <option *ngFor="let user of users" [value]="user.id">
+                        {{ user.firstName }} {{ user.lastName }}
+                    </option>
+                </select>
+            </div>
+            }
 
-        <!-- MONTO -->
-        <div class="form-control mb-3">
-            <label class="label">
-                <span class="label-text">Monto</span>
-            </label>
-            <input type="number" class="input input-bordered" formControlName="amount" min="1" />
-        </div>
+            <div class="form-control">
+                <label class="label">Descripción *</label>
+                <input type="text" class="input input-bordered" formControlName="description" />
+            </div>
 
-        <!-- FECHA -->
-        <div class="form-control mb-4">
-            <label class="label">
-                <span class="label-text">Fecha del gasto</span>
-            </label>
-            <input type="date" class="input input-bordered" formControlName="expenseDate" />
-        </div>
+            <div class="form-control">
+                <label class="label">Monto *</label>
+                <input type="number" class="input input-bordered" formControlName="amount" min="1" />
+            </div>
 
-        <!-- ACTIONS -->
-        <div class="modal-action">
-            <button type="button" class="btn" (click)="closeModal('expense_modal')">
-                Cancelar
-            </button>
-            <button type="submit" class="btn btn-primary" [disabled]="expenseForm.invalid">
-                Guardar
-            </button>
-        </div>
+            <div class="form-control">
+                <label class="label">Fecha del gasto *</label>
+                <input type="date" class="input input-bordered" formControlName="expenseDate" />
+            </div>
+
+            <div class="modal-action">
+                <button type="button" class="btn" (click)="closeModal('expense_modal')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary" [disabled]="expenseForm.invalid">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+        <button></button>
     </form>
 </dialog>
