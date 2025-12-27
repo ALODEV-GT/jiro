@@ -1,16 +1,17 @@
 import { inject, Injectable } from '@angular/core';
 import { Contract, CreateOrUpdateContract } from '../models/home.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { ApiConfig } from '../../../shared/services/api-config.service';
 import { Observable } from 'rxjs';
+import { Page } from '../../../shared/models/page';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContractService {
-
   private readonly http = inject(HttpClient);
   private readonly apiConfig = inject(ApiConfig);
+  private readonly SIZE = 20;
 
   createContract(
     employeeId: string,
@@ -56,6 +57,16 @@ export class ContractService {
   ): Observable<Contract> {
     return this.http.get<Contract>(
       `${this.apiConfig.API_EMPLOYEES}/${employeeId}/contracts/current`
+    );
+  }
+
+  getUserContracts(userId: string, page: number) {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', this.SIZE);
+
+    return this.http.get<Page<Contract>>(
+      `${this.apiConfig.API_EMPLOYEES}/${userId}/contracts`
     );
   }
 }

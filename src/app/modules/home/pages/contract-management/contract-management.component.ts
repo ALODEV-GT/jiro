@@ -7,22 +7,27 @@ import { RolService } from '../../services/rol.service';
 import { Page } from '../../../../shared/models/page';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 
 @Component({
   selector: 'app-contract-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, InfiniteScrollDirective],
   templateUrl: './contract-management.component.html'
 })
 export class ContractManagementComponent implements OnChanges {
+
   @Input({ required: true }) employeeId!: string;
 
-  private fb = inject(FormBuilder);
-  private contractService = inject(ContractService);
-  private rolService = inject(RolService);
-  private toast = inject(ToastService);
+  private readonly fb = inject(FormBuilder);
+  private readonly contractService = inject(ContractService);
+  private readonly rolService = inject(RolService);
+  private readonly toast = inject(ToastService);
 
-  contracts = signal<Contract[]>([]);
+  page = 0;
+  isLastPage = false;
+
+  contracts: Contract[] = [];
   roles = signal<Rol[]>([]);
   terminatingId = signal<number | null>(null);
 
@@ -37,10 +42,14 @@ export class ContractManagementComponent implements OnChanges {
   });
 
   ngOnChanges() {
-    if (this.employeeId) {
-      this.loadCurrentContract();
-      this.loadRoles();
-    }
+    if (!this.employeeId) return;
+
+    this.page = 0;
+    this.contracts = [];
+    this.isLastPage = false;
+
+    this.loadRoles();
+    this.loadContractsPage();
   }
 
   loadRoles() {
@@ -50,11 +59,26 @@ export class ContractManagementComponent implements OnChanges {
     });
   }
 
-  loadCurrentContract() {
-    this.contractService.getCurrentContract(this.employeeId).subscribe({
-      next: c => this.contracts.set(c ? [c] : []),
-      error: () => this.contracts.set([])
-    });
+  loadContractsPage() {
+    if (this.isLastPage) return;
+
+    this.contractService
+      .getUserContracts(this.employeeId, this.page)
+      .subscribe({
+        next: (page: Page<Contract>) => {
+          this.contracts = [...this.contracts, ...page.items];
+          this.page++;
+          this.isLastPage = page.lastPage;
+        },
+        error: (e: ErrorResponse) => this.toast.error(e.message)
+      });
+  }
+
+  resetPagination() {
+    this.contracts = []
+    this.page = 0
+    this.isLastPage = false
+    this.loadContractsPage()
   }
 
   openCreateModal() {
@@ -86,13 +110,12 @@ export class ContractManagementComponent implements OnChanges {
 
     this.contractService.createContract(this.employeeId, body).subscribe({
       next: contract => {
-        this.contracts.set([contract]);
+        this.contracts = [contract, ...this.contracts];
         this.closeModal('contract_modal');
       },
-      error: error => this.toast.error(error.message)
+      error: (e: ErrorResponse) => this.toast.error(e.message)
     });
   }
-
 
   openTerminateModal(contractId: number) {
     this.terminatingId.set(contractId);
@@ -101,21 +124,27 @@ export class ContractManagementComponent implements OnChanges {
   }
 
   terminate() {
-    if (!this.terminatingId()) return;
+    const id = this.terminatingId();
+    if (!id || this.terminateForm.invalid) return;
 
-    const contract = this.contracts()[0];
+    const contract = this.contracts.find(c => c.id === id);
+    if (!contract) return;
 
     this.contractService.updateContract(
       this.employeeId,
       contract.id,
       {
-        ...contract,
-        endDate: this.terminateForm.value.endDate!,
+        role: contract.role,
+        baseSalary: contract.baseSalary,
+        startDate: contract.startDate,
+        endDate: this.terminateForm.getRawValue().endDate,
         status: 'INACTIVE'
       }
     ).subscribe({
       next: updated => {
-        this.contracts.set([updated]);
+        this.contracts = this.contracts.map(c =>
+          c.id === updated.id ? updated : c
+        );
         this.closeModal('terminate_modal');
       },
       error: (e: ErrorResponse) => this.toast.error(e.message)
@@ -126,7 +155,9 @@ export class ContractManagementComponent implements OnChanges {
     if (!confirm('¿Eliminar contrato?')) return;
 
     this.contractService.deleteContract(this.employeeId, contractId).subscribe({
-      next: () => this.contracts.set([]),
+      next: () => {
+        this.contracts = this.contracts.filter(c => c.id !== contractId);
+      },
       error: (e: ErrorResponse) => this.toast.error(e.message)
     });
   }

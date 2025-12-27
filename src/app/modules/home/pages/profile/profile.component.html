@@ -81,14 +81,16 @@
             <a class="tab" [class.tab-active]="activeTab === 'contract'" (click)="activeTab = 'contract'">Contratos</a>
         </div>
 
-        <div class="bg-base-100 rounded-xl shadow-lg min-h-[60vh] p-6">
+        <div>
             @switch (activeTab) {
             @case ('income') { Ingresos }
             @case ('discount') { Descuentos }
             @case ('bonus') { Bonos }
             @case ('suspension') { Suspensiones }
             @case ('contract') {
-            <app-contract-management [employeeId]="user!.id"></app-contract-management>
+            @if (user) {
+            <app-contract-management [employeeId]="user.id"></app-contract-management>
+            }
             }
             }
         </div>

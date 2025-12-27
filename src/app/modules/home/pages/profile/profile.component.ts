@@ -30,7 +30,7 @@ export class ProfileComponent {
     password: ''
   };
 
-  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' = 'income';
+  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' = 'contract';
 
   constructor() {
     this.activatedRoute.params.subscribe(params => {

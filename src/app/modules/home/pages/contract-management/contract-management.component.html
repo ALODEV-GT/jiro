@@ -1,4 +1,4 @@
-<div class="p-6">
+<div>
 
     <!-- Header interno de la tab -->
     <div class="flex justify-end mb-6">
@@ -21,8 +21,9 @@
                 </tr>
             </thead>
 
-            <tbody>
-                @for (contract of contracts(); track contract.id) {
+            <tbody infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+                (scrolled)="loadContractsPage()">
+                @for (contract of contracts; track contract?.id ?? $index) {
                 <tr>
                     <td class="font-semibold">{{ contract.role }}</td>
                     <td class="font-bold text-primary">
@@ -53,7 +54,7 @@
             </tbody>
         </table>
 
-        @if (contracts().length === 0) {
+        @if (contracts.length === 0) {
         <div class="text-center py-12 text-base-content/60">
             No hay contratos registrados
         </div>
