@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ErrorResponse } from '../../../../shared/models/errors';
@@ -6,6 +6,8 @@ import { UserService } from '../../services/user.service';
 import { UpdateMyUser, User } from '../../models/home.model';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { ContractManagementComponent } from '../contract-management/contract-management.component';
+import { AuthStore } from '../../../auth/store/auth.store';
+import { LoginResponse } from '../../../auth/models/auth.model';
 
 @Component({
   selector: 'app-profile',
@@ -19,9 +21,9 @@ export class ProfileComponent {
   private activatedRoute = inject(ActivatedRoute);
   private userService = inject(UserService);
   private toast = inject(ToastService);
+  private readonly authStore = inject(AuthStore);
 
   user: User | null = null;
-
   editing = false;
 
   editForm: UpdateMyUser = {
@@ -31,6 +33,11 @@ export class ProfileComponent {
   };
 
   activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' = 'contract';
+
+  canEdit(): boolean{
+    const authUser: LoginResponse = this.authStore.user()!;
+    return !!authUser && !!this.user && authUser.id == this.user.id;
+  }
 
   constructor() {
     this.activatedRoute.params.subscribe(params => {
@@ -42,6 +49,7 @@ export class ProfileComponent {
     this.userService.getUserById(userId).subscribe({
       next: (user) => {
         this.user = user;
+        this.editing = false;
       },
       error: (error: ErrorResponse) => {
         this.toast.error(error.message);
@@ -50,7 +58,7 @@ export class ProfileComponent {
   }
 
   enableEdit() {
-    if (!this.user) return;
+    if (!this.user || !this.canEdit()) return;
 
     this.editing = true;
     this.editForm = {
@@ -66,6 +74,8 @@ export class ProfileComponent {
   }
 
   saveProfile() {
+    if (!this.canEdit()) return;
+
     const body: UpdateMyUser = {
       firstName: this.editForm.firstName,
       lastName: this.editForm.lastName,
@@ -73,7 +83,7 @@ export class ProfileComponent {
     };
 
     this.userService.updateMyInfo(body).subscribe({
-      next: (updatedUser) => {
+      next: updatedUser => {
         this.user = updatedUser;
         this.editing = false;
         this.toast.success('Perfil actualizado correctamente');

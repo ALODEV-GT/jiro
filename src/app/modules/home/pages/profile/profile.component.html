@@ -23,13 +23,13 @@
 
             <!-- Actions -->
             <div class="flex gap-2">
-                @if (!editing) {
+                @if (!editing && canEdit()) {
                 <button class="btn btn-outline btn-primary" (click)="enableEdit()">
                     Editar perfil
                 </button>
                 }
 
-                @if (editing) {
+                @if (editing && canEdit()) {
                 <button class="btn btn-primary" (click)="saveProfile()">
                     Guardar
                 </button>
