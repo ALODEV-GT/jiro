@@ -1,4 +1,4 @@
-export interface Project { //here
+export interface Project {
     id: string;
     name: string;
     description: string;

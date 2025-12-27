@@ -1,10 +1,77 @@
-<div class="min-h-screen bg-base-200">
-    @if (project ) {
-    <div class="mx-auto px-10 pt-8 pb-4">
-        <h1 class="text-lg"><span class="font-bold">Proyecto:</span> {{project.name}}</h1>
-        <p class="text-sm text-cyan-800">{{project.description}}</p>
+<div class="min-h-screen">
+    <!-- Project info here -->
+    @if (project) {
+    <div class="container mx-auto px-4 py-6 mb-6">
+        <div class="bg-base-100 rounded-xl shadow-lg p-6">
+
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold">
+                        {{ project.name }}
+                    </h1>
+                    <p class="text-base-content/60">
+                        Cliente: {{ project.client }}
+                    </p>
+                </div>
+
+                @if (!isEditingProject) {
+                <button class="btn btn-outline btn-primary" (click)="enableEdit()">
+                    Editar proyecto
+                </button>
+                }
+            </div>
+
+            <form [formGroup]="projectForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Nombre -->
+                <div class="form-control">
+                    <label class="label">Nombre</label>
+                    <input class="input input-bordered" formControlName="name" [disabled]="!isEditingProject" />
+                </div>
+
+                <!-- Cliente -->
+                <div class="form-control">
+                    <label class="label">Cliente</label>
+                    <input class="input input-bordered" formControlName="client" [disabled]="!isEditingProject" />
+                </div>
+
+                <!-- Ingreso mensual -->
+                <div class="form-control">
+                    <label class="label">Ingreso mensual</label>
+                    <input type="number" class="input input-bordered" formControlName="monthlyIncome"
+                        [disabled]="!isEditingProject" />
+                </div>
+
+                <!-- Estado -->
+                <div class="form-control">
+                    <label class="label">Estado</label>
+                    <input class="input input-bordered" [value]="project.active ? 'Activo' : 'Cerrado'" disabled />
+                </div>
+
+                <!-- Descripción -->
+                <div class="form-control md:col-span-2">
+                    <label class="label">Descripción</label>
+                    <textarea class="textarea textarea-bordered" formControlName="description"
+                        [disabled]="!isEditingProject"></textarea>
+                </div>
+
+            </form>
+
+            @if (isEditingProject) {
+            <div class="flex justify-end gap-3 mt-6">
+                <button class="btn" (click)="cancelEdit()">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" (click)="saveProject()" [disabled]="projectForm.invalid">
+                    Guardar cambios
+                </button>
+            </div>
+            }
+
+        </div>
     </div>
     }
+
 
     <!-- Project tabs -->
     <div class="container mx-auto px-4 pb-8">

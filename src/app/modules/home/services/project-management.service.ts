@@ -17,8 +17,8 @@ export class ProjectManagementService {
     return this.http.post<Partial<Project>>(`${this.apiConfig.API_PROJECT}`, project)
   }
 
-  update(id: string, project: Partial<Project>): Observable<Partial<Project>> {
-    return this.http.put<Partial<Project>>(`${this.apiConfig.API_PROJECT}/${id}`, project)
+  update(id: string, project: Partial<Project>): Observable<Project> {
+    return this.http.put<Project>(`${this.apiConfig.API_PROJECT}/${id}`, project)
   }
 
   closeProject(id: string): Observable<Partial<Project>> {
