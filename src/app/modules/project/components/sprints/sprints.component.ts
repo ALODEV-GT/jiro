@@ -36,7 +36,8 @@ export class SprintsComponent {
   projectId!: string;
 
   sprints: Sprint[] = [];
-  stories: UserStory[] = [];
+  backlogStories: UserStory[] = [];
+  sprintStories: UserStory[] = []
 
   isEdit = false;
   loading = false;
@@ -85,18 +86,20 @@ export class SprintsComponent {
 
   loadStories(): void {
     this.storyService.getBacklogStories(this.projectId).subscribe({
-      next: stories => this.stories = stories,
+      next: stories => {
+        this.backlogStories = stories;
+      },
       error: (e: ErrorResponse) =>
         this.toast.error(e.message || 'Error al cargar historias')
     });
   }
 
   getBacklogStories(): UserStory[] {
-    return this.stories.filter(s => s.stageId === null);
+    return this.backlogStories;
   }
 
   getStoriesForSprint(stageId: number): UserStory[] {
-    return this.stories.filter(s => s.stageId === stageId);
+    return this.sprintStories.filter(s => s.stageId === stageId);
   }
 
   openStoryModal(isEdit = false, story?: UserStory): void {
@@ -172,16 +175,24 @@ export class SprintsComponent {
     });
   }
 
-  getSprintStories() {
+  getSprintStories(): void {
+    this.sprintStories = [];
+
     this.sprints.forEach((sprint: Sprint) => {
       this.boardService.getSprintStories(sprint.id.toString()).subscribe({
         next: (stories: UserStory[]) => {
-          this.stories = [...this.stories, ...stories]
+          const withSprint = stories.map(story => ({
+            ...story,
+            stageId: sprint.id
+          }));
+
+          this.sprintStories = [...this.sprintStories, ...withSprint];
         },
         error: (e: ErrorResponse) => this.toast.error(e.message)
-      })
-    })
+      });
+    });
   }
+
 
   openCreateSprintModal(): void {
     this.isEdit = false;
@@ -291,16 +302,42 @@ export class SprintsComponent {
       return;
     }
 
-    const sprintId = Number(this.assignSprintForm.value.sprintId);
+    const sprintId = this.assignSprintForm.value.sprintId;
     const storyId = this.assignSprintStoryId()!;
 
-    this.sprintService.assignStoryToSprint(this.projectId, storyId.toString(), sprintId.toString()).subscribe({
-      next: (story: UserStory) => {
-        this.toast.success("Se agrego la historia al sprint")
-      },
-      error: (e: ErrorResponse) =>
-        this.toast.error(e.message || 'No se pudo agregar la historia al sprint')
-    })
+    console.log("Before")
+    console.log(this.backlogStories)
+    console.log(this.sprintStories)
+
+    this.sprintService
+      .assignStoryToSprint(
+        this.projectId,
+        storyId.toString(),
+        sprintId!.toString()
+      )
+      .subscribe({
+        next: (response: UserStory) => {
+          const story = this.backlogStories.find(s => s.id === storyId);
+          if (!story) return;
+
+          this.backlogStories = this.backlogStories.filter(s => s.id !== storyId);
+
+          this.sprintStories = [
+            ...this.sprintStories,
+            response
+          ];
+
+          console.log("After")
+          console.log(this.backlogStories)
+          console.log(this.sprintStories)
+
+
+          this.closeModal('assign_sprint_modal');
+          this.toast.success('Se agregó la historia al sprint');
+        },
+        error: (e: ErrorResponse) =>
+          this.toast.error(e.message || 'No se pudo agregar la historia al sprint')
+      });
   }
 
 

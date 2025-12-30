@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { ApiConfig } from "../../../shared/services/api-config.service";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 import { Page } from "../../../shared/models/page";
 import { Sprint, UserStory } from "../models/project.model";
 
@@ -38,6 +38,11 @@ export class SprintService {
             `${this.apiConfig.API_PROJECT}/${projectId}/stories/${storyId}/sprint`, {
             sprintId
         }
+        ).pipe(
+            map((story) => ({
+                ...story,
+                sprintId
+            }))
         );
     }
 }

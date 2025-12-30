@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ApiConfig } from '../../../shared/services/api-config.service';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { UserStory } from '../models/project.model';
 
 @Injectable({
@@ -12,9 +12,11 @@ export class StoryService {
   private readonly apiConfig = inject(ApiConfig);
 
   getBacklogStories(projectId: string): Observable<UserStory[]> {
-    return this.http.get<UserStory[]>(
-      `${this.apiConfig.API_PROJECT}/${projectId}/stories`
-    );
+    return this.http
+      .get<UserStory[]>(`${this.apiConfig.API_PROJECT}/${projectId}/stories`)
+      .pipe(
+        map(stories => stories.filter(story => story.stageId === null))
+      );
   }
 
   create(
