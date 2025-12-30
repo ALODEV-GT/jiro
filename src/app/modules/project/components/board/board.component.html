@@ -43,28 +43,62 @@
         (cdkDropListDropped)="dropTask($event, column.id)">
         @for (task of column.tasks; track task.id) {
         <div cdkDrag [cdkDragData]="task"
-          class="bg-base-200 p-4 rounded-lg border border-base-300 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-          <div class="font-medium text-base-content">{{ task.name }} [pts: {{ task.points }}]</div>
+          class="bg-base-200 rounded-lg border border-base-300 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing group">
 
-          @if (task.description) {
-          <p class="text-sm text-base-content/70 mt-1">
-            {{ task.description }}
-          </p>
-          }
+          <!-- Header -->
+          <div class="p-4 pb-2">
+            <div class="flex justify-between items-start gap-2">
+              <h4 class="font-semibold text-base-content leading-snug">
+                {{ task.name }}
+              </h4>
 
-          <div class="flex justify-between items-center mt-3">
-            <div>
-              <div>
-                Dev: <div class="badge badge-primary badge-sm">{{ getEmployeeName(task.developerId) }}</div>
-              </div>
-              <div>
-                PO:<div class="badge badge-secondary badge-sm">{{ getEmployeeName(task.productOwnerId) }}</div>
+              <div class="flex items-center gap-1">
+                <span class="badge badge-outline badge-sm">
+                  {{ task.points }} pts
+                </span>
+
+                <span class="badge badge-sm" [ngClass]="{
+            'badge-error': task.priority === 'HIGH',
+            'badge-warning': task.priority === 'MEDIUM',
+            'badge-success': task.priority === 'LOW'
+          }">
+                  {{ task.priority }}
+                </span>
               </div>
             </div>
-            <button class="btn btn-ghost btn-xs text-error" (click)="deleteTask(column.id, task.id)">
-              Delete
+
+            @if (task.description) {
+            <p class="mt-2 text-sm text-base-content/70 line-clamp-3">
+              {{ task.description }}
+            </p>
+            }
+          </div>
+
+          <!-- Footer -->
+          <div class="px-4 py-3 border-t border-base-300 flex justify-between items-center text-sm">
+
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-base-content/60">Dev</span>
+                <span class="badge badge-primary badge-sm">
+                  {{ getEmployeeName(task.developerId) }}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-base-content/60">PO</span>
+                <span class="badge badge-secondary badge-sm">
+                  {{ getEmployeeName(task.productOwnerId) }}
+                </span>
+              </div>
+            </div>
+
+            <button class="btn btn-ghost btn-xs text-error opacity-0 group-hover:opacity-100 transition-opacity"
+              (click)="deleteTask(column.id, task.id)" title="Eliminar historia">
+              Eliminar
             </button>
           </div>
+
         </div>
         }
       </div>

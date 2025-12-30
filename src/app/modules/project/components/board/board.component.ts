@@ -8,7 +8,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { BoardService } from '../../services/board.service';
 import { StoryStageService } from '../../../home/services/story-stage.service';
@@ -19,13 +19,6 @@ import { ProjectMember } from '../../../home/models/home.model';
 import { MembersService } from '../../../home/services/members.service';
 import { Page } from '../../../../shared/models/page';
 import { ActivatedRoute } from '@angular/router';
-import { StoryService } from '../../services/story.service';
-
-interface Task {
-  id: number;              // story.id
-  title: string;
-  description?: string;
-}
 
 interface Column {
   id: string;              // stage.id
@@ -36,7 +29,7 @@ interface Column {
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [CommonModule, CdkDropListGroup, CdkDropList, CdkDrag, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, CdkDropListGroup, CdkDropList, CdkDrag, ReactiveFormsModule],
   templateUrl: './board.component.html',
   styleUrl: './board.component.scss'
 })
@@ -47,7 +40,6 @@ export class BoardComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly memberService = inject(MembersService);
   private readonly route = inject(ActivatedRoute);
-  private readonly storyService = inject(StoryService)
   projectId!: string;
 
 
@@ -70,13 +62,11 @@ export class BoardComponent implements OnInit {
     developerId: ['', Validators.required],
   });
 
-  constructor() {
-    this.route.params.subscribe(params => {
-      this.projectId = params['id'];
-      this.loadMembersPage()
-    });
+  ngOnInit(): void {
+    this.projectId = this.route.snapshot.paramMap.get('id')!;
+    this.loadMembersPage();
+    this.loadStages();
   }
-
 
   loadMembersPage() {
     this.memberService.getMembers(this.projectId, 0, 1000).subscribe({
@@ -119,17 +109,6 @@ export class BoardComponent implements OnInit {
     this.openModal('story_modal');
   }
 
-  isModalOpen = false;
-  newTask: { title: string; description: string; columnId: string } = {
-    title: '',
-    description: '',
-    columnId: '',
-  };
-
-  ngOnInit(): void {
-    this.loadStages();
-  }
-
   // =========================
   // Load stages + stories
   // =========================
@@ -143,8 +122,6 @@ export class BoardComponent implements OnInit {
             title: stage.name,
             tasks: []
           }));
-
-        this.newTask.columnId = this.columns[0]?.id ?? '';
 
         this.columns.forEach(column => {
           this.loadStoriesForStage(Number(column.id));
@@ -361,15 +338,6 @@ export class BoardComponent implements OnInit {
   // =========================
   // Tasks (Stories)
   // =========================
-  openCreateTaskModal(columnId?: string) {
-    this.newTask = {
-      title: '',
-      description: '',
-      columnId: columnId ?? this.columns[0]?.id ?? ''
-    };
-    this.isModalOpen = true;
-  }
-
   deleteTask(stageId: string, id: number): void {
     if (!confirm('¿Eliminar esta historia?')) return;
 
