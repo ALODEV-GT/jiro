@@ -37,10 +37,11 @@ export class SprintsComponent {
   editingSprintId: number | null = null;
 
   sprintForm = this.fb.group({
-    name: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
+    name: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
     description: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
     startDate: ["", [Validators.required]],
-    endDate: ["", [Validators.required]]
+    endDate: ["", [Validators.required]],
+    status: ["", [Validators.required]]
   })
 
   constructor(
@@ -82,7 +83,8 @@ export class SprintsComponent {
       name: sprint.name ?? '',
       description: sprint.description ?? '',
       startDate: sprint.startDate,
-      endDate: sprint.endDate
+      endDate: sprint.endDate,
+      status: sprint.status
     });
 
     this.showSprintModal();
@@ -92,9 +94,23 @@ export class SprintsComponent {
     this.formError = '';
 
     if (this.sprintForm.invalid) {
+      Object.keys(this.sprintForm.controls).forEach(key => {
+        const control = this.sprintForm.get(key);
+
+        if (control?.invalid) {
+          console.log(`❌ Campo inválido: ${key}`, {
+            value: control.value,
+            errors: control.errors,
+            touched: control.touched,
+            dirty: control.dirty
+          });
+        }
+      });
+
       this.sprintForm.markAllAsTouched();
       return;
     }
+
 
     this.loading = true;
 
@@ -114,7 +130,7 @@ export class SprintsComponent {
         let message = 'Se ha creado el sprint';
 
         if (this.isEdit) {
-          message = 'Proyecto actualizado';
+          message = 'Sprint actualizado';
         }
 
         this.toast.success(message);

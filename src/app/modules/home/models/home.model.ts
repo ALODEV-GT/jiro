@@ -210,3 +210,26 @@ export interface ProjectMember {
     role: string;
     color: string;
 }
+
+export type SprintStatus = 'PENDING' | 'ACTIVE' | 'COMPLETED';
+
+//Sprint
+export interface Sprint {
+    id: string;
+    name: string;
+    description: string;
+    startDate: string;   // YYYY-MM-DD
+    endDate: string;     // YYYY-MM-DD
+    status: SprintStatus;
+    createdAt: string;   // ISO datetime
+    updatedAt: string;   // ISO datetime
+}
+
+export interface CreateOrUpdateSprint {
+    name: string;
+    description: string;
+    startDate: string;   // YYYY-MM-DD
+    endDate: string;     // YYYY-MM-DD
+    status: SprintStatus;
+}
+

@@ -32,7 +32,7 @@ export class ProjectComponent {
   members: Member[] = []
   project: Project | null = null
 
-  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' = 'members';
+  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' = 'sprints';
 
   isEditingProject = false;
 
