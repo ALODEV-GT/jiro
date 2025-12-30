@@ -19,6 +19,7 @@ export enum ReportType {
 export class ProjectDataComponent {
   readonly projectId = input.required<string>();
   readonly report = signal<ReportType>(ReportType.ADVANCE);
+  readonly incomes = signal<boolean | undefined>(undefined);
   readonly from = signal<Date | undefined>(undefined);
   readonly to = signal<Date | undefined>(undefined);
 

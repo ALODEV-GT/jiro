@@ -15,6 +15,7 @@ export class FinanceComponent {
   private readonly reportService = inject(ReportService);
 
   readonly projectId = input.required<string>();
+  readonly incomes = input<boolean>();
   readonly from = input<Date>();
   readonly to = input<Date>();
 
@@ -25,6 +26,7 @@ export class FinanceComponent {
     effect(() => {
       const params = {} as any;
       if (this.projectId()) params['projectId'] = this.projectId();
+      if (this.incomes() !== undefined) params['incomes'] = this.incomes();
       if (this.from()) params['from'] = this.from();
       if (this.to()) params['to'] = this.to();
 

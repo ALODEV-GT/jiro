@@ -2,13 +2,22 @@
   <!-- Header -->
   <div class="flex justify-end mb-6 gap-8">
     <div class="form-control flex-row items-center gap-1">
-      <label class="label">Desde</label>
+      <label class="label">Reporte</label>
       <select class="select select-sm select-bordered" [(ngModel)]="report">
         <option [ngValue]="ReportType.ADVANCE" selected>
           Avance del Proyecto
         </option>
         <option [ngValue]="ReportType.FINANCIAL">Financiero</option>
       </select>
+
+      @if (report() === ReportType.FINANCIAL) {
+      <label class="label">de</label>
+      <select class="select select-sm select-bordered" [(ngModel)]="incomes">
+        <option [ngValue]="undefined" selected>Ganancias</option>
+        <option [ngValue]="true">Ingresos</option>
+        <option [ngValue]="false">Gastos</option>
+      </select>
+      }
     </div>
 
     <div class="form-control flex-row items-center gap-1">
@@ -33,6 +42,11 @@
   @if (report() === ReportType.ADVANCE) {
   <report-advance [projectId]="projectId()" [from]="from()" [to]="to()" />
   } @else if (report() === ReportType.FINANCIAL) {
-  <report-finance [projectId]="projectId()" [from]="from()" [to]="to()" />
+  <report-finance
+    [projectId]="projectId()"
+    [from]="from()"
+    [to]="to()"
+    [incomes]="incomes()"
+  />
   }
 </div>
