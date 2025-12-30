@@ -131,10 +131,12 @@ export class BoardComponent implements OnInit {
     const name = prompt('Nombre de la nueva columna:');
     if (!name?.trim()) return;
 
+    const orderIndex = this.columns.length;
+
     this.boardService.createStage(this.sprintId, {
       name: name.trim(),
       description: '',
-      orderIndex: this.columns.length + 1,
+      orderIndex,
       isDefault: false
     }).subscribe({
       next: (stage) => {
