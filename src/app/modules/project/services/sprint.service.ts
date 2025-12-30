@@ -3,7 +3,7 @@ import { inject, Injectable } from "@angular/core";
 import { ApiConfig } from "../../../shared/services/api-config.service";
 import { Observable } from "rxjs";
 import { Page } from "../../../shared/models/page";
-import { Sprint } from "../models/project.model";
+import { Sprint, UserStory } from "../models/project.model";
 
 @Injectable({
     providedIn: 'root'
@@ -31,5 +31,13 @@ export class SprintService {
 
     delete(idProject: string, idSprint: number): Observable<void> {
         return this.http.delete<void>(`${this.apiConfig.API_PROJECT}/${idProject}/sprints/${idSprint}`)
+    }
+
+    assignStoryToSprint(projectId: string, storyId: string, sprintId: string): Observable<UserStory> {
+        return this.http.patch<UserStory>(
+            `${this.apiConfig.API_PROJECT}/${projectId}/stories/${storyId}/sprint`, {
+            sprintId
+        }
+        );
     }
 }

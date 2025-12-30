@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { ApiConfig } from '../../../shared/services/api-config.service';
 import { Page } from '../../../shared/models/page';
-import { Sprint } from '../../project/models/project.model';
+import { Sprint, UserStory } from '../../project/models/project.model';
 import { CreateOrUpdateSprint } from '../models/home.model';
 
 @Injectable({

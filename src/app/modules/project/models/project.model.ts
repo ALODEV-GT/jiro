@@ -12,6 +12,7 @@ export interface UserStory {
     description: string;
     points: number;
     priority: StoryPriority;
+    sprintId?: string;
 }
 
 export type CreateStoryPayload = Omit<
@@ -44,11 +45,11 @@ export interface Member {
 
 
 export interface SprintStage {
-  id: number;
-  name: string;
-  description: string;
-  orderIndex: number;
-  isDefault: boolean;
-  createdAt: string;
-  updatedAt: string;
+    id: number;
+    name: string;
+    description: string;
+    orderIndex: number;
+    isDefault: boolean;
+    createdAt: string;
+    updatedAt: string;
 }

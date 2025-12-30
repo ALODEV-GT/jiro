@@ -4,16 +4,15 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { Sprint, SprintStage, UserStory } from '../../models/project.model';
+import { Sprint, UserStory } from '../../models/project.model';
 import { StoryService } from '../../services/story.service';
-import { SprintService } from '../../services/sprint.service';
 import { Page } from '../../../../shared/models/page';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { MembersService } from '../../../home/services/members.service';
 import { ProjectMember } from '../../../home/models/home.model';
 import { BoardService } from '../../services/board.service';
-import { StoryStageService } from '../../../home/services/story-stage.service';
+import { SprintService } from '../../services/sprint.service';
 
 @Component({
   selector: 'app-sprints',
@@ -31,7 +30,6 @@ export class SprintsComponent {
   private readonly toast = inject(ToastService);
   private readonly memberService = inject(MembersService);
   private readonly boardService = inject(BoardService)
-  private readonly storyStage = inject(StoryStageService)
 
   employees: ProjectMember[] = []
 
@@ -168,40 +166,21 @@ export class SprintsComponent {
     this.sprintService.getProjectSprints(this.projectId).subscribe({
       next: (page: Page<Sprint>) => {
         this.sprints = page.items
-        //this.getSprintStories() <----------- unlock
+        this.getSprintStories()
       },
       error: (e: ErrorResponse) => this.toast.error(e.message)
     });
   }
 
-
   getSprintStories() {
     this.sprints.forEach((sprint: Sprint) => {
-      this.getSprintStages(sprint.id.toString())
+      this.boardService.getSprintStories(sprint.id.toString()).subscribe({
+        next: (stories: UserStory[]) => {
+          this.stories = [...this.stories, ...stories]
+        },
+        error: (e: ErrorResponse) => this.toast.error(e.message)
+      })
     })
-  }
-
-  getSprintStages(sprintId: string) {
-    this.boardService.getSprintStages(sprintId).subscribe({
-      next: (stages: SprintStage[]) => {
-
-      },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message)
-      }
-    })
-  }
-
-  getStageStories(stageId: number) {
-    this.storyStage.getStageStories(stageId).subscribe({
-      next: (stages: UserStory[]) => {
-        
-      },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message)
-      }
-    }
-    )
   }
 
   openCreateSprintModal(): void {
@@ -315,7 +294,13 @@ export class SprintsComponent {
     const sprintId = Number(this.assignSprintForm.value.sprintId);
     const storyId = this.assignSprintStoryId()!;
 
-
+    this.sprintService.assignStoryToSprint(this.projectId, storyId.toString(), sprintId.toString()).subscribe({
+      next: (story: UserStory) => {
+        this.toast.success("Se agrego la historia al sprint")
+      },
+      error: (e: ErrorResponse) =>
+        this.toast.error(e.message || 'No se pudo agregar la historia al sprint')
+    })
   }
 
 

@@ -4,7 +4,7 @@ import { map, Observable } from 'rxjs';
 
 import { ApiConfig } from '../../../shared/services/api-config.service';
 import { Page } from '../../../shared/models/page';
-import { SprintStage } from '../models/project.model';
+import { SprintStage, UserStory } from '../models/project.model';
 
 @Injectable({
     providedIn: 'root'
@@ -50,5 +50,18 @@ export class BoardService {
         return this.http.delete<void>(
             `${this.apiConfig.API_SPRINT}/${sprintId}/stages/${stageId}`
         );
+    }
+
+    getSprintStories(sprintId: string) {
+        return this.http
+            .get<UserStory[]>(`${this.apiConfig.API_SPRINT}/${sprintId}/stories`)
+            .pipe(
+                map(stories =>
+                    stories.map(story => ({
+                        ...story,
+                        sprintId
+                    }))
+                )
+            );
     }
 }
