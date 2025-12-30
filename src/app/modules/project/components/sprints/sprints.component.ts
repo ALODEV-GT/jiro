@@ -13,6 +13,7 @@ import { MembersService } from '../../../home/services/members.service';
 import { ProjectMember } from '../../../home/models/home.model';
 import { BoardService } from '../../services/board.service';
 import { SprintService } from '../../services/sprint.service';
+import { StoryStageService } from '../../../home/services/story-stage.service';
 
 @Component({
   selector: 'app-sprints',
@@ -30,6 +31,8 @@ export class SprintsComponent {
   private readonly toast = inject(ToastService);
   private readonly memberService = inject(MembersService);
   private readonly boardService = inject(BoardService)
+  private readonly storyStageService = inject(StoryStageService);
+
 
   employees: ProjectMember[] = []
 
@@ -181,12 +184,7 @@ export class SprintsComponent {
     this.sprints.forEach((sprint: Sprint) => {
       this.boardService.getSprintStories(sprint.id.toString()).subscribe({
         next: (stories: UserStory[]) => {
-          const withSprint = stories.map(story => ({
-            ...story,
-            stageId: sprint.id
-          }));
-
-          this.sprintStories = [...this.sprintStories, ...withSprint];
+          this.sprintStories = [...this.sprintStories, ...stories];
         },
         error: (e: ErrorResponse) => this.toast.error(e.message)
       });
@@ -337,6 +335,31 @@ export class SprintsComponent {
         },
         error: (e: ErrorResponse) =>
           this.toast.error(e.message || 'No se pudo agregar la historia al sprint')
+      });
+  }
+
+  sendStoryToBacklog(story: UserStory): void {
+    console.log(story)
+    if (!confirm('¿Enviar esta historia nuevamente al backlog?')) return;
+
+    this.storyStageService.updateStoryStage(
+      story.stageId!,
+      story.id,
+      null
+    )
+      .subscribe({
+        next: () => {
+          this.sprintStories = this.sprintStories.filter(s => s.id !== story.id);
+
+          this.backlogStories = [
+            ...this.backlogStories,
+            { ...story, stageId: null }
+          ];
+
+          this.toast.success('Historia regresada al backlog');
+        },
+        error: (e: ErrorResponse) =>
+          this.toast.error(e.message || 'No se pudo regresar la historia al backlog')
       });
   }
 

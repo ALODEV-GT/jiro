@@ -398,7 +398,7 @@ export class BoardComponent implements OnInit {
 
     if (!confirm('¿Enviar esta historia nuevamente al backlog?')) return;
 
-    const fromStageId = this.currentStageId; // 🔒 capturado
+    const fromStageId = this.currentStageId; 
     const storyId = this.editingStoryId();
 
     this.storyStageService.updateStoryStage(
