@@ -23,14 +23,14 @@
                         <td class="font-medium">{{ story.name }}</td>
                         <td>{{ story.points }}</td>
                         <td>
-                            <div class="badge" [class.badge-info]="story.priority === 'Baja'"
-                                [class.badge-warning]="story.priority === 'Media'"
-                                [class.badge-error]="story.priority === 'Alta' || story.priority === 'Crítica'">
+                            <div class="badge" [class.badge-info]="story.priority === 'LOW'"
+                                [class.badge-warning]="story.priority === 'MEDIUM'"
+                                [class.badge-error]="story.priority === 'HIGH'">
                                 {{ story.priority }}
                             </div>
                         </td>
                         <td>{{ getEmployeeName(story.productOwnerId) }}</td>
-                        <td>{{ getEmployeeName(story.assigneeId) }}</td>
+                        <td>{{ getEmployeeName(story.developerId) }}</td>
                         <td class="flex gap-2">
                             <button class="btn btn-sm btn-outline btn-info"
                                 (click)="openStoryModal(true, story)">Editar</button>
@@ -78,14 +78,14 @@
                                 <td class="font-medium">{{ story.name }}</td>
                                 <td>{{ story.points }}</td>
                                 <td>
-                                    <div class="badge" [class.badge-info]="story.priority === 'Baja'"
-                                        [class.badge-warning]="story.priority === 'Media'"
-                                        [class.badge-error]="story.priority === 'Alta' || story.priority === 'Crítica'">
+                                    <div class="badge" [class.badge-info]="story.priority === 'LOW'"
+                                        [class.badge-warning]="story.priority === 'MEDIUM'"
+                                        [class.badge-error]="story.priority === 'HIGH'">
                                         {{ story.priority }}
                                     </div>
                                 </td>
                                 <td>{{ getEmployeeName(story.productOwnerId) }}</td>
-                                <td>{{ getEmployeeName(story.assigneeId) }}</td>
+                                <td>{{ getEmployeeName(story.developerId) }}</td>
                                 <td class="flex gap-2">
                                     <button class="btn btn-sm btn-outline btn-info"
                                         (click)="openStoryModal(true, story)">Editar</button>
@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    <!-- Modal History 
+    <!-- Modal History -->
     <dialog id="story_modal" class="modal">
         <div class="modal-box w-11/12 max-w-3xl">
             <h3 class="text-2xl font-bold mb-6">{{ editingStoryId() ? 'Editar Historia' : 'Nueva Historia' }}</h3>
@@ -125,24 +125,25 @@
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Prioridad *</span></label>
                         <select name="priority" class="select select-bordered" required>
-                            <option value="Baja">Baja</option>
-                            <option value="Media">Media</option>
-                            <option value="Alta">Alta</option>
-                            <option value="Crítica">Crítica</option>
+                            <option value="LOW">Baja</option>
+                            <option value="MEDIUM">Media</option>
+                            <option value="HIGH">Alta</option>
                         </select>
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Product Owner *</span></label>
                         <select name="productOwnerId" class="select select-bordered" required>
                             <option value="0" disabled>Selecciona</option>
-                            <option *ngFor="let emp of employees()" [value]="emp.id">{{ emp.name }}</option>
+                            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.role }}
+                            </option>
                         </select>
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Asignado a *</span></label>
                         <select name="assigneeId" class="select select-bordered" required>
                             <option value="0" disabled>Selecciona</option>
-                            <option *ngFor="let emp of employees()" [value]="emp.id">{{ emp.name }}</option>
+                            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.role }}
+                            </option>
                         </select>
                     </div>
                     <div class="form-control">
@@ -166,7 +167,7 @@
         </div>
         <form method="dialog" class="modal-backdrop"><button>cerrar</button></form>
     </dialog>
--->
+
     <!-- Modal Sprint -->
     <dialog id="sprint_modal" class="modal">
         <div class="modal-box">

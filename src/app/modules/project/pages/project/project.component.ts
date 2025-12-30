@@ -6,10 +6,7 @@ import { ProjectManagementService } from '../../../home/services/project-managem
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { Project } from '../../../home/models/home.model';
-import { Member } from '../../models/project.model';
 import { CommonModule } from '@angular/common';
-import { MembersService } from '../../../home/services/members.service';
-import { Page } from '../../../../shared/models/page';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IncomingManagementComponent } from '../../../home/pages/incoming-management/incoming-management.component';
 import { ExpenseManagementComponent } from "../../../home/pages/expense-management/expense-management.component";
@@ -26,10 +23,8 @@ export class ProjectComponent {
   private fb = inject(FormBuilder);
   private activatedRoute = inject(ActivatedRoute);
   private projectService = inject(ProjectManagementService)
-  private memberService = inject(MembersService)
   private toast = inject(ToastService)
 
-  members: Member[] = []
   project: Project | null = null
 
   activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' = 'sprints';
@@ -55,7 +50,6 @@ export class ProjectComponent {
             client: project.client,
             monthlyIncome: project.monthlyIncome
           });
-          this.getMembers(project.id);
         },
         error: (error: ErrorResponse) => {
           this.toast.error(error.message)
@@ -103,16 +97,5 @@ export class ProjectComponent {
         this.toast.error(error.message);
       }
     });
-  }
-
-  getMembers(id: string) {
-    this.memberService.getMembers(id).subscribe({
-      next: (page: Page<Member>) => {
-        this.members = page.items
-      },
-      error: (error: ErrorResponse) => {
-        this.toast.error(error.message)
-      }
-    })
   }
 }

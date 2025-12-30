@@ -3,7 +3,7 @@ import { inject, Injectable } from "@angular/core";
 import { ApiConfig } from "../../../shared/services/api-config.service";
 import { Observable } from "rxjs";
 import { Page } from "../../../shared/models/page";
-import { Member, Sprint } from "../models/project.model";
+import { Sprint } from "../models/project.model";
 
 @Injectable({
     providedIn: 'root'
