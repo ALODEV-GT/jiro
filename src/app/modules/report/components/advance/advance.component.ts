@@ -1,23 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, input, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, effect, inject, input } from '@angular/core';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { ProjectAdvance } from '../../models/project-advance.model';
 import { ReportService } from '../../services/report.service';
 
 @Component({
-  selector: 'report-project',
+  selector: 'report-advance',
   standalone: true,
-  imports: [CommonModule, FormsModule, InfiniteScrollDirective],
-  templateUrl: './project.component.html',
+  imports: [CommonModule, InfiniteScrollDirective],
+  templateUrl: './advance.component.html',
   styles: ``,
 })
-export class ProjectAdvanceComponent {
+export class AdvanceComponent {
   private readonly reportService = inject(ReportService);
 
   readonly projectId = input.required<string>();
-  readonly from = signal<Date | undefined>(undefined);
-  readonly to = signal<Date | undefined>(undefined);
+  readonly from = input<Date>();
+  readonly to = input<Date>();
 
   rows: ProjectAdvance[] = [];
   fetching = false;

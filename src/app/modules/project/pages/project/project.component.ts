@@ -14,12 +14,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IncomingManagementComponent } from '../../../home/pages/incoming-management/incoming-management.component';
 import { ExpenseManagementComponent } from "../../../home/pages/expense-management/expense-management.component";
 import { MemberManagementComponent } from '../../../home/pages/member-management/member-management.component';
-import { ProjectAdvanceComponent } from "../../../report/components/project/project.component";
+import { ProjectDataComponent } from "../../../report/components/project-data/project-data.component";
 
 @Component({
   selector: 'app-project',
   standalone: true,
-  imports: [BoardComponent, SprintsComponent, CommonModule, ReactiveFormsModule, IncomingManagementComponent, ExpenseManagementComponent, MemberManagementComponent, ProjectAdvanceComponent],
+  imports: [BoardComponent, SprintsComponent, CommonModule, ReactiveFormsModule, IncomingManagementComponent, ExpenseManagementComponent, MemberManagementComponent, ProjectDataComponent],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss'
 })

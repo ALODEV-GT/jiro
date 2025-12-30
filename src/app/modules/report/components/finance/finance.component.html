@@ -1,0 +1,50 @@
+<div class="bg-base-100 rounded-xl shadow overflow-hidden">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Empleado</th>
+        <th>Cargo del Empleado</th>
+        <th>Descripción</th>
+        <th>Categoría del monto</th>
+        <th>Monto</th>
+      </tr>
+    </thead>
+
+    <tbody
+      infiniteScroll
+      [infiniteScrollDistance]="2"
+      [infiniteScrollThrottle]="50"
+    >
+      @for (row of rows; track $index) {
+      <tr>
+        <td>{{ row.client }}</td>
+        <td>{{ row.fullName }}</td>
+        <td>{{ row.role }}</td>
+        <td>{{ row.description }}</td>
+        <td>
+          @if (row.amount != null) {
+          {{ category(row.category) }}
+          } @else if (row.subtotalAmount != null) { Subtotal } @else { Total }
+        </td>
+        <td>
+          {{
+            row.amount ?? row.subtotalAmount ?? row.totalAmount
+              | currency : "GTQ" : "symbol-narrow"
+          }}
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (rows.length === 0 && !fetching) {
+  <div class="text-center py-12 text-base-content/60">
+    No hay información disponible de las finanzas del proyecto
+  </div>
+  } @else if (fetching) {
+  <div class="text-center py-12 text-base-content/60">
+    Cargando información...
+  </div>
+  }
+</div>
