@@ -8,6 +8,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ColorService } from '../../services/color.service';
+import { PermissionStore } from '../../../../shared/store/permission.store';
 
 @Component({
   selector: 'app-rol-management',
@@ -20,8 +21,10 @@ export class RolManagementComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly rolService = inject(RolService)
   private readonly toast = inject(ToastService)
+  private permissionStore = inject(PermissionStore)
   public colorService = inject(ColorService)
 
+  permissions = this.permissionStore.permissions;
   isEdit = false;
   loading = false;
   private isLastPage = false;
@@ -33,7 +36,8 @@ export class RolManagementComponent implements OnInit {
   rolForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]],
     description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(250)]],
-    color: ['', [Validators.required]]
+    color: ['', [Validators.required]],
+    permissions: this.fb.control<number[]>([], { nonNullable: true })
   });
 
   ngOnInit(): void {
@@ -60,8 +64,39 @@ export class RolManagementComponent implements OnInit {
     this.editingId = null;
     this.formError = '';
     this.loading = false;
-    this.rolForm.get('name')?.enable()
+
+    this.resetFormForCreate();
     this.showModal();
+  }
+
+  togglePermission(permissionId: number, event: any) {
+    const control = this.rolForm.controls.permissions;
+    const current = control.value;
+
+    if (event.target.checked) {
+      if (!current.includes(permissionId)) {
+        control.setValue([...current, permissionId]);
+      }
+    } else {
+      control.setValue(current.filter(id => id !== permissionId));
+    }
+  }
+
+  hasPermissionChecked(permissionId: number): boolean {
+    return this.rolForm.controls.permissions.value.includes(permissionId);
+  }
+
+  private resetFormForCreate(): void {
+    this.rolForm.reset({
+      name: '',
+      description: '',
+      color: '#ffffff',
+      permissions: []
+    });
+
+    this.rolForm.markAsPristine();
+    this.rolForm.markAsUntouched();
+    this.rolForm.get('name')?.enable();
   }
 
   openEditModal(rol: Rol) {
@@ -76,8 +111,10 @@ export class RolManagementComponent implements OnInit {
           name: rol.name ?? '',
           description: rol.description ?? '',
           color: rol.color ?? '',
+          permissions: rol.permissions ?? []
         });
-        this.rolForm.get('name')?.disable()
+
+        this.rolForm.get('name')?.disable();
         this.showModal();
       },
       error: (error: ErrorResponse) => {
@@ -149,6 +186,9 @@ export class RolManagementComponent implements OnInit {
 
   closeModal() {
     (document.getElementById('role_modal') as any)?.close();
+    if (!this.isEdit) {
+      this.resetFormForCreate();
+    }
   }
 
   confirmDelete() {

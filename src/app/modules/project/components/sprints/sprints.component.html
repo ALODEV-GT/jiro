@@ -36,6 +36,9 @@
                                 (click)="openStoryModal(true, story)">Editar</button>
                             <button class="btn btn-sm btn-outline btn-error"
                                 (click)="deleteStory(story.id)">Eliminar</button>
+                            <button class="btn btn-sm btn-outline btn-primary" (click)="openAssignSprintModal(story)">
+                                Asignar sprint
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -202,4 +205,41 @@
             </form>
         </div>
         <form method="dialog" class="modal-backdrop"><button>cerrar</button></form>
+    </dialog>
+
+    <!-- Modal Assign Sprint -->
+    <dialog id="assign_sprint_modal" class="modal">
+        <div class="modal-box w-11/12 max-w-md">
+            <h3 class="text-2xl font-bold mb-6">Selecciona el sprint</h3>
+
+            <form [formGroup]="assignSprintForm" (ngSubmit)="assignSprint()" class="space-y-4">
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-medium">Sprint *</span>
+                    </label>
+
+                    <select class="select select-bordered" formControlName="sprintId">
+                        <option value="" disabled>Selecciona un sprint</option>
+                        <option *ngFor="let sprint of sprints" [value]="sprint.id">
+                            {{ sprint.name }} ({{ sprint.status }})
+                        </option>
+                    </select>
+                </div>
+
+                <div class="modal-action">
+                    <button type="button" class="btn" (click)="closeModal('assign_sprint_modal')">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        Asignar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <form method="dialog" class="modal-backdrop">
+            <button>cerrar</button>
+        </form>
     </dialog>

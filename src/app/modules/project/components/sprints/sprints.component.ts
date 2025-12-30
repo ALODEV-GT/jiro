@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { Sprint, UserStory } from '../../models/project.model';
+import { Sprint, SprintStage, UserStory } from '../../models/project.model';
 import { StoryService } from '../../services/story.service';
 import { SprintService } from '../../services/sprint.service';
 import { Page } from '../../../../shared/models/page';
@@ -12,6 +12,8 @@ import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { MembersService } from '../../../home/services/members.service';
 import { ProjectMember } from '../../../home/models/home.model';
+import { BoardService } from '../../services/board.service';
+import { StoryStageService } from '../../../home/services/story-stage.service';
 
 @Component({
   selector: 'app-sprints',
@@ -28,6 +30,9 @@ export class SprintsComponent {
   private readonly storyService = inject(StoryService);
   private readonly toast = inject(ToastService);
   private readonly memberService = inject(MembersService);
+  private readonly boardService = inject(BoardService)
+  private readonly storyStage = inject(StoryStageService)
+
   employees: ProjectMember[] = []
 
   projectId!: string;
@@ -161,9 +166,42 @@ export class SprintsComponent {
 
   getSprints(): void {
     this.sprintService.getProjectSprints(this.projectId).subscribe({
-      next: (page: Page<Sprint>) => this.sprints = page.items,
+      next: (page: Page<Sprint>) => {
+        this.sprints = page.items
+        //this.getSprintStories() <----------- unlock
+      },
       error: (e: ErrorResponse) => this.toast.error(e.message)
     });
+  }
+
+
+  getSprintStories() {
+    this.sprints.forEach((sprint: Sprint) => {
+      this.getSprintStages(sprint.id.toString())
+    })
+  }
+
+  getSprintStages(sprintId: string) {
+    this.boardService.getSprintStages(sprintId).subscribe({
+      next: (stages: SprintStage[]) => {
+
+      },
+      error: (error: ErrorResponse) => {
+        this.toast.error(error.message)
+      }
+    })
+  }
+
+  getStageStories(stageId: number) {
+    this.storyStage.getStageStories(stageId).subscribe({
+      next: (stages: UserStory[]) => {
+        
+      },
+      error: (error: ErrorResponse) => {
+        this.toast.error(error.message)
+      }
+    }
+    )
   }
 
   openCreateSprintModal(): void {
@@ -252,5 +290,33 @@ export class SprintsComponent {
     const e = this.employees.find(emp => emp.id === id);
     return e ? `${e.firstName} ${e.lastName}` : '—';
   }
+
+  assignSprintForm = this.fb.group({
+    sprintId: ['', Validators.required]
+  });
+
+  assignSprintStoryId = signal<number | null>(null);
+  openAssignSprintModal(story: UserStory): void {
+    this.assignSprintStoryId.set(story.id);
+
+    this.assignSprintForm.reset({
+      sprintId: ''
+    });
+
+    (document.getElementById('assign_sprint_modal') as any)?.showModal();
+  }
+
+  assignSprint(): void {
+    if (this.assignSprintForm.invalid || this.assignSprintStoryId() === null) {
+      this.assignSprintForm.markAllAsTouched();
+      return;
+    }
+
+    const sprintId = Number(this.assignSprintForm.value.sprintId);
+    const storyId = this.assignSprintStoryId()!;
+
+
+  }
+
 
 }

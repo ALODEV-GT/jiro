@@ -74,6 +74,27 @@
                 <input formControlName="color" type="color">
             </div>
 
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">Permisos del Rol</span>
+                </label>
+
+                <div
+                    class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-64 overflow-y-auto p-3 rounded-xl border border-base-300">
+                    @for (permission of permissions(); track permission.id) {
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="checkbox checkbox-primary"
+                            [checked]="hasPermissionChecked(permission.id)"
+                            (change)="togglePermission(permission.id, $event)" />
+                        <div>
+                            <p class="font-medium">{{ permission.description }}</p>
+                            <p class="text-xs opacity-70">{{ permission.key }}</p>
+                        </div>
+                    </label>
+                    }
+                </div>
+            </div>
+
             <div class="modal-action">
                 <button type="button" class="btn" (click)="closeModal()">Cancelar</button>
                 <button type="submit" class="btn btn-primary">Guardar Rol</button>
