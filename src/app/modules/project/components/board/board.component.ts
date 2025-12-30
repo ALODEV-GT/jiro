@@ -426,6 +426,37 @@ export class BoardComponent implements OnInit {
     column.tasks = column.tasks.filter(t => t.id !== storyId);
   }
 
+  closeSprint() {
+    if (!confirm('¿Estas seguro que quieres cerrar el proyecto?')) return;
 
+    this.currentSprint!.status = "FINISHED"
+
+    this.sprintService.update(this.projectId, this.sprintId, this.currentSprint!).subscribe({
+      next: () => {
+        this.toast.success("Sprint cerrado")
+        this.currentSprint = null
+      },
+      error: (error: ErrorResponse) => {
+        this.toast.error(error.message)
+      }
+    })
+  }
+
+  sendSprintToBacklog() {
+    if (!confirm('¿Estas seguro que quieres regresar al backlog?')) return;
+
+    this.currentSprint!.status = "PENDING"
+    console.log(this.sprintId)
+
+    this.sprintService.update(this.projectId, this.sprintId, this.currentSprint!).subscribe({
+      next: () => {
+        this.toast.success("Se regreso el sprint al backlog")
+        this.currentSprint = null
+      },
+      error: (error: ErrorResponse) => {
+        this.toast.error(error.message)
+      }
+    })
+  }
 
 }

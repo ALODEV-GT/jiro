@@ -31,9 +31,29 @@
 
           <!-- Actions -->
           <div class="flex items-center gap-2">
-            <button class="btn btn-sm btn-error">
-              Cerrar sprint
-            </button>
+
+            <!-- Menú de acciones -->
+            <div class="dropdown dropdown-end">
+              <button tabindex="0" class="btn btn-sm btn-ghost px-2">
+                ⋮
+              </button>
+
+              <ul tabindex="0"
+                class="dropdown-content menu menu-sm bg-base-200 rounded-box shadow w-48 z-40 font-bold gap-3">
+
+                <li class="text-primary">
+                  <a (click)="closeSprint()">
+                    Cerrar sprint
+                  </a>
+                </li>
+
+                <li>
+                  <a (click)="sendSprintToBacklog()">
+                    Regresar al backlog
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
