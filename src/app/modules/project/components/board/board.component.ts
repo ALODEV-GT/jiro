@@ -14,11 +14,12 @@ import { BoardService } from '../../services/board.service';
 import { StoryStageService } from '../../../home/services/story-stage.service';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
-import { UserStory } from '../../models/project.model';
+import { Sprint, UserStory } from '../../models/project.model';
 import { ProjectMember } from '../../../home/models/home.model';
 import { MembersService } from '../../../home/services/members.service';
 import { Page } from '../../../../shared/models/page';
 import { ActivatedRoute } from '@angular/router';
+import { SprintService } from '../../services/sprint.service';
 
 interface Column {
   id: string;              // stage.id
@@ -40,13 +41,39 @@ export class BoardComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly memberService = inject(MembersService);
   private readonly route = inject(ActivatedRoute);
+  private readonly sprintService = inject(SprintService);
+
+  private sprintId: string = "";
+  currentSprint: Sprint | null = null
+
+
   projectId!: string;
 
 
   employees: ProjectMember[] = []
+  sprints: Sprint[] = [];
 
-  /** TODO: reemplazar por sprint activo real */
-  private readonly sprintId: string = "3ce2dded-4dbf-4d4a-aa40-1f893ad26acb";
+  getSprints(): void {
+    this.sprintService.getProjectSprints(this.projectId).subscribe({
+      next: (page: Page<Sprint>) => {
+        this.sprints = page.items;
+
+        const activeSprint = this.sprints.find(
+          sprint => sprint.status === 'ACTIVE'
+        );
+
+        if (!activeSprint) {
+          this.toast.warning('No hay un sprint activo');
+          return;
+        }
+
+        this.sprintId = activeSprint.id.toString();
+        this.currentSprint = activeSprint
+        this.loadStages();
+      },
+      error: (e: ErrorResponse) => this.toast.error(e.message)
+    });
+  }
 
   columns: Column[] = [];
 
@@ -64,8 +91,8 @@ export class BoardComponent implements OnInit {
 
   ngOnInit(): void {
     this.projectId = this.route.snapshot.paramMap.get('id')!;
+    this.getSprints()
     this.loadMembersPage();
-    this.loadStages();
   }
 
   loadMembersPage() {

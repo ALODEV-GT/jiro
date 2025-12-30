@@ -1,8 +1,71 @@
 <div class="min-h-screen bg-base-200 p-6">
 
-  <h1>
-    Nombre del sprint activo
-  </h1>
+  @if (currentSprint) {
+  <div class="mb-6">
+    <div class="card bg-base-100 shadow-sm border border-base-300">
+      <div class="card-body p-5">
+
+        <!-- Top row -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+          <!-- Sprint info -->
+          <div>
+            <div class="flex items-center gap-3">
+              <h2 class="text-2xl font-bold">
+                {{ currentSprint.name }}
+              </h2>
+
+              <span class="badge badge-success badge-outline" *ngIf="currentSprint.status === 'ACTIVE'">
+                Sprint activo
+              </span>
+
+              <span class="badge badge-neutral badge-outline" *ngIf="currentSprint.status !== 'ACTIVE'">
+                {{ currentSprint.status }}
+              </span>
+            </div>
+
+            <p class="text-sm text-base-content/70 mt-1">
+              {{ currentSprint.description || 'Sin descripción' }}
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2">
+            <button class="btn btn-sm btn-error">
+              Cerrar sprint
+            </button>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider my-3"></div>
+
+        <!-- Bottom row -->
+        <div class="flex flex-wrap gap-4 text-sm text-base-content/70">
+          <div class="flex items-center gap-2">
+            <span class="font-medium">Inicio:</span>
+            <span>{{ currentSprint.startDate | date:'dd MMM yyyy' }}</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="font-medium">Fin:</span>
+            <span>{{ currentSprint.endDate | date:'dd MMM yyyy' }}</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="font-medium">Duración:</span>
+            <span>
+              {{ currentSprint.startDate | date:'dd/MM' }}
+              -
+              {{ currentSprint.endDate | date:'dd/MM' }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  }
 
   <!-- Columns horizontal drag and drop -->
   <div class="flex gap-6 overflow-x-auto pb-4" cdkDropList cdkDropListOrientation="horizontal"
