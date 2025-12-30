@@ -12,6 +12,7 @@ import { PayrollManagementComponent } from '../payroll-management/payroll-manage
 import { DiscountManagementComponent } from '../discount-management/discount-management.component';
 import { BonusManagementComponent } from '../bonus-management/bonus-management.component';
 import { SuspensionManagementComponent } from '../suspension-management/suspension-management.component';
+import { ProductivityComponent } from "../../../report/components/productivity/productivity.component";
 
 @Component({
   selector: 'app-profile',
@@ -22,8 +23,9 @@ import { SuspensionManagementComponent } from '../suspension-management/suspensi
     PayrollManagementComponent,
     DiscountManagementComponent,
     BonusManagementComponent,
-    SuspensionManagementComponent
-  ],
+    SuspensionManagementComponent,
+    ProductivityComponent
+],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -43,7 +45,7 @@ export class ProfileComponent {
     password: ''
   };
 
-  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' = 'suspension';
+  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' | 'reports' = 'suspension';
 
   canEdit(): boolean {
     const authUser: LoginResponse = this.authStore.user()!;

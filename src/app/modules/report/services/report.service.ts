@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Page } from '../../../shared/models/page';
 import { ApiConfig } from '../../../shared/services/api-config.service';
+import { EmployeeProductivity } from '../models/employee-productivity.model';
 import { ProjectAdvance } from '../models/project-advance.model';
 import { ProjectFinance } from '../models/project-finance.model';
 
@@ -30,6 +31,16 @@ export class ReportService {
   ): Observable<Page<ProjectFinance>> {
     return this.http.get<Page<ProjectFinance>>(
       `${this.reportApi}/financial/movements`,
+      { params: { page, size: this.SIZE, ...params } }
+    );
+  }
+
+  getEmployeeProductivity(
+    page: number,
+    params: any
+  ): Observable<Page<EmployeeProductivity>> {
+    return this.http.get<Page<EmployeeProductivity>>(
+      `${this.reportApi}/employees/productivity`,
       { params: { page, size: this.SIZE, ...params } }
     );
   }

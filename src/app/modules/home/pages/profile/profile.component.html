@@ -79,6 +79,7 @@
             <a class="tab" [class.tab-active]="activeTab === 'suspension'"
                 (click)="activeTab = 'suspension'">Suspensiones</a>
             <a class="tab" [class.tab-active]="activeTab === 'contract'" (click)="activeTab = 'contract'">Contratos</a>
+            <a class="tab" [class.tab-active]="activeTab === 'reports'" (click)="activeTab = 'reports'">Reportes</a>
         </div>
 
         <div>
@@ -106,6 +107,11 @@
             @case ('contract') {
             @if (user) {
             <app-contract-management [employeeId]="user.id"></app-contract-management>
+            }
+            }
+            @case ('reports') {
+            @if (user) {
+            <report-productivity [employeeId]="user.id" />
             }
             }
             }

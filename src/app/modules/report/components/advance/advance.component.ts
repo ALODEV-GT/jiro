@@ -21,10 +21,6 @@ export class AdvanceComponent {
   rows: ProjectAdvance[] = [];
   fetching = false;
 
-  key(row: ProjectAdvance): string {
-    return `${row.projectId}-${row.sprintId}`;
-  }
-
   constructor() {
     effect(() => {
       const params = {} as any;

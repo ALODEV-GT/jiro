@@ -1,0 +1,107 @@
+<div>
+  <!-- Header -->
+  <div class="flex justify-end mb-6 gap-8">
+    <div class="form-control flex-row items-center gap-1">
+      <label class="label">Desde</label>
+      <input
+        type="date"
+        class="input input-sm input-bordered"
+        [(ngModel)]="from"
+      />
+    </div>
+
+    <div class="form-control flex-row items-center gap-1">
+      <label class="label">Hasta</label>
+      <input
+        type="date"
+        class="input input-sm input-bordered"
+        [(ngModel)]="to"
+      />
+    </div>
+  </div>
+
+  <div class="bg-base-100 rounded-xl shadow overflow-x-auto">
+    <table class="table table-xs w-full">
+      <thead>
+        <tr class="text-center">
+          <th colspan="2">Proyecto</th>
+          <th class="bg-base-200" colspan="5">Sprint</th>
+          <th colspan="2">Historia</th>
+          <th class="bg-base-200" colspan="2">Product Owner</th>
+          <th colspan="2">Desarrollador</th>
+        </tr>
+
+        <tr>
+          <th>Nombre</th>
+          <th>Cliente</th>
+
+          <th class="bg-base-200">Nombre</th>
+          <th class="bg-base-200">Estado</th>
+          <th class="bg-base-200">Puntos</th>
+          <th class="bg-base-200">Prioridad</th>
+          <th class="bg-base-200">Horas trabajadas</th>
+
+          <th>Nombre</th>
+          <th>Estado</th>
+
+          <th class="bg-base-200">Nombre</th>
+          <th class="bg-base-200">Rol</th>
+
+          <th>Nombre</th>
+          <th>Rol</th>
+        </tr>
+      </thead>
+
+      <tbody
+        infiniteScroll
+        [infiniteScrollDistance]="2"
+        [infiniteScrollThrottle]="50"
+      >
+        @for (row of rows; track $index) {
+        <tr>
+          @if (row.fromDate != null){
+          <td>{{ row.project.name }}</td>
+          <td>{{ row.project.client }}</td>
+
+          <td class="bg-base-200">{{ row.story.name }}</td>
+          <td class="bg-base-200">{{ row.story.stage }}</td>
+          <td class="bg-base-200">{{ row.story.points }}</td>
+          <td class="bg-base-200">{{ row.story.priority }}</td>
+          <td class="bg-base-200">{{ row.hoursSpent }}</td>
+
+          <td>{{ row.sprint.name }}</td>
+          <td>{{ row.sprint.status }}</td>
+
+          <td class="bg-base-200">{{ row.productOwner.fullName }}</td>
+          <td class="bg-base-200">{{ row.productOwner.role }}</td>
+
+          <td>{{ row.developer.fullName }}</td>
+          <td>{{ row.developer.role }}</td>
+          } @else {
+          <td></td>
+          <td>Horas trabajadas</td>
+          <td colspan="2">{{ row.hoursSpent }}</td>
+          <td></td>
+          <td>Historias trabajadas</td>
+          <td colspan="2">{{ row.totalStories }}</td>
+          <td></td>
+          <td>Puntos asignados</td>
+          <td colspan="2">{{ row.pointsDone }}</td>
+          <td></td>
+          }
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (rows.length === 0 && !fetching) {
+    <div class="text-center py-12 text-base-content/60">
+      No hay información disponible de la productividad del empleado
+    </div>
+    } @else if (fetching) {
+    <div class="text-center py-12 text-base-content/60">
+      Cargando información...
+    </div>
+    }
+  </div>
+</div>
