@@ -177,9 +177,23 @@
             Aceptación)</span></label>
         <textarea class="textarea textarea-bordered h-32" formControlName="description"></textarea>
       </div>
-      <div class="modal-action">
-        <button type="button" class="btn" (click)="closeModal('story_modal')">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Guardar</button>
+      <div class="modal-action flex justify-between w-full">
+        <!-- Acción peligrosa / secundaria -->
+        @if (editingStoryId()) {
+        <button type="button" class="btn btn-outline btn-warning" (click)="sendToBacklog()">
+          Enviar al Backlog
+        </button>
+        }
+
+        <!-- Acciones principales -->
+        <div class="flex gap-2">
+          <button type="button" class="btn" (click)="closeModal('story_modal')">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Guardar
+          </button>
+        </div>
       </div>
     </form>
   </div>

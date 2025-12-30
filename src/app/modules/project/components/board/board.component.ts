@@ -365,4 +365,40 @@ export class BoardComponent implements OnInit {
     const e = this.employees.find(emp => emp.id === id);
     return e ? `${e.firstName} ${e.lastName}` : '—';
   }
+
+  sendToBacklog(): void {
+    if (!this.editingStoryId() || this.currentStageId === null) return;
+
+    if (!confirm('¿Enviar esta historia nuevamente al backlog?')) return;
+
+    const fromStageId = this.currentStageId; // 🔒 capturado
+    const storyId = this.editingStoryId();
+
+    this.storyStageService.updateStoryStage(
+      fromStageId,
+      storyId!,
+      null // BACKLOG
+    ).subscribe({
+      next: () => {
+        this.removeStoryFromColumn(fromStageId, storyId!);
+        this.closeModal('story_modal');
+        this.toast.success('Historia enviada al backlog');
+      },
+      error: (err) => {
+        console.error('Error sending story to backlog', err);
+        this.toast.error('No se pudo enviar la historia al backlog');
+      }
+    });
+  }
+
+
+  private removeStoryFromColumn(stageId: number, storyId: number): void {
+    const column = this.columns.find(c => Number(c.id) === stageId);
+    if (!column) return;
+
+    column.tasks = column.tasks.filter(t => t.id !== storyId);
+  }
+
+
+
 }
