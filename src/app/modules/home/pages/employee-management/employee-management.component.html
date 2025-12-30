@@ -2,6 +2,7 @@
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-bold text-primary">Empleados</h1>
+            <button class="btn btn-sm btn-outline" (click)="showReportModal()">Reporte de empleados</button>
         </div>
 
         <div class="bg-base-100 rounded-xl shadow-xl">
@@ -77,3 +78,9 @@
         </div>
     </div>
 </div>
+
+<dialog id="report_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="m-16 p-4 bg-base-100 rounded-xl shadow-lg min-w-[75vw]">
+        <report-employees />
+    </div>
+</dialog>

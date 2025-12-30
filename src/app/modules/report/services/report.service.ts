@@ -3,9 +3,11 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Page } from '../../../shared/models/page';
 import { ApiConfig } from '../../../shared/services/api-config.service';
+import { EmployeeEvent } from '../models/employee-event.model';
 import { EmployeeProductivity } from '../models/employee-productivity.model';
 import { ProjectAdvance } from '../models/project-advance.model';
 import { ProjectFinance } from '../models/project-finance.model';
+import { UserRole } from '../models/roles.model';
 
 @Injectable({
   providedIn: 'root',
@@ -43,5 +45,21 @@ export class ReportService {
       `${this.reportApi}/employees/productivity`,
       { params: { page, size: this.SIZE, ...params } }
     );
+  }
+
+  getEmployeeEvents(
+    page: number,
+    params: any
+  ): Observable<Page<EmployeeEvent>> {
+    return this.http.get<Page<EmployeeEvent>>(
+      `${this.reportApi}/employees/events`,
+      { params: { page, size: this.SIZE, ...params } }
+    );
+  }
+
+  getUserRoles(page: number, params: any): Observable<Page<UserRole>> {
+    return this.http.get<Page<UserRole>>(`${this.reportApi}/users/roles`, {
+      params: { page, size: this.SIZE, ...params },
+    });
   }
 }

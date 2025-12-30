@@ -1,0 +1,43 @@
+<div class="bg-base-100 rounded-xl shadow overflow-hidden">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr>
+        <th>Nombre del empleado</th>
+        <th>Correo Electrónico</th>
+        <th>Cargo / Puesto</th>
+        <th>Fecha de contratación</th>
+        <th>Fecha de finalización</th>
+      </tr>
+    </thead>
+
+    <tbody infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50">
+      @for (row of rows; track $index) {
+      <tr>
+        @if (row.employeeId != null){
+        <td>{{ row.fullName }}</td>
+        <td>{{ row.email }}</td>
+        <td>{{ row.role }}</td>
+        <td>{{ row.hiredAt | date : 'short' }}</td>
+        <td>{{ (row.terminatedAt | date : 'short') ?? "N/A" }}</td>
+        } @else {
+        <td></td>
+        <td class="text-right">{{ row.subtotal != null ? "Subtotal" : "Total" }}</td>
+        <td>{{ row.subtotal ?? row.total }}</td>
+        <td></td>
+        <td></td>
+        }
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (rows.length === 0 && !fetching) {
+  <div class="text-center py-12 text-base-content/60">
+    No hay información disponible de roles
+  </div>
+  } @else if (fetching) {
+  <div class="text-center py-12 text-base-content/60">
+    Cargando información...
+  </div>
+  }
+</div>

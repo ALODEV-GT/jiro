@@ -1,19 +1,20 @@
-import { Component, inject } from '@angular/core';
-import { ToastService } from '../../../../shared/services/toast.service';
-import { Router } from '@angular/router';
-import { Rol, User } from '../../models/home.model';
-import { Page } from '../../../../shared/models/page';
-import { ErrorResponse } from '../../../../shared/models/errors';
-import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../services/user.service';
-import { RolService } from '../../services/rol.service';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { ErrorResponse } from '../../../../shared/models/errors';
+import { Page } from '../../../../shared/models/page';
+import { ToastService } from '../../../../shared/services/toast.service';
+import { EmployeesComponent } from "../../../report/components/employees/employees.component";
+import { Rol, User } from '../../models/home.model';
 import { ColorService } from '../../services/color.service';
+import { RolService } from '../../services/rol.service';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-employee-management',
   standalone: true,
-  imports: [InfiniteScrollDirective, CommonModule],
+  imports: [InfiniteScrollDirective, CommonModule, EmployeesComponent],
   templateUrl: './employee-management.component.html',
   styleUrl: './employee-management.component.scss'
 })
@@ -78,6 +79,10 @@ export class EmployeeManagementComponent {
     this.page = 0
     this.isLastPage = false
     this.getUserPage()
+  }
+
+  showReportModal() {
+    (document.getElementById("report_modal") as HTMLDialogElement)?.showModal();
   }
 
   delete(id: string) {
