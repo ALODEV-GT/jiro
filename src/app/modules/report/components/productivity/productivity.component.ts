@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { EmployeeProductivity } from '../../models/employee-productivity.model';
 import { ReportService } from '../../services/report.service';
@@ -43,16 +45,9 @@ export class ProductivityComponent {
     });
   }
 
-  // stateToString(state: EmployeeProductivity['sprintStatus']): string {
-  //   switch (state) {
-  //     case 'ACTIVE':
-  //       return 'Activa';
-  //     case 'PENDING':
-  //       return 'Pendiente';
-  //     case 'FINISHED':
-  //       return 'Finalizada';
-  //     default:
-  //       return 'Desconocido';
-  //   }
-  // }
+  export() {
+    const doc = new jsPDF('l', 'mm', 'a4');
+    autoTable(doc, { html: '#productivity-report' });
+    doc.save('productivity-report.pdf');
+  }
 }

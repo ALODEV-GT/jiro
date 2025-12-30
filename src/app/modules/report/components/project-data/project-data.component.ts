@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { jsPDF } from 'jspdf';
+import { autoTable } from 'jspdf-autotable';
 import { AdvanceComponent } from '../advance/advance.component';
 import { FinanceComponent } from '../finance/finance.component';
 
@@ -24,4 +26,15 @@ export class ProjectDataComponent {
   readonly to = signal<Date | undefined>(undefined);
 
   readonly ReportType = ReportType;
+
+  export() {
+    const doc = new jsPDF('l', 'mm', 'a4');
+    autoTable(doc, {
+      html:
+        this.report() === ReportType.ADVANCE
+          ? '#advance-report'
+          : '#finance-report',
+    });
+    doc.save('project-report.pdf');
+  }
 }
