@@ -6,7 +6,7 @@
             <button class="btn btn-primary" (click)="openStoryModal()">+ Nueva Historia</button>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="">
             <table class="table table-zebra">
                 <thead>
                     <tr>
@@ -31,14 +31,34 @@
                         </td>
                         <td>{{ getEmployeeName(story.productOwnerId) }}</td>
                         <td>{{ getEmployeeName(story.developerId) }}</td>
-                        <td class="flex gap-2">
-                            <button class="btn btn-sm btn-outline btn-info"
-                                (click)="openStoryModal(true, story)">Editar</button>
-                            <button class="btn btn-sm btn-outline btn-error"
-                                (click)="deleteStory(story.id)">Eliminar</button>
-                            <button class="btn btn-sm btn-outline btn-primary" (click)="openAssignSprintModal(story)">
-                                Asignar sprint
-                            </button>
+                        <td class="text-center">
+                            <div class="dropdown dropdown-end">
+                                <label tabindex="0" class="btn btn-sm btn-ghost">
+                                    ⋮
+                                </label>
+
+                                <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-48">
+                                    <li>
+                                        <button class="flex items-center gap-2" (click)="openStoryModal(true, story)">
+                                            Editar
+                                        </button>
+                                    </li>
+
+                                    <li>
+                                        <button class="flex items-center gap-2 text-error"
+                                            (click)="deleteStory(story.id)">
+                                            Eliminar
+                                        </button>
+                                    </li>
+
+                                    <li>
+                                        <button class="flex items-center gap-2 text-primary"
+                                            (click)="openAssignSprintModal(story)">
+                                            Asignar sprint
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
