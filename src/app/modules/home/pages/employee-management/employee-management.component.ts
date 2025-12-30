@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
 import { RolService } from '../../services/rol.service';
 import { ColorService } from '../../services/color.service';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-employee-management',
@@ -22,7 +23,9 @@ export class EmployeeManagementComponent {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router)
   private readonly rolService = inject(RolService)
+  readonly authStore = inject(AuthStore);
   colorService = inject(ColorService)
+
 
   private isLastPage = false;
   private page = 0

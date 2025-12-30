@@ -67,4 +67,14 @@ export class ProjectManagementService {
 
     return this.http.get<Page<Project>>(`${this.apiConfig.API_PROJECT}`, { params })
   }
+
+  getMyProjects(page: number, size: number = this.PAGE_SIZE): Observable<Page<Project>> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+
+    return this.http.get<Page<Project>>(`${this.apiConfig.API_PROJECT}/me`, { params })
+  }
+
+
 }

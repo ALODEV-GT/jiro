@@ -11,6 +11,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IncomingManagementComponent } from '../../../home/pages/incoming-management/incoming-management.component';
 import { ExpenseManagementComponent } from "../../../home/pages/expense-management/expense-management.component";
 import { MemberManagementComponent } from '../../../home/pages/member-management/member-management.component';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-project',
@@ -24,10 +25,11 @@ export class ProjectComponent {
   private activatedRoute = inject(ActivatedRoute);
   private projectService = inject(ProjectManagementService)
   private toast = inject(ToastService)
+  readonly authStore = inject(AuthStore);
 
   project: Project | null = null
 
-  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' = 'sprints';
+  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' = 'board';
 
   isEditingProject = false;
 

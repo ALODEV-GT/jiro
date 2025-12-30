@@ -3,7 +3,9 @@
     <div class="bg-base-100 rounded-xl shadow-xl p-6">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-3xl font-bold text-primary">Historias (Backlog)</h2>
+            @if (this.authStore.hasPermission("stories:write")) {
             <button class="btn btn-primary" (click)="openStoryModal()">+ Nueva Historia</button>
+            }
         </div>
 
         <div class="">
@@ -32,33 +34,43 @@
                         <td>{{ getEmployeeName(story.productOwnerId) }}</td>
                         <td>{{ getEmployeeName(story.developerId) }}</td>
                         <td class="text-center">
+                            @if (this.authStore.hasPermission("stories:write") ||
+                            this.authStore.hasPermission("stories:delete")) {
                             <div class="dropdown dropdown-end">
                                 <label tabindex="0" class="btn btn-sm btn-ghost">
                                     ⋮
                                 </label>
 
                                 <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-48">
+                                    @if (this.authStore.hasPermission("stories:write")) {
                                     <li>
                                         <button class="flex items-center gap-2" (click)="openStoryModal(true, story)">
                                             Editar
                                         </button>
                                     </li>
+                                    }
 
+                                    @if (this.authStore.hasPermission("stories:delete")) {
                                     <li>
                                         <button class="flex items-center gap-2 text-error"
                                             (click)="deleteStory(story.id)">
                                             Eliminar
                                         </button>
                                     </li>
+                                    }
 
+                                    @if (this.authStore.hasPermission("stories:write")) {
                                     <li>
                                         <button class="flex items-center gap-2 text-primary"
                                             (click)="openAssignSprintModal(story)">
                                             Asignar sprint
                                         </button>
                                     </li>
+                                    }
+
                                 </ul>
                             </div>
+                            }
                         </td>
                     </tr>
                 </tbody>
@@ -73,7 +85,9 @@
     <div class="bg-base-100 rounded-xl shadow-xl p-6">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-3xl font-bold text-primary">Sprints</h2>
+            @if (this.authStore.hasPermission("sprints:write")) {
             <button class="btn btn-primary" (click)="openCreateSprintModal()">+ Nuevo Sprint</button>
+            }
         </div>
 
         <div class="space-y-8">
@@ -84,6 +98,8 @@
                     <h3 class="text-xl font-bold text-secondary">
                         {{ sprint.name }} ({{ sprint.status }})
                     </h3>
+                    @if (this.authStore.hasPermission("sprints:write") ||
+                    this.authStore.hasPermission("sprints:delete")) {
 
                     <div class="dropdown dropdown-end z-50">
                         <label tabindex="0" class="btn btn-sm btn-ghost">
@@ -91,19 +107,24 @@
                         </label>
 
                         <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40">
+                            @if (this.authStore.hasPermission("sprints:write")) {
                             <li>
                                 <button (click)="openEditSprintModal(sprint)">
                                     Editar
                                 </button>
                             </li>
+                            }
 
+                            @if (this.authStore.hasPermission("sprints:delete")) {
                             <li>
                                 <button class="text-error" (click)="deleteSprint(sprint.id)">
                                     Eliminar
                                 </button>
                             </li>
+                            }
                         </ul>
                     </div>
+                    }
                 </div>
 
                 <div class="">
@@ -132,6 +153,8 @@
                                 <td>{{ getEmployeeName(story.productOwnerId) }}</td>
                                 <td>{{ getEmployeeName(story.developerId) }}</td>
                                 <td class="text-center">
+                                    @if (this.authStore.hasPermission("stories:delete") ||
+                                    this.authStore.hasPermission("stories:write")) {
                                     <div class="dropdown dropdown-end">
                                         <label tabindex="0" class="btn btn-sm btn-ghost">
                                             ⋮
@@ -139,25 +162,34 @@
 
                                         <ul tabindex="0"
                                             class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                                            @if (this.authStore.hasPermission("stories:write")) {
                                             <li>
                                                 <button (click)="openStoryModal(true, story)">
                                                     Editar
                                                 </button>
                                             </li>
+                                            }
 
+                                            @if (this.authStore.hasPermission("stories:delete")) {
                                             <li>
                                                 <button class="text-error" (click)="deleteStory(story.id)">
                                                     Eliminar
                                                 </button>
                                             </li>
+                                            }
 
+                                            @if (this.authStore.hasPermission("stories:write")) {
                                             <li>
                                                 <button class="text-warning" (click)="sendStoryToBacklog(story)">
                                                     Regresar al backlog
                                                 </button>
                                             </li>
+                                            }
                                         </ul>
                                     </div>
+                                    }@else{
+                                    N/A
+                                    }
                                 </td>
                             </tr>
                         </tbody>

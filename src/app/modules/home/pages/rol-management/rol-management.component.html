@@ -2,9 +2,11 @@
     <div class="max-w-4xl mx-auto">
         <div class="flex justify-between items-center mb-10">
             <h1 class="text-4xl font-bold text-primary">Gestión de Roles</h1>
+            @if (this.authStore.hasPermission("roles:write")) {
             <button class="btn btn-primary" (click)="openCreateModal()">
                 + Nuevo Rol
             </button>
+            }
         </div>
 
         <!-- Rol table -->
@@ -30,12 +32,22 @@
                         </td>
                         <td>{{rol.description}}</td>
                         <td class="text-center">
+                            @if (this.authStore.hasPermission("roles:write") ||
+                            this.authStore.hasPermission("roles:delete")) {
+
                             <div class="flex justify-center gap-2">
+                                @if (this.authStore.hasPermission("roles:write")){
                                 <button class="btn btn-sm btn-outline btn-info"
                                     (click)="openEditModal(rol)">Editar</button>
+                                }
+                                @if (this.authStore.hasPermission("roles:delete")){
                                 <button class="btn btn-sm btn-outline btn-error"
                                     (click)="deleteRol(rol)">Eliminar</button>
+                                }
                             </div>
+                            }@else {
+                            N/A
+                            }
                         </td>
                     </tr>
                     }

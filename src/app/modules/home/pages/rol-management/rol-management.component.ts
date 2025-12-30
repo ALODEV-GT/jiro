@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ColorService } from '../../services/color.service';
 import { PermissionStore } from '../../../../shared/store/permission.store';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-rol-management',
@@ -23,6 +24,7 @@ export class RolManagementComponent implements OnInit {
   private readonly toast = inject(ToastService)
   private permissionStore = inject(PermissionStore)
   public colorService = inject(ColorService)
+  readonly authStore = inject(AuthStore);
 
   permissions = this.permissionStore.permissions;
   isEdit = false;

@@ -14,6 +14,7 @@ import { ProjectMember } from '../../../home/models/home.model';
 import { BoardService } from '../../services/board.service';
 import { SprintService } from '../../services/sprint.service';
 import { StoryStageService } from '../../../home/services/story-stage.service';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-sprints',
@@ -32,7 +33,7 @@ export class SprintsComponent {
   private readonly memberService = inject(MembersService);
   private readonly boardService = inject(BoardService)
   private readonly storyStageService = inject(StoryStageService);
-
+  readonly authStore = inject(AuthStore);
 
   employees: ProjectMember[] = []
 

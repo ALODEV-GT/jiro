@@ -9,6 +9,8 @@ import { Page } from '../../../../shared/models/page';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { PermissionStore } from '../../../../shared/store/permission.store';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-projects-management',
@@ -22,6 +24,7 @@ export class ProjectsManagementComponent implements OnInit {
   private readonly projectManagementService = inject(ProjectManagementService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router)
+  readonly authStore = inject(AuthStore);
 
   isEdit = false;
   loading = false;
@@ -30,6 +33,8 @@ export class ProjectsManagementComponent implements OnInit {
   formError = '';
   projects: Project[] = [];
   private editingId: string | null = null;
+
+  justMine: boolean = false
 
   projectForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]],
@@ -40,21 +45,37 @@ export class ProjectsManagementComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    if (!this.authStore.hasPermission("projects:read")) {
+      this.justMine = true
+    }
     this.getProjectPage()
   }
 
   getProjectPage() {
     if (!this.isLastPage) {
-      this.projectManagementService.getAll(this.page).subscribe({
-        next: (page: Page<Project>) => {
-          this.projects = [...this.projects, ...page.items]
-          this.page += 1
-          this.isLastPage = page.lastPage
-        },
-        error: (error: ErrorResponse) => {
-          this.toast.error(error.message)
-        }
-      })
+      if (this.justMine) {
+        this.projectManagementService.getMyProjects(this.page).subscribe({
+          next: (page: Page<Project>) => {
+            this.projects = [...this.projects, ...page.items]
+            this.page += 1
+            this.isLastPage = page.lastPage
+          },
+          error: (error: ErrorResponse) => {
+            this.toast.error(error.message)
+          }
+        })
+      } else {
+        this.projectManagementService.getAll(this.page).subscribe({
+          next: (page: Page<Project>) => {
+            this.projects = [...this.projects, ...page.items]
+            this.page += 1
+            this.isLastPage = page.lastPage
+          },
+          error: (error: ErrorResponse) => {
+            this.toast.error(error.message)
+          }
+        })
+      }
     }
   }
 

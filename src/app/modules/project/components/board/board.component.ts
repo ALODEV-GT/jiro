@@ -20,6 +20,7 @@ import { MembersService } from '../../../home/services/members.service';
 import { Page } from '../../../../shared/models/page';
 import { ActivatedRoute } from '@angular/router';
 import { SprintService } from '../../services/sprint.service';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 interface Column {
   id: string;              // stage.id
@@ -42,6 +43,7 @@ export class BoardComponent implements OnInit {
   private readonly memberService = inject(MembersService);
   private readonly route = inject(ActivatedRoute);
   private readonly sprintService = inject(SprintService);
+  readonly authStore = inject(AuthStore);
 
   private sprintId: string = "";
   currentSprint: Sprint | null = null
@@ -398,7 +400,7 @@ export class BoardComponent implements OnInit {
 
     if (!confirm('¿Enviar esta historia nuevamente al backlog?')) return;
 
-    const fromStageId = this.currentStageId; 
+    const fromStageId = this.currentStageId;
     const storyId = this.editingStoryId();
 
     this.storyStageService.updateStoryStage(
