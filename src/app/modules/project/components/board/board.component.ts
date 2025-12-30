@@ -93,6 +93,8 @@ export class BoardComponent implements OnInit {
     this.openModal('story_modal');
   }
 
+  Number = Number
+
   openEditStory(stageId: number, story: UserStory) {
     this.currentStageId = stageId;
     this.editingStoryId.set(story.id);

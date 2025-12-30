@@ -93,10 +93,17 @@
               </div>
             </div>
 
-            <button class="btn btn-ghost btn-xs text-error opacity-0 group-hover:opacity-100 transition-opacity"
-              (click)="deleteTask(column.id, task.id)" title="Eliminar historia">
-              Eliminar
-            </button>
+            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button class="btn btn-ghost btn-xs" (click)="openEditStory(Number(column.id), task)"
+                title="Editar historia">
+                Editar
+              </button>
+
+              <button class="btn btn-ghost btn-xs text-error" (click)="deleteTask(column.id, task.id)"
+                title="Eliminar historia">
+                Eliminar
+              </button>
+            </div>
           </div>
 
         </div>
