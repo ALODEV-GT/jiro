@@ -338,15 +338,24 @@ export class BoardComponent implements OnInit {
   // =========================
   // Tasks (Stories)
   // =========================
-  deleteTask(stageId: string, id: number): void {
+  deleteTask(stageId: string, storyId: number): void {
     if (!confirm('¿Eliminar esta historia?')) return;
 
-    this.storyStageService.delete(stageId, id).subscribe({
+    const column = this.columns.find(c => c.id === stageId);
+    if (!column) return;
+
+    const previousTasks = [...column.tasks];
+
+    column.tasks = column.tasks.filter(s => s.id !== storyId);
+
+    this.storyStageService.delete(stageId, storyId).subscribe({
       next: () => {
         this.toast.success('Historia eliminada');
       },
-      error: (e: ErrorResponse) =>
-        this.toast.error(e.message || 'Error al eliminar historia')
+      error: (e: ErrorResponse) => {
+        column.tasks = previousTasks;
+        this.toast.error(e.message || 'Error al eliminar historia');
+      }
     });
   }
 
