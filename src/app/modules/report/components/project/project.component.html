@@ -1,0 +1,71 @@
+<div>
+  <!-- Header -->
+  <div class="flex justify-end mb-6 gap-8">
+    <div class="form-control flex-row items-center gap-1">
+      <label class="label">Desde</label>
+      <input
+        type="date"
+        class="input input-sm input-bordered"
+        [(ngModel)]="from"
+      />
+    </div>
+
+    <div class="form-control flex-row items-center gap-1">
+      <label class="label">Hasta</label>
+      <input
+        type="date"
+        class="input input-sm input-bordered"
+        [(ngModel)]="to"
+      />
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="bg-base-100 rounded-xl shadow overflow-hidden">
+    <table class="table table-zebra w-full">
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Nombre del Sprint</th>
+          <th>Estado del Sprint</th>
+          <th>Puntos Terminados</th>
+          <th>Puntos Pendientes</th>
+          <th>Porcentaje Completado</th>
+          <th>Miembros</th>
+        </tr>
+      </thead>
+
+      <tbody
+        infiniteScroll
+        [infiniteScrollDistance]="2"
+        [infiniteScrollThrottle]="50"
+      >
+        @for (row of rows; track key(row)) {
+        <tr>
+          <td>{{ row.client }}</td>
+          <td>{{ row.sprintName }}</td>
+          <td>{{ stateToString(row.sprintStatus) }}</td>
+          <td>{{ row.pointsDone || 0 }}</td>
+          <td>{{ row.pointsPlanned || 0 }}</td>
+          <td>{{ (row.percentDone || 0) / 100 | percent : "1.2-2" }}</td>
+          <td class="flex flex-col gap-2 text-xs text-base-content/80">
+            @for (member of row.members; track member.id) {
+            <span> {{ member.fullName }} - {{ member.role }} </span>
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (rows.length === 0 && !fetching) {
+    <div class="text-center py-12 text-base-content/60">
+      No hay información disponible del avance del proyecto
+    </div>
+    } @else if (fetching) {
+    <div class="text-center py-12 text-base-content/60">
+      Cargando información...
+    </div>
+    }
+  </div>
+</div>

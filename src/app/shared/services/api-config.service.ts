@@ -15,6 +15,6 @@ export class ApiConfig {
     public readonly API_PROJECT_FI = `${this.API_BASE}/fi/projects`
     public readonly API_EMPLOYEES = `${this.API_BASE}/fi/employees`
     
-    
+    public readonly API_REPORT = `${this.API_BASE}/in`
     
 }

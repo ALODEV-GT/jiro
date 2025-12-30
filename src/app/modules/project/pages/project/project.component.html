@@ -130,10 +130,9 @@
             }
 
             @if (activeTab === 'reports') {
-            <div class="text-center py-20">
-                <h2 class="text-3xl font-bold mb-4">Reportes</h2>
-                <p class="text-base-content/60">Burndown chart, velocity, informes personalizados</p>
-            </div>
+                @if (project) {
+                <report-project [projectId]="project.id" />
+                }
             }
         </div>
     </div>
