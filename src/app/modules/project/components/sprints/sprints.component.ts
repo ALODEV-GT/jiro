@@ -98,8 +98,8 @@ export class SprintsComponent {
     return this.backlogStories;
   }
 
-  getStoriesForSprint(stageId: number): UserStory[] {
-    return this.sprintStories.filter(s => s.stageId === stageId);
+  getStoriesForSprint(sprintId: number): UserStory[] {
+    return this.sprintStories.filter((s: UserStory) => s.sprintId! == sprintId.toString());
   }
 
   openStoryModal(isEdit = false, story?: UserStory): void {
