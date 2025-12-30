@@ -112,19 +112,19 @@
     <dialog id="story_modal" class="modal">
         <div class="modal-box w-11/12 max-w-3xl">
             <h3 class="text-2xl font-bold mb-6">{{ editingStoryId() ? 'Editar Historia' : 'Nueva Historia' }}</h3>
-            <form (ngSubmit)="saveStory()" class="space-y-4">
+            <form [formGroup]="storyForm" (ngSubmit)="saveStory()" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Nombre *</span></label>
-                        <input type="text" name="name" class="input input-bordered" required />
+                        <input type="text" class="input input-bordered" formControlName="name" />
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Puntos *</span></label>
-                        <input type="number" name="points" class="input input-bordered" min="1" required />
+                        <input type="number" class="input input-bordered" min="1" formControlName="points" />
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Prioridad *</span></label>
-                        <select name="priority" class="select select-bordered" required>
+                        <select class="select select-bordered" formControlName="priority">
                             <option value="LOW">Baja</option>
                             <option value="MEDIUM">Media</option>
                             <option value="HIGH">Alta</option>
@@ -132,32 +132,27 @@
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Product Owner *</span></label>
-                        <select name="productOwnerId" class="select select-bordered" required>
-                            <option value="0" disabled>Selecciona</option>
-                            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.role }}
+                        <select class="select select-bordered" formControlName="productOwnerId">
+                            <option value="" disabled>Selecciona</option>
+                            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.lastName
+                                }} ({{ emp.role }})
                             </option>
                         </select>
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Asignado a *</span></label>
-                        <select name="assigneeId" class="select select-bordered" required>
+                        <select class="select select-bordered" formControlName="developerId">
                             <option value="0" disabled>Selecciona</option>
-                            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.role }}
+                            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.lastName
+                                }} ({{ emp.role }})
                             </option>
-                        </select>
-                    </div>
-                    <div class="form-control">
-                        <label class="label"><span class="label-text font-medium">Sprint</span></label>
-                        <select name="sprintId" class="select select-bordered">
-                            <option [value]="undefined">Ninguno (Backlog)</option>
-                            <option *ngFor="let sprint of sprints" [value]="sprint.id">{{ sprint.name }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-control col-span-2">
                     <label class="label"><span class="label-text font-medium">Descripción (Criterios de
                             Aceptación)</span></label>
-                    <textarea name="description" class="textarea textarea-bordered h-32"></textarea>
+                    <textarea class="textarea textarea-bordered h-32" formControlName="description"></textarea>
                 </div>
                 <div class="modal-action">
                     <button type="button" class="btn" (click)="closeModal('story_modal')">Cancelar</button>

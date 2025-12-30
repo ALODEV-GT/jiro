@@ -249,6 +249,8 @@ export class SprintsComponent {
   }
 
   getEmployeeName(id: string): string {
-    return this.employees.find(e => e.id === id)?.firstName ?? '—';
+    const e = this.employees.find(emp => emp.id === id);
+    return e ? `${e.firstName} ${e.lastName}` : '—';
   }
+
 }
