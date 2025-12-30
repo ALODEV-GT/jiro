@@ -1,13 +1,27 @@
+export type StoryPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+
 export interface UserStory {
     id: number;
+    stageId: number | null;
+    projectId: string;
+
+    productOwnerId: string;
+    developerId: string;
+
     name: string;
     description: string;
     points: number;
-    priority: 'Baja' | 'Media' | 'Alta' | 'Crítica';
-    productOwnerId: number;
-    assigneeId: number;
-    sprintId?: number;
+    priority: StoryPriority;
+    sprintId?: string;
 }
+
+export type CreateStoryPayload = Omit<
+    UserStory,
+    'id' | 'stageId' | 'projectId'
+>;
+
+export type UpdateStoryPayload = Partial<CreateStoryPayload>;
+
 
 export interface Sprint {
     id: number;
@@ -27,4 +41,15 @@ export interface Member {
     email: string;
     role: string;
     color: string;
+}
+
+
+export interface SprintStage {
+    id: number;
+    name: string;
+    description: string;
+    orderIndex: number;
+    isDefault: boolean;
+    createdAt: string;
+    updatedAt: string;
 }

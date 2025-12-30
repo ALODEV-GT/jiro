@@ -8,8 +8,9 @@ import { ToastService } from '../../../../shared/services/toast.service';
 import { EmployeesComponent } from "../../../report/components/employees/employees.component";
 import { Rol, User } from '../../models/home.model';
 import { ColorService } from '../../services/color.service';
-import { RolService } from '../../services/rol.service';
+import { AuthStore } from '../../../auth/store/auth.store';
 import { UserService } from '../../services/user.service';
+import { RolService } from '../../services/rol.service';
 
 @Component({
   selector: 'app-employee-management',
@@ -23,7 +24,9 @@ export class EmployeeManagementComponent {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router)
   private readonly rolService = inject(RolService)
+  readonly authStore = inject(AuthStore);
   colorService = inject(ColorService)
+
 
   private isLastPage = false;
   private page = 0

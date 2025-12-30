@@ -1,9 +1,9 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { ApiConfig } from "../../../shared/services/api-config.service";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 import { Page } from "../../../shared/models/page";
-import { Member, Sprint } from "../models/project.model";
+import { Sprint, UserStory } from "../models/project.model";
 
 @Injectable({
     providedIn: 'root'
@@ -21,7 +21,7 @@ export class SprintService {
         return this.http.get<Page<Sprint>>(`${this.apiConfig.API_PROJECT}/${id}/sprints`, { params })
     }
 
-    update(idProject: string, idSprint: number, update: Partial<Sprint>): Observable<Partial<Sprint>> {
+    update(idProject: string, idSprint: number | string, update: Partial<Sprint>): Observable<Partial<Sprint>> {
         return this.http.put<Partial<Sprint>>(`${this.apiConfig.API_PROJECT}/${idProject}/sprints/${idSprint}`, update)
     }
 
@@ -31,5 +31,18 @@ export class SprintService {
 
     delete(idProject: string, idSprint: number): Observable<void> {
         return this.http.delete<void>(`${this.apiConfig.API_PROJECT}/${idProject}/sprints/${idSprint}`)
+    }
+
+    assignStoryToSprint(projectId: string, storyId: string, sprintId: string): Observable<UserStory> {
+        return this.http.patch<UserStory>(
+            `${this.apiConfig.API_PROJECT}/${projectId}/stories/${storyId}/sprint`, {
+            sprintId
+        }
+        ).pipe(
+            map((story) => ({
+                ...story,
+                sprintId
+            }))
+        );
     }
 }

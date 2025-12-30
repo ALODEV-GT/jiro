@@ -30,10 +30,15 @@
                             </span>
                         </td>
                         <td class="text-center">
+                            @if (this.authStore.hasPermission("users:read") ||
+                            this.authStore.hasPermission("users:delete") ) {
                             <div class="flex justify-center">
+                                @if (this.authStore.hasPermission("users:read")) {
                                 <button class="btn btn-sm btn-primary font-bold" (click)="view(user.id)">
                                     Ver
                                 </button>
+                                }
+                                @if (this.authStore.hasPermission("users:delete")) {
                                 <div class="dropdown dropdown-end">
 
                                     <button tabindex="1" class="btn btn-sm btn-ghost px-2">
@@ -49,7 +54,11 @@
                                         </li>
                                     </ul>
                                 </div>
+                                }
                             </div>
+                            }@else{
+                            N/A
+                            }
                         </td>
                     </tr>
                     }

@@ -42,11 +42,7 @@ export class LoginComponent {
     this.authService.login(credentials).subscribe({
       next: (response: LoginResponse) => {
         this.authStore.loginSuccess(response)
-        if (response.role == "ADMIN") {
-          this.router.navigate(['/app/projects']);
-        } else {
-          this.router.navigate(['/app/welcome']);
-        }
+        this.router.navigate(['/app/projects']);
       },
       error: (err: ErrorResponse) => {
         this.loading = false;

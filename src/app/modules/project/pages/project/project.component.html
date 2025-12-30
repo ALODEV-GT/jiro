@@ -13,7 +13,7 @@
                     </p>
                 </div>
 
-                @if (!isEditingProject) {
+                @if (!isEditingProject && this.authStore.hasPermission("projects:write")) {
                 <button class="btn btn-outline btn-primary" (click)="enableEdit()">
                     Editar proyecto
                 </button>

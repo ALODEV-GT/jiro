@@ -3,10 +3,12 @@
     <div class="bg-base-100 rounded-xl shadow-xl p-6">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-3xl font-bold text-primary">Historias (Backlog)</h2>
+            @if (this.authStore.hasPermission("stories:write")) {
             <button class="btn btn-primary" (click)="openStoryModal()">+ Nueva Historia</button>
+            }
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="">
             <table class="table table-zebra">
                 <thead>
                     <tr>
@@ -23,19 +25,52 @@
                         <td class="font-medium">{{ story.name }}</td>
                         <td>{{ story.points }}</td>
                         <td>
-                            <div class="badge" [class.badge-info]="story.priority === 'Baja'"
-                                [class.badge-warning]="story.priority === 'Media'"
-                                [class.badge-error]="story.priority === 'Alta' || story.priority === 'Crítica'">
+                            <div class="badge" [class.badge-info]="story.priority === 'LOW'"
+                                [class.badge-warning]="story.priority === 'MEDIUM'"
+                                [class.badge-error]="story.priority === 'HIGH'">
                                 {{ story.priority }}
                             </div>
                         </td>
                         <td>{{ getEmployeeName(story.productOwnerId) }}</td>
-                        <td>{{ getEmployeeName(story.assigneeId) }}</td>
-                        <td class="flex gap-2">
-                            <button class="btn btn-sm btn-outline btn-info"
-                                (click)="openStoryModal(true, story)">Editar</button>
-                            <button class="btn btn-sm btn-outline btn-error"
-                                (click)="deleteStory(story.id)">Eliminar</button>
+                        <td>{{ getEmployeeName(story.developerId) }}</td>
+                        <td class="text-center">
+                            @if (this.authStore.hasPermission("stories:write") ||
+                            this.authStore.hasPermission("stories:delete")) {
+                            <div class="dropdown dropdown-end">
+                                <label tabindex="0" class="btn btn-sm btn-ghost">
+                                    ⋮
+                                </label>
+
+                                <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-48">
+                                    @if (this.authStore.hasPermission("stories:write")) {
+                                    <li>
+                                        <button class="flex items-center gap-2" (click)="openStoryModal(true, story)">
+                                            Editar
+                                        </button>
+                                    </li>
+                                    }
+
+                                    @if (this.authStore.hasPermission("stories:delete")) {
+                                    <li>
+                                        <button class="flex items-center gap-2 text-error"
+                                            (click)="deleteStory(story.id)">
+                                            Eliminar
+                                        </button>
+                                    </li>
+                                    }
+
+                                    @if (this.authStore.hasPermission("stories:write")) {
+                                    <li>
+                                        <button class="flex items-center gap-2 text-primary"
+                                            (click)="openAssignSprintModal(story)">
+                                            Asignar sprint
+                                        </button>
+                                    </li>
+                                    }
+
+                                </ul>
+                            </div>
+                            }
                         </td>
                     </tr>
                 </tbody>
@@ -50,18 +85,49 @@
     <div class="bg-base-100 rounded-xl shadow-xl p-6">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-3xl font-bold text-primary">Sprints</h2>
+            @if (this.authStore.hasPermission("sprints:write")) {
             <button class="btn btn-primary" (click)="openCreateSprintModal()">+ Nuevo Sprint</button>
+            }
         </div>
 
         <div class="space-y-8">
             <div *ngFor="let sprint of sprints">
-                <td class="flex gap-2">
-                    <h3 class="text-xl font-bold text-secondary mb-4">{{ sprint.name }} ({{ sprint.status }})</h3>
-                    <button class="btn btn-sm btn-outline btn-info"
-                        (click)="openEditSprintModal(sprint)">Editar</button>
-                    <button class="btn btn-sm btn-outline btn-error" (click)="deleteSprint(sprint.id)">Eliminar</button>
-                </td>
-                <div class="overflow-x-auto">
+
+
+                <div class="flex items-center gap-3 mb-4">
+                    <h3 class="text-xl font-bold text-secondary">
+                        {{ sprint.name }} ({{ sprint.status }})
+                    </h3>
+                    @if (this.authStore.hasPermission("sprints:write") ||
+                    this.authStore.hasPermission("sprints:delete")) {
+
+                    <div class="dropdown dropdown-end z-50">
+                        <label tabindex="0" class="btn btn-sm btn-ghost">
+                            ⋮
+                        </label>
+
+                        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40">
+                            @if (this.authStore.hasPermission("sprints:write")) {
+                            <li>
+                                <button (click)="openEditSprintModal(sprint)">
+                                    Editar
+                                </button>
+                            </li>
+                            }
+
+                            @if (this.authStore.hasPermission("sprints:delete")) {
+                            <li>
+                                <button class="text-error" (click)="deleteSprint(sprint.id)">
+                                    Eliminar
+                                </button>
+                            </li>
+                            }
+                        </ul>
+                    </div>
+                    }
+                </div>
+
+                <div class="">
                     <table class="table table-zebra">
                         <thead>
                             <tr>
@@ -78,19 +144,52 @@
                                 <td class="font-medium">{{ story.name }}</td>
                                 <td>{{ story.points }}</td>
                                 <td>
-                                    <div class="badge" [class.badge-info]="story.priority === 'Baja'"
-                                        [class.badge-warning]="story.priority === 'Media'"
-                                        [class.badge-error]="story.priority === 'Alta' || story.priority === 'Crítica'">
+                                    <div class="badge" [class.badge-info]="story.priority === 'LOW'"
+                                        [class.badge-warning]="story.priority === 'MEDIUM'"
+                                        [class.badge-error]="story.priority === 'HIGH'">
                                         {{ story.priority }}
                                     </div>
                                 </td>
                                 <td>{{ getEmployeeName(story.productOwnerId) }}</td>
-                                <td>{{ getEmployeeName(story.assigneeId) }}</td>
-                                <td class="flex gap-2">
-                                    <button class="btn btn-sm btn-outline btn-info"
-                                        (click)="openStoryModal(true, story)">Editar</button>
-                                    <button class="btn btn-sm btn-outline btn-error"
-                                        (click)="deleteStory(story.id)">Eliminar</button>
+                                <td>{{ getEmployeeName(story.developerId) }}</td>
+                                <td class="text-center">
+                                    @if (this.authStore.hasPermission("stories:delete") ||
+                                    this.authStore.hasPermission("stories:write")) {
+                                    <div class="dropdown dropdown-end">
+                                        <label tabindex="0" class="btn btn-sm btn-ghost">
+                                            ⋮
+                                        </label>
+
+                                        <ul tabindex="0"
+                                            class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                                            @if (this.authStore.hasPermission("stories:write")) {
+                                            <li>
+                                                <button (click)="openStoryModal(true, story)">
+                                                    Editar
+                                                </button>
+                                            </li>
+                                            }
+
+                                            @if (this.authStore.hasPermission("stories:delete")) {
+                                            <li>
+                                                <button class="text-error" (click)="deleteStory(story.id)">
+                                                    Eliminar
+                                                </button>
+                                            </li>
+                                            }
+
+                                            @if (this.authStore.hasPermission("stories:write")) {
+                                            <li>
+                                                <button class="text-warning" (click)="sendStoryToBacklog(story)">
+                                                    Regresar al backlog
+                                                </button>
+                                            </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                    }@else{
+                                    N/A
+                                    }
                                 </td>
                             </tr>
                         </tbody>
@@ -112,51 +211,47 @@
     <dialog id="story_modal" class="modal">
         <div class="modal-box w-11/12 max-w-3xl">
             <h3 class="text-2xl font-bold mb-6">{{ editingStoryId() ? 'Editar Historia' : 'Nueva Historia' }}</h3>
-            <form (ngSubmit)="saveStory()" class="space-y-4">
+            <form [formGroup]="storyForm" (ngSubmit)="saveStory()" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Nombre *</span></label>
-                        <input type="text" name="name" class="input input-bordered" required />
+                        <input type="text" class="input input-bordered" formControlName="name" />
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Puntos *</span></label>
-                        <input type="number" name="points" class="input input-bordered" min="1" required />
+                        <input type="number" class="input input-bordered" min="1" formControlName="points" />
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Prioridad *</span></label>
-                        <select name="priority" class="select select-bordered" required>
-                            <option value="Baja">Baja</option>
-                            <option value="Media">Media</option>
-                            <option value="Alta">Alta</option>
-                            <option value="Crítica">Crítica</option>
+                        <select class="select select-bordered" formControlName="priority">
+                            <option value="LOW">Baja</option>
+                            <option value="MEDIUM">Media</option>
+                            <option value="HIGH">Alta</option>
                         </select>
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Product Owner *</span></label>
-                        <select name="productOwnerId" class="select select-bordered" required>
-                            <option value="0" disabled>Selecciona</option>
-                            <option *ngFor="let emp of employees()" [value]="emp.id">{{ emp.name }}</option>
+                        <select class="select select-bordered" formControlName="productOwnerId">
+                            <option value="" disabled>Selecciona</option>
+                            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.lastName
+                                }} ({{ emp.role }})
+                            </option>
                         </select>
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Asignado a *</span></label>
-                        <select name="assigneeId" class="select select-bordered" required>
+                        <select class="select select-bordered" formControlName="developerId">
                             <option value="0" disabled>Selecciona</option>
-                            <option *ngFor="let emp of employees()" [value]="emp.id">{{ emp.name }}</option>
-                        </select>
-                    </div>
-                    <div class="form-control">
-                        <label class="label"><span class="label-text font-medium">Sprint</span></label>
-                        <select name="sprintId" class="select select-bordered">
-                            <option [value]="undefined">Ninguno (Backlog)</option>
-                            <option *ngFor="let sprint of sprints" [value]="sprint.id">{{ sprint.name }}</option>
+                            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.lastName
+                                }} ({{ emp.role }})
+                            </option>
                         </select>
                     </div>
                 </div>
                 <div class="form-control col-span-2">
                     <label class="label"><span class="label-text font-medium">Descripción (Criterios de
                             Aceptación)</span></label>
-                    <textarea name="description" class="textarea textarea-bordered h-32"></textarea>
+                    <textarea class="textarea textarea-bordered h-32" formControlName="description"></textarea>
                 </div>
                 <div class="modal-action">
                     <button type="button" class="btn" (click)="closeModal('story_modal')">Cancelar</button>
@@ -188,15 +283,15 @@
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-medium">Fecha fin *</span></label>
-                        <input formControlName="endDate" type="date" name="startDate" class="input input-bordered" />
+                        <input formControlName="endDate" type="date" name="endDate" class="input input-bordered" />
                     </div>
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text font-medium">Estado *</span></label>
-                    <select name="status" class="select select-bordered">
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="Activo">Activo</option>
-                        <option value="Finalizado">Finalizado</option>
+                    <select formControlName="status" class="select select-bordered">
+                        <option value="PENDING">Pendiente</option>
+                        <option value="ACTIVE">Activo</option>
+                        <option value="FINISHED">Finalizado</option>
                     </select>
                 </div>
                 <div class="modal-action">
@@ -206,4 +301,41 @@
             </form>
         </div>
         <form method="dialog" class="modal-backdrop"><button>cerrar</button></form>
+    </dialog>
+
+    <!-- Modal Assign Sprint -->
+    <dialog id="assign_sprint_modal" class="modal">
+        <div class="modal-box w-11/12 max-w-md">
+            <h3 class="text-2xl font-bold mb-6">Selecciona el sprint</h3>
+
+            <form [formGroup]="assignSprintForm" (ngSubmit)="assignSprint()" class="space-y-4">
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-medium">Sprint *</span>
+                    </label>
+
+                    <select class="select select-bordered" formControlName="sprintId">
+                        <option value="" disabled>Selecciona un sprint</option>
+                        <option *ngFor="let sprint of sprints" [value]="sprint.id">
+                            {{ sprint.name }} ({{ sprint.status }})
+                        </option>
+                    </select>
+                </div>
+
+                <div class="modal-action">
+                    <button type="button" class="btn" (click)="closeModal('assign_sprint_modal')">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        Asignar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <form method="dialog" class="modal-backdrop">
+            <button>cerrar</button>
+        </form>
     </dialog>

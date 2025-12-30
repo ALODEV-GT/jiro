@@ -73,6 +73,16 @@ export const AuthStore = signalStore(
 
                 router.navigate(['/login']);
             },
+
+            hasPermission(permission: string): boolean {
+                const user = store.user();
+
+                if (!user || !user.permissions) {
+                    return false;
+                }
+
+                return user.permissions.includes(permission);
+            },
         };
     })
 );

@@ -1,8 +1,92 @@
 <div class="min-h-screen bg-base-200 p-6">
 
-  <h1>
-    Nombre del sprint activo
-  </h1>
+  @if (currentSprint) {
+  <div class="mb-6">
+    <div class="card bg-base-100 shadow-sm border border-base-300">
+      <div class="card-body p-5">
+
+        <!-- Top row -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+          <!-- Sprint info -->
+          <div>
+            <div class="flex items-center gap-3">
+              <h2 class="text-2xl font-bold">
+                {{ currentSprint.name }}
+              </h2>
+
+              <span class="badge badge-success badge-outline" *ngIf="currentSprint.status === 'ACTIVE'">
+                Sprint activo
+              </span>
+
+              <span class="badge badge-neutral badge-outline" *ngIf="currentSprint.status !== 'ACTIVE'">
+                {{ currentSprint.status }}
+              </span>
+            </div>
+
+            <p class="text-sm text-base-content/70 mt-1">
+              {{ currentSprint.description || 'Sin descripción' }}
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2">
+
+            <!-- Menú de acciones -->
+            @if (this.authStore.hasPermission("sprints:write")) {
+            <div class="dropdown dropdown-end">
+              <button tabindex="0" class="btn btn-sm btn-ghost px-2">
+                ⋮
+              </button>
+
+              <ul tabindex="0"
+                class="dropdown-content menu menu-sm bg-base-200 rounded-box shadow w-48 z-40 font-bold gap-3">
+
+                <li class="text-primary">
+                  <a (click)="closeSprint()">
+                    Cerrar sprint
+                  </a>
+                </li>
+
+                <li>
+                  <a (click)="sendSprintToBacklog()">
+                    Regresar al backlog
+                  </a>
+                </li>
+              </ul>
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider my-3"></div>
+
+        <!-- Bottom row -->
+        <div class="flex flex-wrap gap-4 text-sm text-base-content/70">
+          <div class="flex items-center gap-2">
+            <span class="font-medium">Inicio:</span>
+            <span>{{ currentSprint.startDate | date:'dd MMM yyyy' }}</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="font-medium">Fin:</span>
+            <span>{{ currentSprint.endDate | date:'dd MMM yyyy' }}</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="font-medium">Duración:</span>
+            <span>
+              {{ currentSprint.startDate | date:'dd/MM' }}
+              -
+              {{ currentSprint.endDate | date:'dd/MM' }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
   <!-- Columns horizontal drag and drop -->
   <div class="flex gap-6 overflow-x-auto pb-4" cdkDropList cdkDropListOrientation="horizontal"
@@ -26,10 +110,12 @@
         </div>
 
         <div class="flex items-center gap-1">
+          @if (this.authStore.hasPermission("stage:write")) {
           <button class="btn btn-ghost btn-xs" (click)="editColumnName(column)">
             Edit
           </button>
-          @if (columns.length > 1) {
+          }
+          @if (columns.length > 1 && this.authStore.hasPermission("stage:delete")) {
           <button class="btn btn-ghost btn-xs text-error" (click)="deleteColumn(column.id)">
             Delete
           </button>
@@ -43,36 +129,91 @@
         (cdkDropListDropped)="dropTask($event, column.id)">
         @for (task of column.tasks; track task.id) {
         <div cdkDrag [cdkDragData]="task"
-          class="bg-base-200 p-4 rounded-lg border border-base-300 shadow-sm hover:shadow-md transition-shadow">
-          <div class="font-medium text-base-content">{{ task.title }}</div>
+          class="bg-base-200 rounded-lg border border-base-300 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing group">
 
-          @if (task.description) {
-          <p class="text-sm text-base-content/70 mt-1">
-            {{ task.description }}
-          </p>
-          }
+          <!-- Header -->
+          <div class="p-4 pb-2">
+            <div class="flex justify-between items-start gap-2">
+              <h4 class="font-semibold text-base-content leading-snug">
+                {{ task.name }}
+              </h4>
 
-          <div class="flex justify-between items-center mt-3">
-            <div class="badge badge-primary badge-sm">{{ task.id }}</div>
-            <button class="btn btn-ghost btn-xs text-error" (click)="deleteTask(column.id, task.id)">
-              Delete
-            </button>
+              <div class="flex items-center gap-1">
+                <span class="badge badge-outline text-nowrap">
+                  {{ task.points }} pts
+                </span>
+
+                <span class="badge badge-sm" [ngClass]="{
+            'badge-error': task.priority === 'HIGH',
+            'badge-warning': task.priority === 'MEDIUM',
+            'badge-success': task.priority === 'LOW'
+          }">
+                  {{ task.priority }}
+                </span>
+              </div>
+            </div>
+
+            @if (task.description) {
+            <p class="mt-2 text-sm text-base-content/70 line-clamp-3">
+              {{ task.description }}
+            </p>
+            }
           </div>
+
+          <!-- Footer -->
+          <div class="px-4 py-3 border-t border-base-300 flex justify-between items-center text-sm">
+
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-base-content/60">Dev</span>
+                <span class="badge badge-primary badge-sm">
+                  {{ getEmployeeName(task.developerId) }}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-base-content/60">PO</span>
+                <span class="badge badge-secondary badge-sm">
+                  {{ getEmployeeName(task.productOwnerId) }}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              @if (this.authStore.hasPermission("stories:write")) {
+              <button class="btn btn-ghost btn-xs" (click)="openEditStory(Number(column.id), task)"
+                title="Editar historia">
+                Editar
+              </button>
+              }
+
+              @if (this.authStore.hasPermission("stories:delete")) {
+              <button class="btn btn-ghost btn-xs text-error" (click)="deleteTask(column.id, task.id)"
+                title="Eliminar historia">
+                Eliminar
+              </button>
+              }
+            </div>
+          </div>
+
         </div>
         }
       </div>
 
+      @if (this.authStore.hasPermission("stories:write")) {
       <!-- Footer -->
       <div class="p-4 border-t border-base-300">
         <button class="text-sm text-base-content/70 hover:text-primary w-full text-left"
-          (click)="openCreateTaskModal(column.id)">
-          + Agregar tarea
+          (click)="openCreateStory(column.id)">
+          + Agregar historia
         </button>
       </div>
+      }
     </div>
     }
 
     <!-- Add new column -->
+    @if (this.authStore.hasPermission("stage:write")) {
     <div class="flex-shrink-0 w-80">
       <button
         class="btn btn-ghost w-full h-32 border-2 border-dashed border-base-300 text-base-content/60 hover:border-primary hover:text-primary"
@@ -80,38 +221,92 @@
         + Agregar otra columna
       </button>
     </div>
+    }
   </div>
+  }@else {
+  <div class="hero min-h-[60vh] bg-base-200">
+    <div class="hero-content text-center">
+      <div class="max-w-md">
+        <svg class="mx-auto h-24 w-24 text-base-content/30 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2">
+          </path>
+        </svg>
+        <h1 class="text-4xl font-bold mb-4">No hay ningun sprint activo</h1>
+        <p class="text-lg text-base-content/70 mb-8">
+          Ve al backlog y activa un sprint
+        </p>
+      </div>
+    </div>
+  </div>
+  }
 </div>
 
 <!-- Modal create task -->
-<div class="modal" [class.modal-open]="isModalOpen">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold">Nueva tarea</h3>
-    <form (ngSubmit)="createTask()" class="space-y-4 mt-4">
-      <div class="form-control">
-        <label class="label"><span class="label-text">Título</span></label>
-        <input type="text" name="title" [(ngModel)]="newTask.title" class="input input-bordered" required />
+<dialog id="story_modal" class="modal">
+  <div class="modal-box w-11/12 max-w-3xl">
+    <h3 class="text-2xl font-bold mb-6">{{ editingStoryId() ? 'Editar Historia' : 'Nueva Historia' }}</h3>
+    <form [formGroup]="storyForm" (ngSubmit)="saveStory()" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-control">
+          <label class="label"><span class="label-text font-medium">Nombre *</span></label>
+          <input type="text" class="input input-bordered" formControlName="name" />
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-medium">Puntos *</span></label>
+          <input type="number" class="input input-bordered" min="1" formControlName="points" />
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-medium">Prioridad *</span></label>
+          <select class="select select-bordered" formControlName="priority">
+            <option value="LOW">Baja</option>
+            <option value="MEDIUM">Media</option>
+            <option value="HIGH">Alta</option>
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-medium">Product Owner *</span></label>
+          <select class="select select-bordered" formControlName="productOwnerId">
+            <option value="" disabled>Selecciona</option>
+            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.lastName
+              }} ({{ emp.role }})
+            </option>
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-medium">Asignado a *</span></label>
+          <select class="select select-bordered" formControlName="developerId">
+            <option value="0" disabled>Selecciona</option>
+            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.lastName
+              }} ({{ emp.role }})
+            </option>
+          </select>
+        </div>
       </div>
-
-      <div class="form-control">
-        <label class="label"><span class="label-text">Descripción (opcional)</span></label>
-        <textarea name="description" [(ngModel)]="newTask.description"
-          class="textarea textarea-bordered h-24"></textarea>
+      <div class="form-control col-span-2">
+        <label class="label"><span class="label-text font-medium">Descripción (Criterios de
+            Aceptación)</span></label>
+        <textarea class="textarea textarea-bordered h-32" formControlName="description"></textarea>
       </div>
+      <div class="modal-action flex justify-between w-full">
+        <!-- Acción peligrosa / secundaria -->
+        @if (editingStoryId()) {
+        <button type="button" class="btn btn-outline btn-warning" (click)="sendToBacklog()">
+          Enviar al Backlog
+        </button>
+        }
 
-      <div class="form-control">
-        <label class="label"><span class="label-text">Columna</span></label>
-        <select name="column" class="select select-bordered w-full" [(ngModel)]="newTask.columnId">
-          @for (column of columns; track column.id) {
-          <option [value]="column.id">{{ column.title }}</option>
-          }
-        </select>
-      </div>
-
-      <div class="modal-action">
-        <button type="button" class="btn" (click)="closeModal()">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Crear tarea</button>
+        <!-- Acciones principales -->
+        <div class="flex gap-2">
+          <button type="button" class="btn" (click)="closeModal('story_modal')">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Guardar
+          </button>
+        </div>
       </div>
     </form>
   </div>
-</div>
+  <form method="dialog" class="modal-backdrop"><button>cerrar</button></form>
+</dialog>
