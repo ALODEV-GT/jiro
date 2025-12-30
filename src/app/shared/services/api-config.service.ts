@@ -14,7 +14,9 @@ export class ApiConfig {
     public readonly API_PROJECT = `${this.API_BASE}/sc/projects`
     public readonly API_PROJECT_FI = `${this.API_BASE}/fi/projects`
     public readonly API_EMPLOYEES = `${this.API_BASE}/fi/employees`
-    
-    
-    
+    public readonly API_SPRINT = `${this.API_BASE}/sc/sprints`
+
+
+
+
 }

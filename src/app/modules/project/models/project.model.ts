@@ -41,3 +41,14 @@ export interface Member {
     role: string;
     color: string;
 }
+
+
+export interface SprintStage {
+  id: number;
+  name: string;
+  description: string;
+  orderIndex: number;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}

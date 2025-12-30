@@ -27,7 +27,7 @@ export class ProjectComponent {
 
   project: Project | null = null
 
-  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' = 'sprints';
+  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' = 'board';
 
   isEditingProject = false;
 
