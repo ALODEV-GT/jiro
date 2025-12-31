@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthStore } from '../../../auth/store/auth.store';
 import { CommonModule } from '@angular/common';
 import { ColorService } from '../../services/color.service';
@@ -14,6 +14,7 @@ import { ColorService } from '../../services/color.service';
 export class TopbarComponent {
   private authStore = inject(AuthStore);
   colorService = inject(ColorService)
+  private readonly router = inject(Router)
 
   user = computed(() => this.authStore.user());
 
@@ -28,5 +29,9 @@ export class TopbarComponent {
 
   logout(): void {
     this.authStore.logout();
+  }
+
+  viewProfile() {
+    this.router.navigate(['app/employee', this.authStore.user()?.id]);
   }
 }
