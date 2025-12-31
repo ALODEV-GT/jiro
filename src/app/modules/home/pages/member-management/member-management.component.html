@@ -1,11 +1,12 @@
 <div>
-
     <!-- Header -->
+    @if (authStore.hasPermission("member:write")) {
     <div class="flex justify-end mb-6">
         <button class="btn btn-primary" (click)="openCreateModal()">
             + Agregar miembro
         </button>
     </div>
+    }
 
     <!-- Tabla -->
     <div class="bg-base-100 rounded-xl shadow overflow-hidden">
@@ -34,9 +35,13 @@
                         </span>
                     </td>
                     <td class="text-center">
+                        @if (authStore.hasPermission("member:delete")) {
                         <button class="btn btn-sm btn-outline btn-error" (click)="removeMember(member.id)">
                             Eliminar
                         </button>
+                        }@else{
+                        N/A
+                        }
                     </td>
                 </tr>
                 }

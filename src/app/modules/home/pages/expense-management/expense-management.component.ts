@@ -8,6 +8,7 @@ import { ToastService } from '../../../../shared/services/toast.service';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-expense-management',
@@ -16,13 +17,14 @@ import { UserService } from '../../services/user.service';
   templateUrl: './expense-management.component.html',
   styleUrl: './expense-management.component.scss'
 })
-export class ExpenseManagementComponent implements OnChanges {
+export class ExpenseManagementComponent {
   @Input({ required: true }) projectId!: string;
 
   private readonly fb = inject(FormBuilder);
   private readonly expenseService = inject(ExpenseService);
   private readonly toast = inject(ToastService);
   private readonly userService = inject(UserService);
+  readonly authStore = inject(AuthStore);
 
   page = 0;
   isLastPage = false;
@@ -54,16 +56,6 @@ export class ExpenseManagementComponent implements OnChanges {
 
       this.expenseForm.controls.employeeId.updateValueAndValidity();
     });
-  }
-
-  ngOnChanges() {
-    if (!this.projectId) return;
-
-    this.page = 0;
-    this.expenses = [];
-    this.isLastPage = false;
-
-    this.loadExpensesPage();
   }
 
   loadUsers() {

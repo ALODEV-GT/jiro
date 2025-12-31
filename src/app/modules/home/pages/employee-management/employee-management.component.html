@@ -2,7 +2,9 @@
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-bold text-primary">Empleados</h1>
+            @if (this.authStore.hasPermission("reportemployees:read")) {
             <button class="btn btn-sm btn-outline" (click)="showReportModal()">Reporte de empleados</button>
+            }
         </div>
 
         <div class="bg-base-100 rounded-xl shadow-xl">

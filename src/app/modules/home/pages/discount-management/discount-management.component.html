@@ -2,9 +2,11 @@
 
     <!-- Header -->
     <div class="flex justify-end mb-6">
+        @if (authStore.hasPermission("discountemployee:write")) {
         <button class="btn btn-primary" (click)="openCreateModal()">
             + Nuevo Descuento
         </button>
+        }
     </div>
 
     <!-- Tabla -->
@@ -19,10 +21,8 @@
                 </tr>
             </thead>
 
-            <tbody infiniteScroll
-                   [infiniteScrollDistance]="2"
-                   [infiniteScrollThrottle]="50"
-                   (scrolled)="loadDiscountsPage()">
+            <tbody infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+                (scrolled)="loadDiscountsPage()">
                 @for (discount of discounts; track discount.id) {
                 <tr>
                     <td class="font-semibold">{{ discount.reason }}</td>
@@ -31,17 +31,24 @@
                     </td>
                     <td>{{ discount.createdAt | date:'yyyy-MM-dd' }}</td>
                     <td class="text-center">
+                        @if (authStore.hasPermission("discountemployee:write") ||
+                        authStore.hasPermission("discountemployee:delete")) {
+
                         <div class="flex gap-2 justify-center">
-                            <button class="btn btn-sm btn-outline btn-warning"
-                                    (click)="openEditModal(discount)">
+                            @if (authStore.hasPermission("discountemployee:write")) {
+                            <button class="btn btn-sm btn-outline btn-warning" (click)="openEditModal(discount)">
                                 Editar
                             </button>
-
-                            <button class="btn btn-sm btn-outline btn-error"
-                                    (click)="delete(discount.id)">
+                            }
+                            @if (authStore.hasPermission("discountemployee:delete")) {
+                            <button class="btn btn-sm btn-outline btn-error" (click)="delete(discount.id)">
                                 Eliminar
                             </button>
+                            }
                         </div>
+                        }@else {
+                        N/A
+                        }
                     </td>
                 </tr>
                 }
@@ -63,33 +70,23 @@
             {{ editingId ? 'Editar Descuento' : 'Nuevo Descuento' }}
         </h3>
 
-        <form [formGroup]="discountForm"
-              (ngSubmit)="save()"
-              class="space-y-4">
+        <form [formGroup]="discountForm" (ngSubmit)="save()" class="space-y-4">
 
             <div class="form-control">
                 <label class="label">Motivo *</label>
-                <input type="text"
-                       formControlName="reason"
-                       class="input input-bordered" />
+                <input type="text" formControlName="reason" class="input input-bordered" />
             </div>
 
             <div class="form-control">
                 <label class="label">Monto *</label>
-                <input type="number"
-                       formControlName="amount"
-                       class="input input-bordered" />
+                <input type="number" formControlName="amount" class="input input-bordered" />
             </div>
 
             <div class="modal-action">
-                <button type="button"
-                        class="btn"
-                        (click)="closeModal('discount_modal')">
+                <button type="button" class="btn" (click)="closeModal('discount_modal')">
                     Cancelar
                 </button>
-                <button type="submit"
-                        class="btn btn-primary"
-                        [disabled]="discountForm.invalid">
+                <button type="submit" class="btn btn-primary" [disabled]="discountForm.invalid">
                     Guardar
                 </button>
             </div>

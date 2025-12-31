@@ -110,7 +110,7 @@
             }
             }
             @case ('reports') {
-            @if (user) {
+            @if (user && this.authStore.hasPermission("reportsprofile:read")) {
             <report-productivity [employeeId]="user.id" />
             }
             }

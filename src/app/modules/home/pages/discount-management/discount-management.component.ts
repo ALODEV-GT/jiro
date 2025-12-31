@@ -7,6 +7,7 @@ import { Page } from '../../../../shared/models/page';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-discount-management',
@@ -21,6 +22,7 @@ export class DiscountManagementComponent implements OnChanges {
   private readonly fb = inject(FormBuilder);
   private readonly discountService = inject(DiscountService);
   private readonly toast = inject(ToastService);
+  readonly authStore = inject(AuthStore);
 
   page = 0;
   isLastPage = false;

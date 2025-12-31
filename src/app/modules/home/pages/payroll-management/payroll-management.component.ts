@@ -7,6 +7,7 @@ import { PayrollService } from '../../services/payroll.service';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-payroll-management',
@@ -21,6 +22,7 @@ export class PayrollManagementComponent {
   private readonly fb = inject(FormBuilder);
   private readonly payrollService = inject(PayrollService);
   private readonly toast = inject(ToastService);
+  readonly authStore = inject(AuthStore);
 
   page = 0;
   isLastPage = false;

@@ -7,6 +7,7 @@ import { SuspensionService } from '../../services/suspension.service';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-suspension-management',
@@ -22,6 +23,7 @@ export class SuspensionManagementComponent implements OnChanges {
   private readonly fb = inject(FormBuilder);
   private readonly suspensionService = inject(SuspensionService);
   private readonly toast = inject(ToastService);
+  readonly authStore = inject(AuthStore);
 
   page = 0;
   isLastPage = false;

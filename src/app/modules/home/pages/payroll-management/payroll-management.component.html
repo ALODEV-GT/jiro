@@ -2,9 +2,11 @@
 
     <!-- Header -->
     <div class="flex justify-end mb-6">
+        @if (authStore.hasPermission("incomeemployee:write")) {
         <button class="btn btn-primary" (click)="openCreateModal()">
             + Nueva Planilla
         </button>
+        }
     </div>
 
     <!-- Tabla -->
@@ -22,9 +24,8 @@
                 </tr>
             </thead>
 
-            <tbody infiniteScroll [infiniteScrollDistance]="2"
-                   [infiniteScrollThrottle]="50"
-                   (scrolled)="loadPayrollsPage()">
+            <tbody infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+                (scrolled)="loadPayrollsPage()">
                 @for (payroll of payrolls; track payroll.id) {
                 <tr>
                     <td>
@@ -40,17 +41,24 @@
                     </td>
                     <td>{{ payroll.paymentDate }}</td>
                     <td class="text-center">
+                        @if (authStore.hasPermission("incomeemployee:write") ||
+                        authStore.hasPermission("incomeemployee:delete")) {
                         <div class="flex gap-2 justify-center">
-                            <button class="btn btn-sm btn-outline btn-warning"
-                                    (click)="openEditModal(payroll)">
+                            @if (authStore.hasPermission("incomeemployee:write")) {
+
+                            <button class="btn btn-sm btn-outline btn-warning" (click)="openEditModal(payroll)">
                                 Editar
                             </button>
-
-                            <button class="btn btn-sm btn-outline btn-error"
-                                    (click)="delete(payroll.id)">
+                            }
+                            @if (authStore.hasPermission("incomeemployee:delete")) {
+                            <button class="btn btn-sm btn-outline btn-error" (click)="delete(payroll.id)">
                                 Eliminar
                             </button>
+                            }
                         </div>
+                        }@else {
+                        N/A
+                        }
                     </td>
                 </tr>
                 }

@@ -2,9 +2,11 @@
 
     <!-- Header interno de la tab -->
     <div class="flex justify-end mb-6">
+        @if (this.authStore.hasPermission("contractemployee:write")) {
         <button class="btn btn-primary" (click)="openCreateModal()">
             + Nuevo Contrato
         </button>
+        }
     </div>
 
     <!-- Tabla -->
@@ -38,16 +40,24 @@
                         </span>
                     </td>
                     <td class="text-center">
+                        @if (this.authStore.hasPermission("contractemployee:write") ||
+                        this.authStore.hasPermission("contractemployee:delete")) {
                         <div class="flex gap-2 justify-center">
+                            @if (this.authStore.hasPermission("contractemployee:write")) {
                             <button class="btn btn-sm btn-outline btn-warning" (click)="openTerminateModal(contract.id)"
                                 [disabled]="contract.status !== 'ACTIVE'">
                                 Terminar
                             </button>
-
+                            }
+                            @if (this.authStore.hasPermission("contractemployee:delete")) {
                             <button class="btn btn-sm btn-outline btn-error" (click)="delete(contract.id)">
                                 Eliminar
                             </button>
+                            }
                         </div>
+                        }@else {
+                        N/A
+                        }
                     </td>
                 </tr>
                 }

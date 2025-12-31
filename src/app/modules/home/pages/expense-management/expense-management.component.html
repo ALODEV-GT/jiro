@@ -1,9 +1,11 @@
 <div>
     <!-- Header -->
     <div class="flex justify-end mb-6">
+        @if (authStore.hasPermission("expenseproject:write")) {
         <button class="btn btn-primary" (click)="openCreateModal()">
             + Nuevo gasto
         </button>
+        }
     </div>
 
     <!-- Tabla -->
@@ -40,9 +42,13 @@
                     </td>
 
                     <td class="text-center">
+                        @if (authStore.hasPermission("expenseproject:delete")) {
                         <button class="btn btn-sm btn-outline btn-error" (click)="delete(expense.id)">
                             Eliminar
                         </button>
+                        }@else{
+                        N/A
+                        }
                     </td>
                 </tr>
                 }

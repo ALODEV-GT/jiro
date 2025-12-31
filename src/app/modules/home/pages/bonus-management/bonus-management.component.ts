@@ -8,6 +8,7 @@ import { Page } from '../../../../shared/models/page';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { UserService } from '../../services/user.service';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-bonus-management',
@@ -23,6 +24,8 @@ export class BonusManagementComponent implements OnChanges {
   private readonly fb = inject(FormBuilder);
   private readonly bonusService = inject(BonusService);
   private readonly toast = inject(ToastService);
+  readonly authStore = inject(AuthStore);
+  
 
   bonuses: Bonus[] = [];
   page = 0;

@@ -130,9 +130,11 @@
             }
 
             @if (activeTab === 'reports') {
-                @if (project) {
-                <report-project [projectId]="project.id" />
-                }
+            @if (project && this.authStore.hasPermission("reportsprint:read")) {
+            <report-project [projectId]="project.id" />
+            }@else{
+            No tienes permisos para el reporte
+            }
             }
         </div>
     </div>

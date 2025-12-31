@@ -2,9 +2,11 @@
 
     <!-- Header -->
     <div class="flex justify-end mb-6">
+        @if (this.authStore.hasPermission("bonusemployee:write")) {
         <button class="btn btn-primary" (click)="openCreateModal()">
             + Nuevo Bono
         </button>
+        }
     </div>
 
     <!-- Tabla -->
@@ -29,14 +31,23 @@
                     <td>{{ bonus.reason }}</td>
                     <td>{{ bonus.createdAt | date: 'yyyy-MM-dd' }}</td>
                     <td class="text-center">
+                        @if (this.authStore.hasPermission("bonusemployee:write") ||
+                        this.authStore.hasPermission("bonusemployee:delete")) {
                         <div class="flex gap-2 justify-center">
+                            @if (this.authStore.hasPermission("bonusemployee:write")) {
                             <button class="btn btn-sm btn-outline" (click)="openEditModal(bonus)">
                                 Editar
                             </button>
+                            }
+                            @if (this.authStore.hasPermission("bonusemployee:delete")) {
                             <button class="btn btn-sm btn-outline btn-error" (click)="delete(bonus.id)">
                                 Eliminar
                             </button>
+                            }
                         </div>
+                        }@else {
+                        N/A
+                        }
                     </td>
                 </tr>
                 }

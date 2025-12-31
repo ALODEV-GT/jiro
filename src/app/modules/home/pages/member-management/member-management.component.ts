@@ -9,6 +9,7 @@ import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { CommonModule } from '@angular/common';
 import { ColorService } from '../../services/color.service';
 import { UserService } from '../../services/user.service';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-member-management',
@@ -17,7 +18,7 @@ import { UserService } from '../../services/user.service';
   templateUrl: './member-management.component.html',
   styleUrl: './member-management.component.scss'
 })
-export class MemberManagementComponent implements OnChanges {
+export class MemberManagementComponent {
 
   @Input({ required: true }) projectId!: string;
 
@@ -26,7 +27,7 @@ export class MemberManagementComponent implements OnChanges {
   private readonly toast = inject(ToastService);
   public colorService = inject(ColorService)
   private readonly userService = inject(UserService);
-
+  readonly authStore = inject(AuthStore);
 
   page = 0;
   isLastPage = false;
@@ -39,14 +40,8 @@ export class MemberManagementComponent implements OnChanges {
     userId: ['', Validators.required]
   });
 
-  ngOnChanges() {
-    if (!this.projectId) return;
+  ngOnInit() {
 
-    this.page = 0;
-    this.members = [];
-    this.isLastPage = false;
-
-    this.loadMembersPage();
   }
 
   loadUsers() {

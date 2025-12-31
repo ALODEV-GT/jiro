@@ -25,7 +25,7 @@ import { ProductivityComponent } from "../../../report/components/productivity/p
     BonusManagementComponent,
     SuspensionManagementComponent,
     ProductivityComponent
-],
+  ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -34,7 +34,7 @@ export class ProfileComponent {
   private activatedRoute = inject(ActivatedRoute);
   private userService = inject(UserService);
   private toast = inject(ToastService);
-  private readonly authStore = inject(AuthStore);
+  readonly authStore = inject(AuthStore);
 
   user: User | null = null;
   editing = false;
@@ -45,7 +45,7 @@ export class ProfileComponent {
     password: ''
   };
 
-  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' | 'reports' = 'suspension';
+  activeTab: 'income' | 'discount' | 'bonus' | 'suspension' | 'contract' | 'reports' = 'income';
 
   canEdit(): boolean {
     const authUser: LoginResponse = this.authStore.user()!;

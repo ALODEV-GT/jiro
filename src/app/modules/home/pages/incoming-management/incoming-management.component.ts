@@ -7,6 +7,7 @@ import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-incoming-management',
@@ -15,13 +16,14 @@ import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
   templateUrl: './incoming-management.component.html',
   styleUrl: './incoming-management.component.scss'
 })
-export class IncomingManagementComponent implements OnChanges {
+export class IncomingManagementComponent {
 
   @Input({ required: true }) projectId!: string;
 
   private readonly fb = inject(FormBuilder);
   private readonly incomeService = inject(IncomeService);
   private readonly toast = inject(ToastService);
+  readonly authStore = inject(AuthStore);
 
   page = 0;
   isLastPage = false;
@@ -35,16 +37,6 @@ export class IncomingManagementComponent implements OnChanges {
     description: ['', Validators.required],
     billingDate: ['', Validators.required]
   });
-
-  ngOnChanges() {
-    if (!this.projectId) return;
-
-    this.page = 0;
-    this.incomes = [];
-    this.isLastPage = false;
-
-    this.loadIncomesPage();
-  }
 
   loadIncomesPage() {
     if (this.isLastPage) return;

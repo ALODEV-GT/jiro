@@ -8,6 +8,7 @@ import { Page } from '../../../../shared/models/page';
 import { ErrorResponse } from '../../../../shared/models/errors';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-contract-management',
@@ -23,6 +24,7 @@ export class ContractManagementComponent implements OnChanges {
   private readonly contractService = inject(ContractService);
   private readonly rolService = inject(RolService);
   private readonly toast = inject(ToastService);
+  readonly authStore = inject(AuthStore);
 
   page = 0;
   isLastPage = false;
