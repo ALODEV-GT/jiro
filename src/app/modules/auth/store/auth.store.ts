@@ -2,6 +2,9 @@ import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginResponse } from '../models/auth.model';
+import { UserService } from '../../home/services/user.service';
+import { pipe, switchMap, tap } from 'rxjs';
+import { User } from '../../home/models/home.model';
 
 export interface AuthState {
     user: LoginResponse | null;
@@ -83,6 +86,31 @@ export const AuthStore = signalStore(
 
                 return user.permissions.includes(permission);
             },
+            updateUserInfo(user: User): void {
+                const current = store.user();
+
+                if (!current) {
+                    return;
+                }
+
+                const updatedUser: LoginResponse = {
+                    ...current,
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    dpi: user.dpi,
+                    email: user.email,
+                    permissions: user.permissions
+                };
+
+                patchState(store, {
+                    user: updatedUser
+                });
+
+                if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedUser));
+                }
+            }
         };
     })
 );

@@ -83,6 +83,7 @@ export interface User {
     roleColor: string;
     createdAt: string;
     updatedAt: string;
+    permissions: string[];
 }
 
 export interface UpdateMyUser {

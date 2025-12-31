@@ -15,7 +15,6 @@ export interface LoginResponse {
   color: string;
 }
 
-
 export interface SignupRequest {
   firstName: string;
   lastName: string;
