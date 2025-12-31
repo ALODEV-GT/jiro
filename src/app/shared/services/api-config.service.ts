@@ -19,9 +19,5 @@ export class ApiConfig {
     
     public readonly API_SPRINT = `${this.API_BASE}/sc/sprints`
     public readonly API_STAGE = `${this.API_BASE}/sc/stages`
-
-
-
-
-
+    public readonly API_ACTIVITY = `${this.API_BASE}/in/activity`
 }

@@ -1,136 +1,61 @@
 <div class="p-6 min-h-screen bg-base-200">
     <div class="max-w-4xl mx-auto">
-        <h1 class="text-4xl font-bold text-primary mb-8">Actividad del Proyecto</h1>
+        <h1 class="text-4xl font-bold text-primary mb-8">
+            Actividad del Proyecto
+        </h1>
 
-        <div class="space-y-4">
-            <!-- Activity 1 -->
-            <div class="flex gap-4 items-start bg-base-100 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow">
-                <div class="avatar">
-                    <div class="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                        <img src="https://i.pravatar.cc/150?img=1" alt="Juan Pérez" />
-                    </div>
-                </div>
-                <div class="flex-1">
-                    <p class="text-lg">
-                        <span class="font-semibold">Juan Pérez</span>
-                        <span class="text-base-content/70"> creó una nueva historia</span>
-                    </p>
-                    <p class="text-sm text-base-content/60 mt-1">
-                        “Como usuario, quiero recuperar mi contraseña...” fue agregada al Backlog
-                    </p>
-                    <p class="text-xs text-base-content/50 mt-3">Hace 5 minutos</p>
-                </div>
-                <div class="badge badge-primary badge-outline">Historia</div>
-            </div>
+        <!-- Loading -->
+        <div *ngIf="loading()" class="text-center py-16">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
 
-            <!-- Activity 2 -->
-            <div class="flex gap-4 items-start bg-base-100 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow">
-                <div class="avatar">
-                    <div class="w-12 rounded-full ring ring-success ring-offset-base-100 ring-offset-2">
-                        <img src="https://i.pravatar.cc/150?img=5" alt="María López" />
-                    </div>
-                </div>
-                <div class="flex-1">
-                    <p class="text-lg">
-                        <span class="font-semibold">María López</span>
-                        <span class="text-base-content/70"> movió una historia al sprint</span>
-                    </p>
-                    <p class="text-sm text-base-content/60 mt-1">
-                        “Diseñar dashboard administrativo” fue asignada a <strong>Sprint 3</strong>
-                    </p>
-                    <p class="text-xs text-base-content/50 mt-3">Hace 18 minutos</p>
-                </div>
-                <div class="badge badge-success badge-outline">Sprint</div>
-            </div>
-
-            <!-- Activity 3 -->
-            <div class="flex gap-4 items-start bg-base-100 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow">
-                <div class="avatar">
-                    <div class="w-12 rounded-full ring ring-info ring-offset-base-100 ring-offset-2">
-                        <img src="https://i.pravatar.cc/150?img=12" alt="Carlos Gómez" />
-                    </div>
-                </div>
-                <div class="flex-1">
-                    <p class="text-lg">
-                        <span class="font-semibold">Carlos Gómez</span>
-                        <span class="text-base-content/70"> cambió el estado de una tarea</span>
-                    </p>
-                    <p class="text-sm text-base-content/60 mt-1">
-                        “Implementar login con Google” pasó de <span class="badge badge-warning badge-sm">En
-                            Progreso</span> → <span class="badge badge-success badge-sm">Completada</span>
-                    </p>
-                    <p class="text-xs text-base-content/50 mt-3">Hace 1 hora</p>
-                </div>
-                <div class="badge badge-info badge-outline">Tarea</div>
-            </div>
-
-            <!-- Activity 4 -->
-            <div class="flex gap-4 items-start bg-base-100 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow">
+        <!-- Activity list -->
+        <div *ngIf="!loading() && logs().length > 0" class="space-y-4">
+            <div *ngFor="let log of logs()"
+                class="flex gap-4 items-start bg-base-100 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow">
+                <!-- Avatar -->
                 <div class="avatar placeholder">
                     <div
-                        class="w-12 rounded-full bg-neutral text-neutral-content ring ring-warning ring-offset-base-100 ring-offset-2">
-                        <span class="text-lg font-bold">AL</span>
+                        class="w-12 rounded-full bg-neutral text-neutral-content ring ring-primary ring-offset-base-100 ring-offset-2">
+                        <span class="font-bold">
+                            {{ log.fullName[0] }}{{ log.fullName.split(' ')[1]?.[0] }}
+                        </span>
                     </div>
                 </div>
-                <div class="flex-1">
-                    <p class="text-lg">
-                        <span class="font-semibold">Ana López</span>
-                        <span class="text-base-content/70"> creó un nuevo sprint</span>
-                    </p>
-                    <p class="text-sm text-base-content/60 mt-1">
-                        <strong>Sprint 4 – Fase de Testing</strong> (14 días) fue iniciado
-                    </p>
-                    <p class="text-xs text-base-content/50 mt-3">Hace 3 horas</p>
-                </div>
-                <div class="badge badge-warning badge-outline">Sprint</div>
-            </div>
 
-            <!-- Activity 5 -->
-            <div class="flex gap-4 items-start bg-base-100 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow">
-                <div class="avatar">
-                    <div class="w-12 rounded-full ring ring-error ring-offset-base-100 ring-offset-2">
-                        <img src="https://i.pravatar.cc/150?img=8" alt="Pedro Ruiz" />
-                    </div>
-                </div>
+                <!-- Content -->
                 <div class="flex-1">
                     <p class="text-lg">
-                        <span class="font-semibold">Pedro Ruiz</span>
-                        <span class="text-base-content/70"> eliminó una historia</span>
+                        <span class="font-semibold">{{ log.fullName }}</span>
+                        <span class="text-base-content/70">
+                            {{ getDetails(log) }}
+                        </span>
                     </p>
-                    <p class="text-sm text-base-content/60 mt-1">
-                        >
-                        “Migrar base de datos a PostgreSQL” fue eliminada del proyecto
-                    </p>
-                    <p class="text-xs text-base-content/50 mt-3">Hace 5 horas</p>
-                </div>
-                <div class="badge badge-error badge-outline">Eliminado</div>
-            </div>
 
-            <!-- Activity 6 -->
-            <div class="flex gap-4 items-start bg-base-100 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow">
-                <div class="avatar">
-                    <div class="w-12 rounded-full ring ring-accent ring-offset-base-100 ring-offset-2">
-                        <img src="https://i.pravatar.cc/150?img=15" alt="Sofía Martínez" />
-                    </div>
-                </div>
-                <div class="flex-1">
-                    <p class="text-lg">
-                        <span class="font-semibold">Sofía Martínez</span>
-                        <span class="text-base-content/70"> actualizó los puntos de una historia</span>
-                    </p>
                     <p class="text-sm text-base-content/60 mt-1">
-                        “Diseñar flujo de onboarding” cambió de 8 → <strong>13 puntos</strong>
+                        {{ log.details?.name }}
                     </p>
-                    <p class="text-xs text-base-content/50 mt-3">Ayer a las 16:42</p>
+
+                    <p class="text-xs text-base-content/50 mt-3">
+                        {{ log.occurredAt | date: 'short' }}
+                    </p>
                 </div>
-                <div class="badge badge-accent badge-outline">Puntos</div>
+
+                <!-- Badge -->
+                <div class="badge badge-outline" [ngClass]="getBadgeClass(log)">
+                    {{ getBadgeLabel(log) }}
+                </div>
             </div>
         </div>
 
-        <!-- Empty -->
-        <div class="text-center py-16" *ngIf="false">
-            <p class="text-2xl text-base-content/60">Aún no hay actividad en el proyecto</p>
-            <p class="text-lg mt-2">Las acciones aparecerán aquí cuando el equipo empiece a trabajar</p>
+        <!-- Empty state -->
+        <div *ngIf="!loading() && logs().length === 0" class="text-center py-16">
+            <p class="text-2xl text-base-content/60">
+                Aún no hay actividad en el proyecto
+            </p>
+            <p class="text-lg mt-2">
+                Las acciones aparecerán aquí cuando el equipo empiece a trabajar
+            </p>
         </div>
     </div>
 </div>

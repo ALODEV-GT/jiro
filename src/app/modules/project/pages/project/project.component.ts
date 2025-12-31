@@ -13,11 +13,22 @@ import { ExpenseManagementComponent } from "../../../home/pages/expense-manageme
 import { MemberManagementComponent } from '../../../home/pages/member-management/member-management.component';
 import { ProjectDataComponent } from "../../../report/components/project-data/project-data.component";
 import { AuthStore } from '../../../auth/store/auth.store';
+import { LogActivityComponent } from '../../components/log-activity/log-activity.component';
 
 @Component({
   selector: 'app-project',
   standalone: true,
-  imports: [BoardComponent, SprintsComponent, CommonModule, ReactiveFormsModule, IncomingManagementComponent, ExpenseManagementComponent, MemberManagementComponent, ProjectDataComponent],
+  imports: [
+    BoardComponent,
+    SprintsComponent,
+    CommonModule,
+    ReactiveFormsModule,
+    IncomingManagementComponent,
+    ExpenseManagementComponent,
+    MemberManagementComponent,
+    ProjectDataComponent,
+    LogActivityComponent
+  ],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss'
 })
@@ -30,7 +41,7 @@ export class ProjectComponent {
 
   project: Project | null = null
 
-  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' = 'board';
+  activeTab: 'board' | 'members' | 'sprints' | 'income' | 'expense' | 'reports' | 'activity' = 'board';
 
   isEditingProject = false;
 

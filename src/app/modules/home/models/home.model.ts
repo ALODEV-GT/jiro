@@ -233,3 +233,78 @@ export interface CreateOrUpdateSprint {
     status: SprintStatus;
 }
 
+
+
+//Audit logs
+export interface Audit {
+    actorId: string;
+    eventType: string;
+    occurredAt: number;
+    description: string;
+}
+
+export interface StoryEvent {
+    id: string;
+    projectId: string;
+    productOwnerId: string;
+    developerId: string;
+    sprintId: string;
+    name: string;
+    description: string;
+    points: number;
+    priority: string;
+    stage: string;
+    audit: Audit;
+}
+
+export interface SprintEvent {
+    id: string;
+    projectId: string;
+    name: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    audit: Audit;
+}
+
+export interface ProjectEvent {
+    id: string;
+    name: string;
+    description: string;
+    client: string;
+    status: string;
+    monthlyIncome: number;
+    audit: Audit;
+}
+
+export type ActivityEventType =
+    | 'story.created'
+    | 'story.moved'
+    | 'story.updated'
+    | 'story.deleted'
+    | 'sprint.created'
+    | 'sprint.updated'
+    | 'sprint.deleted'
+    | 'project.created'
+    | 'project.closed'
+    | 'project.updated'
+    | 'project.deleted';
+
+export type ActivityDetails =
+    | StoryEvent
+    | SprintEvent
+    | ProjectEvent;
+
+export interface ActivityLog {
+    id: number;
+    eventType: ActivityEventType;
+    aggregateId: string;
+    actorId: string;
+    fullName: string;
+    email: string;
+    role: string;
+    occurredAt: string;
+    description: string;
+    details: any;
+}
