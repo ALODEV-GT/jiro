@@ -15,35 +15,49 @@
                 class="flex gap-4 items-start bg-base-100 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow">
                 <!-- Avatar -->
                 <div class="avatar placeholder">
-                    <div
-                        class="w-12 rounded-full bg-neutral text-neutral-content ring ring-primary ring-offset-base-100 ring-offset-2">
-                        <span class="font-bold">
-                            {{ log.fullName[0] }}{{ log.fullName.split(' ')[1]?.[0] }}
+                    <div class="w-12 rounded-full bg-neutral text-neutral-content ring ring-primary ring-offset-base-100 ring-offset-2"
+                        [style.backgroundColor]="getRoleBgColor(log.role)">
+                        <span class="text-sm font-bold uppercase"
+                            [style.color]="colorService.getTextColor(getRoleBgColor(log.role))">
+                            {{ getInitials(log.fullName) }}
                         </span>
                     </div>
                 </div>
 
                 <!-- Content -->
                 <div class="flex-1">
-                    <p class="text-lg">
-                        <span class="font-semibold">{{ log.fullName }}</span>
-                        <span class="text-base-content/70">
-                            {{ getDetails(log) }}
+                    <!-- Nombre + Rol -->
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-lg font-semibold">
+                            {{ log.fullName }}
                         </span>
+
+                        <span class="badge badge-sm font-medium" [style.backgroundColor]="getRoleBgColor(log.role)"
+                            [style.color]="colorService.getTextColor(getRoleBgColor(log.role))">
+                            {{ log.role }}
+                        </span>
+                    </div>
+
+                    <!-- Acción -->
+                    <p class="text-base-content/70 mt-1">
+                        {{ getDetails(log) }}
                     </p>
 
+                    <!-- Entidad -->
                     <p class="text-sm text-base-content/60 mt-1">
                         {{ log.details?.name }}
                     </p>
 
+                    <!-- Fecha -->
                     <p class="text-xs text-base-content/50 mt-3">
-                        {{ log.occurredAt | date: 'short' }}
+                        {{ log.occurredAt | date: 'dd/MM/yy hh:mm a' }}
                     </p>
                 </div>
 
+
                 <!-- Badge -->
-                <div class="badge badge-outline" [ngClass]="getBadgeClass(log)">
-                    {{ getBadgeLabel(log) }}
+                <div class="badge badge-outline" [ngClass]="getBadgeClass(log.eventType)">
+                    {{ getBadgeLabel(log.eventType) }}
                 </div>
             </div>
         </div>
